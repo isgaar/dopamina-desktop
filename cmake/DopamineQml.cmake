@@ -1,0 +1,81 @@
+# Location: cmake/DopamineQml.cmake
+# Function: Manifest of QML declarative UI files, dialogs, views, delegates,
+# fonts, and visual resources registered with the Qt Quick application module.
+# All Rights Reserved isgaar
+
+set(DOPAMINE_QML_FILES
+    src/shared/ui/AppMenuBar.qml
+    src/shared/ui/AppIcon.qml
+    src/shared/ui/AppButton.qml
+    src/Main.qml
+    src/shared/ui/titlebar/AppTitleBar.qml
+    src/shared/ui/titlebar/TitleMenuBar.qml
+    src/shared/ui/titlebar/WindowControls.qml
+    src/shared/ui/window/RoundedWindow.qml
+    src/shared/ui/window/AboutWindow.qml
+    src/shared/ui/window/SettingsWindow.qml
+    src/shared/ui/window/SleepTimerDialog.qml
+    src/shared/ui/SegmentedControl.qml
+    src/shared/ui/StatusPill.qml
+    src/shared/ui/feedback/LoadingSpinner.qml
+    src/shared/ui/feedback/EmptyStateView.qml
+    src/shared/ui/feedback/ProgressBar.qml
+    src/shared/ui/settings/SettingsNav.qml
+    src/shared/ui/settings/SettingsPane.qml
+    src/shared/ui/settings/SettingsField.qml
+    src/shared/ui/settings/SettingsSelect.qml
+    src/shared/ui/settings/SettingsSwitchRow.qml
+    src/shared/ui/settings/SettingsFooter.qml
+    src/features/settings/ui/panes/AudioSettingsPane.qml
+    src/features/settings/ui/panes/MusicSourceSettingsPane.qml
+    src/features/settings/ui/panes/CoversSettingsPane.qml
+    src/features/settings/ui/panes/AppearanceSettingsPane.qml
+    src/features/settings/ui/panes/SystemSettingsPane.qml
+    src/features/settings/ui/SettingsConfirmDialog.qml
+    src/features/settings/ui/FirstRunWizardDialog.qml
+    src/features/settings/ui/FirstRunSmbFields.qml
+    src/features/stations/ui/delegates/TrackTableRowDelegate.qml
+    src/features/stations/ui/delegates/StationRailDelegate.qml
+    src/features/stations/ui/delegates/TrackFormatBadge.qml
+    src/features/stations/ui/delegates/TrackStationBadge.qml
+    src/features/stations/ui/dialogs/StationReassignDialog.qml
+    src/features/stations/ui/StationSideRail.qml
+    src/features/stations/ui/StationHeaderBanner.qml
+    src/features/stations/ui/TrackToolbar.qml
+    src/features/stations/ui/TrackTableView.qml
+    src/features/stations/ui/TrackDetailDrawer.qml
+    src/features/stations/ui/StationManagerView.qml
+    src/features/playback/ui/equalizer/EqualizerBandsTab.qml
+    src/features/playback/ui/equalizer/EqualizerCurve.qml
+    src/features/playback/ui/equalizer/EqualizerEffects1Tab.qml
+    src/features/playback/ui/equalizer/EqualizerEffects2Tab.qml
+    src/features/playback/ui/equalizer/EqualizerHeader.qml
+    src/features/playback/ui/equalizer/EqualizerKnob.qml
+    src/features/playback/ui/EqualizerDialog.qml
+    src/features/playback/ui/PlayerBarControls.qml
+    src/features/playback/ui/PlayerBar.qml
+    src/shared/ui/navigation/SideNav.qml
+    src/shared/ui/navigation/MainDashboard.qml
+    src/features/library/ui/LibraryView.qml
+    src/features/library/ui/LibraryTrackDelegate.qml
+    src/features/queue/ui/QueueView.qml
+    src/features/playlists/ui/PlaylistsView.qml
+    src/shared/ui/state/ViewState.qml
+    src/shared/ui/state/ConnectionPill.qml
+    src/shared/ui/state/BannerNotification.qml
+)
+
+
+set(DOPAMINE_RESOURCES
+    src/shared/assets/app-icon.png
+    src/shared/colors/colors.xml
+    src/shared/colors/colors_light.xml
+    src/shared/i18n/strings_es.xml
+    src/shared/i18n/strings_en.xml
+    src/shared/assets/fonts/LumpySansLight.ttf
+    src/shared/assets/fonts/LumpySansRegular.ttf
+    src/shared/assets/fonts/LumpySans-Medium.ttf
+    src/shared/assets/fonts/LumpySansBold.ttf
+    src/shared/assets/fonts/LumpySansHeavy.ttf
+    src/shared/assets/fonts/lucide.ttf
+)
