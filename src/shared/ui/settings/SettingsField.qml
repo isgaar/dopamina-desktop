@@ -1,7 +1,7 @@
 /**
  * Location: src/shared/ui/settings/SettingsField.qml
- * Function: Standardized settings input field with top label, monospace font
- * support for URIs, 32px height constraint, and contextual help hints.
+ * Function: Standardized settings input field with top label, Lumpy Sans
+ * typography, 32px height constraint, and contextual help hints.
  * All Rights Reserved isgaar
  */
 import QtQuick
@@ -14,7 +14,6 @@ ColumnLayout {
     property alias text: input.text
     property string placeholderText: ""
     property string helpText: ""
-    property bool monospace: false
     property bool readOnly: false
     property alias echoMode: input.echoMode
     signal textEdited(string value)
@@ -45,7 +44,7 @@ ColumnLayout {
             anchors.leftMargin: Theme.spaceSm
             anchors.rightMargin: Theme.spaceSm
             verticalAlignment: TextInput.AlignVCenter
-            font.family: root.monospace ? "monospace" : Theme.fontFamily
+            font.family: Theme.fontFamily
             font.pixelSize: 12
             color: root.readOnly ? Theme.textMuted : Theme.textLight
             readOnly: root.readOnly

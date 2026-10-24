@@ -1,6 +1,6 @@
 /**
  * Location: src/features/queue/infra/QueueApiClient.h
- * Function: Network client requesting stateless song radio recommendation
+ * Function: Network client requesting stateless song mix recommendation
  * batches and posting playback history events to server endpoints.
  * All Rights Reserved isgaar
  */
@@ -20,15 +20,15 @@ public:
     explicit QueueApiClient(Core::ApiClient *client,
                             QObject *parent = nullptr);
 
-    using RadioCallback =
+    using MixCallback =
         std::function<void(bool ok, const QJsonArray &trackIds)>;
 
-    void fetchRadioNext(int seedTrackId,
+    void fetchMixNext(int seedTrackId,
                         const QList<int> &historyIds,
                         const QJsonArray &events,
                         const QString &mode,
                         int count,
-                        RadioCallback cb);
+                        MixCallback cb);
 
     void recordHistory(int trackId);
 

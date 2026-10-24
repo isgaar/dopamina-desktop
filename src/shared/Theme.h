@@ -1,14 +1,13 @@
 /**
  * Location: src/shared/Theme.h
- * Function: Master design token singleton exposing colors, radiuses, spacing,
- * and typography constants for consistent native desktop styling in Qt Quick.
+ * Function: Master design token singleton exposing reactive colors, radii,
+ * spacing, and typography for consistent native Qt Quick styling.
  * All Rights Reserved isgaar
  */
 #ifndef DOPAMINE_SHARED_THEME_H
 #define DOPAMINE_SHARED_THEME_H
 
 #include <QColor>
-#include <QLocale>
 #include <QObject>
 #include <QString>
 
@@ -18,30 +17,35 @@ class Theme : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString appName READ appName CONSTANT)
     Q_PROPERTY(QString fontFamily READ fontFamily CONSTANT)
-    Q_PROPERTY(bool isSpanish READ isSpanish CONSTANT)
+    Q_PROPERTY(QString currentTheme READ currentTheme
+               NOTIFY paletteChanged)
+    Q_PROPERTY(bool isSpanish READ isSpanish NOTIFY languageChanged)
 
-    Q_PROPERTY(QColor primary READ primary CONSTANT)
-    Q_PROPERTY(QColor primaryHover READ primaryHover CONSTANT)
-    Q_PROPERTY(QColor primaryDim READ primaryDim CONSTANT)
-    Q_PROPERTY(QColor accent READ accent CONSTANT)
-    Q_PROPERTY(QColor accentLight READ accentLight CONSTANT)
-    Q_PROPERTY(QColor accentOrange READ accentOrange CONSTANT)
+    Q_PROPERTY(QColor primary READ primary NOTIFY paletteChanged)
+    Q_PROPERTY(QColor primaryHover READ primaryHover
+               NOTIFY paletteChanged)
+    Q_PROPERTY(QColor primaryDim READ primaryDim NOTIFY paletteChanged)
+    Q_PROPERTY(QColor accent READ accent NOTIFY paletteChanged)
+    Q_PROPERTY(QColor accentLight READ accentLight NOTIFY paletteChanged)
+    Q_PROPERTY(QColor accentOrange READ accentOrange
+               NOTIFY paletteChanged)
 
-    Q_PROPERTY(QColor bgDarkest READ bgDarkest CONSTANT)
-    Q_PROPERTY(QColor bgDark READ bgDark CONSTANT)
-    Q_PROPERTY(QColor bgSurface READ bgSurface CONSTANT)
-    Q_PROPERTY(QColor bgCard READ bgCard CONSTANT)
-    Q_PROPERTY(QColor bgSelected READ bgSelected CONSTANT)
-    Q_PROPERTY(QColor borderDark READ borderDark CONSTANT)
-    Q_PROPERTY(QColor borderHighlight READ borderHighlight CONSTANT)
+    Q_PROPERTY(QColor bgDarkest READ bgDarkest NOTIFY paletteChanged)
+    Q_PROPERTY(QColor bgDark READ bgDark NOTIFY paletteChanged)
+    Q_PROPERTY(QColor bgSurface READ bgSurface NOTIFY paletteChanged)
+    Q_PROPERTY(QColor bgCard READ bgCard NOTIFY paletteChanged)
+    Q_PROPERTY(QColor bgSelected READ bgSelected NOTIFY paletteChanged)
+    Q_PROPERTY(QColor borderDark READ borderDark NOTIFY paletteChanged)
+    Q_PROPERTY(QColor borderHighlight READ borderHighlight
+               NOTIFY paletteChanged)
 
-    Q_PROPERTY(QColor textLight READ textLight CONSTANT)
-    Q_PROPERTY(QColor textMuted READ textMuted CONSTANT)
-    Q_PROPERTY(QColor textDim READ textDim CONSTANT)
+    Q_PROPERTY(QColor textLight READ textLight NOTIFY paletteChanged)
+    Q_PROPERTY(QColor textMuted READ textMuted NOTIFY paletteChanged)
+    Q_PROPERTY(QColor textDim READ textDim NOTIFY paletteChanged)
 
-    Q_PROPERTY(QColor success READ success CONSTANT)
-    Q_PROPERTY(QColor danger READ danger CONSTANT)
-    Q_PROPERTY(QColor warning READ warning CONSTANT)
+    Q_PROPERTY(QColor success READ success NOTIFY paletteChanged)
+    Q_PROPERTY(QColor danger READ danger NOTIFY paletteChanged)
+    Q_PROPERTY(QColor warning READ warning NOTIFY paletteChanged)
 
     Q_PROPERTY(int spaceXs READ spaceXs CONSTANT)
     Q_PROPERTY(int spaceSm READ spaceSm CONSTANT)
@@ -65,9 +69,8 @@ public:
 
     QString appName() const { return QStringLiteral("Dopamine"); }
     QString fontFamily() const { return QStringLiteral("LumpySans"); }
-    bool isSpanish() const {
-        return QLocale::system().language() == QLocale::Spanish;
-    }
+    QString currentTheme() const;
+    bool isSpanish() const;
 
     Q_INVOKABLE QString string(const QString &key) const;
     Q_INVOKABLE QColor color(const QString &key) const;
@@ -106,6 +109,10 @@ public:
     int radiusLg() const { return 14; } int radiusFull() const { return 9999; }
     int fontSm() const { return 11; } int fontBase() const { return 13; }
     int fontMd() const { return 15; } int fontLg() const { return 18; }
+
+signals:
+    void paletteChanged();
+    void languageChanged();
 };
 
 } // namespace Dopamine::Shared

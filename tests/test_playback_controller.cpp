@@ -1,13 +1,14 @@
 /**
  * Location: tests/test_playback_controller.cpp
- * Function: Unit test suite validating PlaybackController transitions,
- * audio state management, EqualizerController gains, and synced lyrics.
+ * Function: Unit test suite validating library playback transitions, volume,
+ * local lyric loading, and EqualizerController gains.
  * All Rights Reserved isgaar
  */
 #include <QCoreApplication>
+#include <QFile>
 #include <QSignalSpy>
+#include <QTemporaryDir>
 #include <QTest>
-#include "core/ApiClient.h"
 #include "core/audio/IAudioBackend.h"
 #include "features/playback/app/PlaybackController.h"
 #include "features/playback/app/EqualizerController.h"
@@ -36,6 +37,11 @@ public:
     void setNext(const QUrl &) override {}
     void setGainDb(float) override {}
     void setCrossfadeMs(int) override {}
+
+    void tick(qint64 positionMs) {
+        m_p = positionMs;
+        emit positionChanged(positionMs);
+    }
 };
 
 class TestPlaybackController : public QObject {
@@ -55,31 +61,55 @@ private slots:
 
     void testPlaybackStateMachine() {
         MockAudio audio;
-        Dopamine::Core::ApiClient client;
-        PlaybackController ctrl(&client, &audio);
+        PlaybackController ctrl(&audio);
 
-        ctrl.tuneStation("chill");
-        QCOMPARE(ctrl.stationId(), QString("chill"));
-        QCOMPARE(ctrl.playbackOrigin(), QString("radio"));
-
-        ctrl.play();
+        ctrl.playLibraryTrack(99, "Song", "Artist", "Album",
+                              "/tmp/dopamine-song.mp3", 200);
+        QCOMPARE(ctrl.trackTitle(), QString("Song"));
+        QCOMPARE(ctrl.trackArtist(), QString("Artist"));
+        QCOMPARE(audio.currentUrl(),
+                 QUrl::fromLocalFile("/tmp/dopamine-song.mp3"));
         QVERIFY(ctrl.isPlaying());
         QVERIFY(audio.isPlaying());
+
+        ctrl.pause();
+        QVERIFY(!ctrl.isPlaying());
+        QVERIFY(!audio.isPlaying());
+
+        ctrl.togglePlay();
+        QVERIFY(ctrl.isPlaying());
 
         ctrl.stop();
         QVERIFY(!ctrl.isPlaying());
         QVERIFY(!audio.isPlaying());
 
-        ctrl.playLibraryTrack(99, "Song", "Artist", "Album", "", 200);
-        QCOMPARE(ctrl.playbackOrigin(), QString("library"));
-        QCOMPARE(ctrl.trackTitle(), QString("Song"));
-
-        ctrl.tuneStation("jazz");
-        QCOMPARE(ctrl.playbackOrigin(), QString("radio"));
-        QCOMPARE(ctrl.stationId(), QString("jazz"));
-
         ctrl.setVolume(72);
         QCOMPARE(ctrl.volume(), 72);
+
+        ctrl.playLibraryTrack(100, "Other", "Artist", "Album", "", 0);
+        QCOMPARE(ctrl.trackTitle(), QString("Other"));
+    }
+
+    void testLocalLyrics() {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        QFile lrc(dir.filePath("song.lrc"));
+        QVERIFY(lrc.open(QIODevice::WriteOnly | QIODevice::Text));
+        lrc.write("[00:10.00]First line\n[00:20.00]Second line\n");
+        lrc.close();
+
+        MockAudio audio;
+        PlaybackController ctrl(&audio);
+        ctrl.playLibraryTrack(1, "Song", "Artist", "Album",
+                              dir.filePath("song.mp3"), 180);
+
+        QVERIFY(ctrl.lyricsAvailable());
+        QCOMPARE(ctrl.lyricsLines().size(), 2);
+        QCOMPARE(ctrl.activeLyricIndex(), -1);
+        audio.tick(12000);
+        QCOMPARE(ctrl.activeLyricIndex(), 0);
+        audio.tick(22000);
+        QCOMPARE(ctrl.activeLyricIndex(), 1);
     }
 
     void testEqualizerStateAndController() {

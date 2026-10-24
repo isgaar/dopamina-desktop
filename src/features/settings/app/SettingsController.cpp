@@ -37,7 +37,8 @@ void SettingsController::resetDrafts() {
     m_connectionStatus = m_sourceStatus = QStringLiteral("neutral");
     updateDirtyState();
     emit draftApiUrlChanged(); emit tokenChanged(); emit firstRunChanged();
-    emit draftLanguageChanged(); emit sourceDraftsChanged();
+    emit draftLanguageChanged(); emit draftThemeChanged();
+    emit sourceDraftsChanged();
     emit connectionStatusChanged(); emit sourceStatusChanged();
 }
 
@@ -48,6 +49,7 @@ void SettingsController::resetDrafts() {
 IMPL_SET(setDraftApiUrl, m_draft.serverUrl, draftApiUrlChanged)
 IMPL_SET(setDraftToken, m_draft.token, tokenChanged)
 IMPL_SET(setDraftLanguage, m_draft.language, draftLanguageChanged)
+IMPL_SET(setDraftTheme, m_draft.theme, draftThemeChanged)
 IMPL_SET(setDraftSourceType, m_draft.mode, sourceDraftsChanged)
 IMPL_SET(setDraftLocalPath, m_draft.folderPath, sourceDraftsChanged)
 IMPL_SET(setDraftSmbHost, m_draft.smbHost, sourceDraftsChanged)

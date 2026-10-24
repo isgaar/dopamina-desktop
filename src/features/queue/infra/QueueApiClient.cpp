@@ -1,7 +1,7 @@
 /**
  * Location: src/features/queue/infra/QueueApiClient.cpp
- * Function: Implementation of radio recommendation API client packing JSON
- * payloads for stateless radio sequencer generation and playback auditing.
+ * Function: Implementation of mix recommendation API client packing JSON
+ * payloads for stateless mix sequencer generation and playback auditing.
  * All Rights Reserved isgaar
  */
 #include "QueueApiClient.h"
@@ -13,12 +13,12 @@ namespace Dopamine::Features::Queue::Infra {
 QueueApiClient::QueueApiClient(Core::ApiClient *client, QObject *parent)
     : QObject(parent), m_client(client) {}
 
-void QueueApiClient::fetchRadioNext(int seedTrackId,
+void QueueApiClient::fetchMixNext(int seedTrackId,
                                     const QList<int> &historyIds,
                                     const QJsonArray &events,
                                     const QString &mode,
                                     int count,
-                                    RadioCallback cb) {
+                                    MixCallback cb) {
     if (!m_client) { if (cb) cb(false, {}); return; }
     QJsonObject payload;
     payload["seed_track_id"] = seedTrackId;

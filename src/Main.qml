@@ -1,11 +1,12 @@
 /**
  * Location: src/Main.qml
  * Function: Root application window hosting custom title bar, SideNav rail,
- * onboarding flow, library, playlists view, admin view, and PlayerBar.
+ * onboarding flow, library, playlists, queue, and the playback bar.
  * All Rights Reserved isgaar
  */
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import QtQuick.Window
 import "shared/ui"
 import "shared/ui/navigation"
@@ -44,7 +45,6 @@ ApplicationWindow {
         y = Math.max(0, (Screen.desktopAvailableHeight - th) / 2);
         width = tw; height = th;
     }
-
     Component.onCompleted: syncWindowSize()
 
     Loader {
@@ -58,16 +58,16 @@ ApplicationWindow {
 
     Rectangle {
         id: windowRoot
-        anchors.fill: parent; color: Theme.bgSurface; clip: true
+        anchors.fill: parent; color: Theme.bgDarkest
         radius: isFloat ? Theme.radiusMd : 0
         border.color: isFloat ? Theme.borderDark : "transparent"
-        border.width: 1
+        border.width: isFloat ? 1 : 0; layer.enabled: window.isFloat
+        layer.effect: MultiEffect { maskEnabled: true; maskSource: cornerMask }
 
         AppTitleBar {
             id: titleBar; anchors.top: parent.top; window: window
             anchors.left: parent.left; anchors.right: parent.right
-            isFirstRun: window.isSetup; activeView: window.activeView
-            onViewChangeRequested: v => window.activeView = v
+            isFirstRun: window.isSetup
             onOpenAboutRequested: aboutWindow.showWindow()
             onOpenSettingsRequested: settingsWindow.showSettings()
             onOpenEqualizerRequested: equalizerWindow.showWindow()
@@ -81,14 +81,12 @@ ApplicationWindow {
         }
 
         Loader {
-            id: mainDashboardLoader
             anchors.top: titleBar.bottom; anchors.bottom: parent.bottom
             anchors.left: parent.left; anchors.right: parent.right
             active: !window.isSetup
             sourceComponent: Component {
                 MainDashboard {
                     activeView: window.activeView
-                    isFloating: window.isFloat
                     onActiveViewChanged: window.activeView = activeView
                     onOpenSettingsRequested: settingsWindow.showSettings()
                     onOpenEqualizerRequested: equalizerWindow.showWindow()
@@ -98,8 +96,10 @@ ApplicationWindow {
         }
     }
 
-    Connections {
-        target: settingsController
+    RoundedMask { id: cornerMask; anchors.fill: windowRoot
+        cornerRadius: window.isFloat ? Theme.radiusMd : 0 }
+
+    Connections { target: settingsController
         function onFirstRunChanged() { window.syncWindowSize() }
     }
 

@@ -30,14 +30,14 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true; spacing: Theme.spaceSm
         SettingsField {
-            Layout.fillWidth: true; monospace: true
+            Layout.fillWidth: true
             label: Strings.get("settings_smb_host")
             placeholderText: "192.168.0.2 o smb://..."
             text: settingsController ? settingsController.draftSmbHost : ""
             onTextEdited: v => root.parseSmbHost(v)
         }
         SettingsField {
-            Layout.fillWidth: true; monospace: true
+            Layout.fillWidth: true
             label: Strings.get("settings_smb_share")
             placeholderText: "datos"
             text: settingsController ? settingsController.draftSmbShare : ""
@@ -49,7 +49,7 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true; spacing: Theme.spaceSm
         SettingsField {
-            Layout.fillWidth: true; monospace: true
+            Layout.fillWidth: true
             label: Strings.get("settings_smb_folder")
             placeholderText: "BackupMusic"
             text: settingsController ? settingsController.draftSmbFolder : ""

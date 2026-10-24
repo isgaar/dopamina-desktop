@@ -47,7 +47,7 @@ SettingsPane {
                 { value: "off", label: "Desactivada" },
                 { value: "ebu14", label: "-14 LUFS (Estándar)" },
                 { value: "ebu18", label: "-18 LUFS (Hi-Fi)" },
-                { value: "ebu23", label: "-23 LUFS (Broadcast)" }
+                { value: "ebu23", label: "-23 LUFS (EBU R128)" }
             ]
             currentValue: "ebu14"
         }

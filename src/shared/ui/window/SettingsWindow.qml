@@ -26,7 +26,6 @@ RoundedWindow {
     }
     function saveSettings() {
         if (settingsController) settingsController.apply()
-        if (stationController) stationController.reload()
         root.close()
     }
     onClosing: function(e) {

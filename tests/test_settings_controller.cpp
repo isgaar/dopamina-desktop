@@ -5,6 +5,7 @@
  * All Rights Reserved isgaar
  */
 #include <QCoreApplication>
+#include <QFile>
 #include <QSettings>
 #include <QSignalSpy>
 #include <QTest>
@@ -27,6 +28,7 @@ private slots:
         QSettings s(QStringLiteral("isgaar_test"), QStringLiteral("Dopamine"));
         s.clear();
         s.setValue(QStringLiteral("FirstRun/Completed"), true);
+        QFile::remove(SettingsStorage::appearanceFilePath());
         ProjectConfig::instance().setApiUrl(
             QStringLiteral("http://127.0.0.1:8000"));
     }
@@ -34,6 +36,7 @@ private slots:
     void cleanup() {
         QSettings s(QStringLiteral("isgaar_test"), QStringLiteral("Dopamine"));
         s.clear();
+        QFile::remove(SettingsStorage::appearanceFilePath());
         SettingsStorage::setTestScope(false);
     }
 
@@ -111,6 +114,34 @@ private slots:
         QVERIFY(!controller.isFirstRun());
         QSettings s("isgaar_test", "Dopamine");
         QVERIFY(s.value("FirstRun/Completed").toBool());
+    }
+
+    void testAppearanceDefaults() {
+        SettingsController controller;
+        QCOMPARE(controller.draftTheme(), QStringLiteral("roseglow"));
+        QCOMPARE(controller.draftLanguage(), QStringLiteral("system"));
+        QVERIFY(!controller.isDirty());
+    }
+
+    void testAppearancePersistsToXml() {
+        SettingsController controller;
+        controller.setDraftTheme(QStringLiteral("exoblur"));
+        controller.setDraftLanguage(QStringLiteral("en"));
+        QVERIFY(controller.isDirty());
+        controller.apply();
+        QVERIFY(!controller.isDirty());
+
+        QFile file(SettingsStorage::appearanceFilePath());
+        QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
+        const QString xml = QString::fromUtf8(file.readAll());
+        QVERIFY(xml.contains(QStringLiteral(
+            "<theme>exoblur</theme>")));
+        QVERIFY(xml.contains(QStringLiteral(
+            "<language>en</language>")));
+
+        SettingsController reloaded;
+        QCOMPARE(reloaded.draftTheme(), QStringLiteral("exoblur"));
+        QCOMPARE(reloaded.draftLanguage(), QStringLiteral("en"));
     }
 };
 

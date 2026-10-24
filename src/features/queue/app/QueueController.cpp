@@ -1,7 +1,7 @@
 /**
  * Location: src/features/queue/app/QueueController.cpp
  * Function: Implementation of player queue controller orchestrating dynamic
- * track lists, repeat/shuffle algorithms, and station radio queues.
+ * track lists, repeat/shuffle algorithms, and song mix queues.
  * All Rights Reserved isgaar
  */
 #include "QueueController.h"
@@ -48,7 +48,7 @@ void QueueController::next() {
         m_currentIndex++;
         emit indexChanged();
         playCurrentTrack();
-        if (m_isRadioActive) refillRadioIfNeeded();
+        if (m_isMixActive) refillMixIfNeeded();
     } else if (m_isRepeat) {
         m_currentIndex = 0;
         emit indexChanged();
@@ -64,9 +64,9 @@ void QueueController::previous() {
     }
 }
 
-void QueueController::startRadio(int seedTrackId, const QString &seedTitle) {
-    m_isRadioActive = true; m_seedId = seedTrackId;
-    m_radioSeedTitle = seedTitle; emit radioChanged();
+void QueueController::startMix(int seedTrackId, const QString &seedTitle) {
+    m_isMixActive = true; m_seedId = seedTrackId;
+    m_mixSeedTitle = seedTitle; emit mixChanged();
     m_queue.clear(); m_currentIndex = 0;
     QVariantMap seedTrack;
     seedTrack["id"] = seedTrackId;
@@ -74,21 +74,21 @@ void QueueController::startRadio(int seedTrackId, const QString &seedTitle) {
     m_queue.append(seedTrack);
     emit queueChanged(); emit indexChanged();
     playCurrentTrack();
-    refillRadioIfNeeded();
+    refillMixIfNeeded();
 }
 
-void QueueController::refillRadioIfNeeded() {
-    if (!m_api || !m_isRadioActive) return;
+void QueueController::refillMixIfNeeded() {
+    if (!m_api || !m_isMixActive) return;
     int remaining = m_queue.size() - m_currentIndex;
     if (remaining >= 5) return;
-    m_api->fetchRadioNext(m_seedId, m_history, {}, "normal", 25,
+    m_api->fetchMixNext(m_seedId, m_history, {}, "normal", 25,
         [this](bool ok, auto ids) {
             if (!ok) return;
             for (const auto &val : ids) {
                 QVariantMap item;
                 item["id"] = val.toInt();
                 item["title"] = QString("Pista #%1").arg(val.toInt());
-                item["isRadio"] = true;
+                item["isMix"] = true;
                 m_queue.append(item);
             }
             emit queueChanged();
@@ -105,7 +105,8 @@ void QueueController::playCurrentTrack() {
     if (m_api) m_api->recordHistory(id);
     emit playTrackRequested(
         id, t["title"].toString(), t["artist"].toString(),
-        t["album"].toString(), t["duration"].toInt());
+        t["album"].toString(), t["path"].toString(),
+        t["duration"].toInt());
 }
 
 } // namespace Dopamine::Features::Queue::App

@@ -7,6 +7,8 @@ set(DOPAMINE_QML_FILES
     src/shared/ui/AppMenuBar.qml
     src/shared/ui/AppIcon.qml
     src/shared/ui/AppButton.qml
+    src/shared/ui/RoundedImage.qml
+    src/shared/ui/RoundedMask.qml
     src/Main.qml
     src/shared/ui/titlebar/AppTitleBar.qml
     src/shared/ui/titlebar/TitleMenuBar.qml
@@ -15,7 +17,6 @@ set(DOPAMINE_QML_FILES
     src/shared/ui/window/AboutWindow.qml
     src/shared/ui/window/SettingsWindow.qml
     src/shared/ui/window/SleepTimerDialog.qml
-    src/shared/ui/SegmentedControl.qml
     src/shared/ui/StatusPill.qml
     src/shared/ui/feedback/LoadingSpinner.qml
     src/shared/ui/feedback/EmptyStateView.qml
@@ -34,17 +35,7 @@ set(DOPAMINE_QML_FILES
     src/features/settings/ui/SettingsConfirmDialog.qml
     src/features/settings/ui/FirstRunWizardDialog.qml
     src/features/settings/ui/FirstRunSmbFields.qml
-    src/features/stations/ui/delegates/TrackTableRowDelegate.qml
-    src/features/stations/ui/delegates/StationRailDelegate.qml
-    src/features/stations/ui/delegates/TrackFormatBadge.qml
-    src/features/stations/ui/delegates/TrackStationBadge.qml
-    src/features/stations/ui/dialogs/StationReassignDialog.qml
-    src/features/stations/ui/StationSideRail.qml
-    src/features/stations/ui/StationHeaderBanner.qml
-    src/features/stations/ui/TrackToolbar.qml
-    src/features/stations/ui/TrackTableView.qml
-    src/features/stations/ui/TrackDetailDrawer.qml
-    src/features/stations/ui/StationManagerView.qml
+    src/features/settings/ui/ThemePicker.qml
     src/features/playback/ui/equalizer/EqualizerBandsTab.qml
     src/features/playback/ui/equalizer/EqualizerCurve.qml
     src/features/playback/ui/equalizer/EqualizerEffects1Tab.qml
@@ -60,16 +51,16 @@ set(DOPAMINE_QML_FILES
     src/features/library/ui/LibraryTrackDelegate.qml
     src/features/queue/ui/QueueView.qml
     src/features/playlists/ui/PlaylistsView.qml
-    src/shared/ui/state/ViewState.qml
-    src/shared/ui/state/ConnectionPill.qml
-    src/shared/ui/state/BannerNotification.qml
 )
 
 
 set(DOPAMINE_RESOURCES
     src/shared/assets/app-icon.png
-    src/shared/colors/colors.xml
-    src/shared/colors/colors_light.xml
+    src/shared/colors/theme_roseglow.xml
+    src/shared/colors/theme_exoblur.xml
+    src/shared/colors/theme_thegrand.xml
+    src/shared/colors/theme_redline.xml
+    src/shared/colors/theme_flat.xml
     src/shared/i18n/strings_es.xml
     src/shared/i18n/strings_en.xml
     src/shared/assets/fonts/LumpySansLight.ttf

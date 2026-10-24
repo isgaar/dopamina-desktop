@@ -1,7 +1,7 @@
 /**
  * Location: src/core/discovery/DiscoveryService.h
- * Function: Zero-configuration mDNS client resolving DopamineFM broadcast
- * servers on local area network and configuring connection settings safely.
+ * Function: Zero-configuration mDNS client resolving Dopamine companion
+ * servers on the local area network and configuring connection settings safely.
  * All Rights Reserved isgaar
  */
 #ifndef DOPAMINE_CORE_DISCOVERY_DISCOVERYSERVICE_H

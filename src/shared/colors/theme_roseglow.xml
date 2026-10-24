@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Location: src/shared/colors/theme_roseglow.xml -->
+<!-- Function: Rose Glow OLED palette ported from the Android theme -->
+<!-- resources; default Dopamine desktop appearance. -->
+<!-- All Rights Reserved isgaar -->
+<resources>
+<!-- Brand and Accent Tokens -->
+<color name="primary">#FA2D48</color>
+<color name="primary_hover">#FF375F</color>
+<color name="primary_dim">#33FA2D48</color>
+<color name="accent">#FA2D48</color>
+<color name="accent_light">#33FA2D48</color>
+<color name="accent_orange">#FF9F0A</color>
+<color name="accent_cyan">#64D2FF</color>
+<color name="accent_sky">#0A84FF</color>
+<color name="accent_purple">#BF5AF2</color>
+<color name="accent_pink">#FF375F</color>
+<color name="eq_coral">#FA2D48</color>
+<color name="eq_coral_dim">#33FA2D48</color>
+<color name="eq_track_bg">#2C2C2E</color>
+<color name="eq_knob_ring">#3A3A3C</color>
+<color name="eq_pro_badge">#FA2D48</color>
+
+<!-- Background and Surface Tokens -->
+<color name="bg_darkest">#000000</color>
+<color name="bg_dark">#1C1C1E</color>
+<color name="bg_surface">#2C2C2E</color>
+<color name="bg_card">#B3242426</color>
+<color name="bg_card_elevated">#242426</color>
+<color name="bg_elevated">#1C1C1E</color>
+<color name="bg_input">#2C2C2E</color>
+<color name="bg_active">#2C2C2E</color>
+<color name="bg_selected">#2C2C2E</color>
+<color name="bg_hover">#2C2C2E</color>
+<color name="bg_login">#000000</color>
+<color name="bg_code">#1C1C1E</color>
+<color name="bg_terminal">#000000</color>
+
+<!-- Border and Divider Tokens -->
+<color name="border_dark">#26FFFFFF</color>
+<color name="border_highlight">#FA2D48</color>
+<color name="border_subtle">#1AFFFFFF</color>
+<color name="border_card">#26FFFFFF</color>
+<color name="border_input">#33FFFFFF</color>
+<color name="border_code">#1AFFFFFF</color>
+<color name="border_zinc">#33FFFFFF</color>
+<color name="border_accent">#FA2D48</color>
+
+<!-- Text and Foreground Tokens -->
+<color name="text_light">#FFFFFF</color>
+<color name="text_muted">#98989D</color>
+<color name="text_dim">#636366</color>
+<color name="text_zinc">#8E8E93</color>
+<color name="text_slate">#AEAEB2</color>
+<color name="text_caption">#8E8E93</color>
+<color name="text_label">#C7C7CC</color>
+<color name="text_placeholder">#636366</color>
+
+<!-- Status and Notification Tokens -->
+<color name="success">#30D158</color>
+<color name="success_alt">#248A3D</color>
+<color name="success_badge">#2630D158</color>
+<color name="success_light">#30D158</color>
+<color name="danger">#FF453A</color>
+<color name="danger_alt">#D70015</color>
+<color name="danger_badge">#26FF453A</color>
+<color name="danger_border">#66FF453A</color>
+<color name="danger_light">#FF6961</color>
+<color name="warning">#FFD60A</color>
+</resources>

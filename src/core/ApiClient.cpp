@@ -19,7 +19,7 @@ ApiClient::ApiClient(QObject *parent)
 QNetworkRequest ApiClient::createRequest(const QString &url) const {
     if (!ProjectConfig::instance().isProduction()) {
         QUrl parsed(url);
-        qInfo().noquote() << "[ApiClient] Consulta DopamineFM Engine:"
+        qInfo().noquote() << "[ApiClient] Consulta Dopamine Engine:"
                           << parsed.host() << ":" << parsed.port(8000)
                           << parsed.path();
     }

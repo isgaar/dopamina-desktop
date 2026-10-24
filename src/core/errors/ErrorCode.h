@@ -1,6 +1,6 @@
 /**
  * Location: src/core/errors/ErrorCode.h
- * Function: Strongly typed error code enumeration for the DopamineFM error
+ * Function: Strongly typed error code enumeration for the Dopamine error
  * catalog spanning connection, auth, source, audio, and API failure domains.
  * All Rights Reserved isgaar
  */

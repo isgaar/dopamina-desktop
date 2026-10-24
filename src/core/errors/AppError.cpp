@@ -1,7 +1,7 @@
 /**
  * Location: src/core/errors/AppError.cpp
  * Function: Logic determining retry strategies (Automatic, Manual, None)
- * based on the DopamineFM architectural error catalog guidelines.
+ * based on the Dopamine architectural error catalog guidelines.
  * All Rights Reserved isgaar
  */
 #include "AppError.h"

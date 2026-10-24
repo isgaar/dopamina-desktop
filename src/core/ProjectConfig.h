@@ -38,14 +38,6 @@ public:
     int targetPort() const;
     void logActiveEndpoint() const;
 
-    QString streamUrl(const QString &genre) const {
-        return QString("%1/stream/%2").arg(m_apiUrl, genre);
-    }
-    QString apiStationsUrl() const {
-        return QString("%1/api/v1/stations").arg(m_apiUrl);
-    }
-    QString stationsUrl() const { return apiStationsUrl(); }
-
     QString sourceType() const { return m_sourceType; }
     QString smbHost() const { return m_smbHost; }
     QString smbShare() const { return m_smbShare; }

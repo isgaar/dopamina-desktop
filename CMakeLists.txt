@@ -20,6 +20,7 @@ find_package(Qt6Multimedia REQUIRED
     NO_DEFAULT_PATH
 )
 
+include(cmake/DopamineRust.cmake)
 qt_standard_project_setup()
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
@@ -38,7 +39,7 @@ qt_add_qml_module(dopamine
 
 target_link_libraries(dopamine PRIVATE
     Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::Network Qt6::Widgets Qt6::Sql
-    Qt6::Multimedia Qt6::Concurrent
+    Qt6::Multimedia Qt6::Concurrent dopamine_desktop
 )
 
 target_include_directories(dopamine PRIVATE

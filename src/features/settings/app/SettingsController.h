@@ -27,6 +27,8 @@ class SettingsController : public QObject {
                NOTIFY tokenChanged)
     Q_PROPERTY(QString draftLanguage READ draftLanguage WRITE setDraftLanguage
                NOTIFY draftLanguageChanged)
+    Q_PROPERTY(QString draftTheme READ draftTheme WRITE setDraftTheme
+               NOTIFY draftThemeChanged)
     Q_PROPERTY(QString draftSourceType READ draftSourceType
                WRITE setDraftSourceType NOTIFY sourceDraftsChanged)
     Q_PROPERTY(QString draftLocalPath READ draftLocalPath
@@ -66,6 +68,8 @@ public:
     void setDraftToken(const QString &t);
     QString draftLanguage() const { return m_draft.language; }
     void setDraftLanguage(const QString &l);
+    QString draftTheme() const { return m_draft.theme; }
+    void setDraftTheme(const QString &t);
     QString draftSourceType() const { return m_draft.mode; }
     void setDraftSourceType(const QString &t);
     QString draftLocalPath() const { return m_draft.folderPath; }
@@ -97,7 +101,8 @@ public:
 
 signals:
     void draftApiUrlChanged(); void tokenChanged();
-    void draftLanguageChanged(); void sourceDraftsChanged();
+    void draftLanguageChanged(); void draftThemeChanged();
+    void sourceDraftsChanged();
     void dirtyChanged(); void firstRunChanged();
     void connectionStatusChanged(); void sourceStatusChanged();
 private:

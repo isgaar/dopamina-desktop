@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Location: src/shared/colors/theme_exoblur.xml -->
+<!-- Function: ExoBlur Hi-Fi cyan palette ported from the Android theme -->
+<!-- resources for the Dopamine desktop client. -->
+<!-- All Rights Reserved isgaar -->
+<resources>
+<!-- Brand and Accent Tokens -->
+<color name="primary">#00E5FF</color>
+<color name="primary_hover">#00B0FF</color>
+<color name="primary_dim">#3300E5FF</color>
+<color name="accent">#00E5FF</color>
+<color name="accent_light">#3300E5FF</color>
+<color name="accent_orange">#FF9F0A</color>
+<color name="accent_cyan">#00E5FF</color>
+<color name="accent_sky">#00B0FF</color>
+<color name="accent_purple">#BF5AF2</color>
+<color name="accent_pink">#FF375F</color>
+<color name="eq_coral">#00E5FF</color>
+<color name="eq_coral_dim">#3300E5FF</color>
+<color name="eq_track_bg">#1C2234</color>
+<color name="eq_knob_ring">#263049</color>
+<color name="eq_pro_badge">#00E5FF</color>
+
+<!-- Background and Surface Tokens -->
+<color name="bg_darkest">#0C0E14</color>
+<color name="bg_dark">#141824</color>
+<color name="bg_surface">#1C2234</color>
+<color name="bg_card">#99182030</color>
+<color name="bg_card_elevated">#182030</color>
+<color name="bg_elevated">#141824</color>
+<color name="bg_input">#1C2234</color>
+<color name="bg_active">#1C2234</color>
+<color name="bg_selected">#1C2234</color>
+<color name="bg_hover">#1C2234</color>
+<color name="bg_login">#0C0E14</color>
+<color name="bg_code">#141824</color>
+<color name="bg_terminal">#0C0E14</color>
+
+<!-- Border and Divider Tokens -->
+<color name="border_dark">#26FFFFFF</color>
+<color name="border_highlight">#00E5FF</color>
+<color name="border_subtle">#1AFFFFFF</color>
+<color name="border_card">#26FFFFFF</color>
+<color name="border_input">#33FFFFFF</color>
+<color name="border_code">#1AFFFFFF</color>
+<color name="border_zinc">#33FFFFFF</color>
+<color name="border_accent">#00E5FF</color>
+
+<!-- Text and Foreground Tokens -->
+<color name="text_light">#F3F7FA</color>
+<color name="text_muted">#8D99AE</color>
+<color name="text_dim">#5C677D</color>
+<color name="text_zinc">#8D99AE</color>
+<color name="text_slate">#A9B4C4</color>
+<color name="text_caption">#8D99AE</color>
+<color name="text_label">#C9D3DF</color>
+<color name="text_placeholder">#5C677D</color>
+
+<!-- Status and Notification Tokens -->
+<color name="success">#30D158</color>
+<color name="success_alt">#248A3D</color>
+<color name="success_badge">#2630D158</color>
+<color name="success_light">#30D158</color>
+<color name="danger">#FF453A</color>
+<color name="danger_alt">#D70015</color>
+<color name="danger_badge">#26FF453A</color>
+<color name="danger_border">#66FF453A</color>
+<color name="danger_light">#FF6961</color>
+<color name="warning">#FFD60A</color>
+</resources>

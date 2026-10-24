@@ -16,8 +16,6 @@ Rectangle {
 
     property var window: null
     property bool isFirstRun: false
-    property string activeView: "radio"
-    signal viewChangeRequested(string view)
     signal openAboutRequested()
     signal openSettingsRequested()
     signal openEqualizerRequested()

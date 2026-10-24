@@ -1,6 +1,6 @@
 # Location: cmake/DopamineSources.cmake
 # Function: Source file catalog defining C++ sources and headers across core,
-# shared, station manager, equalizer playback, and radio broadcast modules.
+# shared, playback engine, library, queue, playlists, and settings.
 # All Rights Reserved isgaar
 
 set(PROJECT_SOURCES
@@ -53,27 +53,12 @@ set(PROJECT_SOURCES
     src/core/daemon/AmbiguityDaemon.h
     src/core/service/LocalServiceManager.cpp
     src/core/service/LocalServiceManager.h
-    src/features/stations/domain/Station.h
-    src/features/stations/domain/Track.h
-    src/features/stations/domain/IStationRepository.h
-    src/features/stations/infra/StationHttpService.cpp
-    src/features/stations/infra/StationHttpService.h
-    src/features/stations/app/StationListModel.cpp
-    src/features/stations/app/StationListModel.h
-    src/features/stations/app/TrackListModel.cpp
-    src/features/stations/app/TrackListModel.h
-    src/features/stations/app/StationController.cpp
-    src/features/stations/app/StationController.h
     src/features/playback/domain/EqualizerPreset.h
     src/features/playback/domain/EqualizerState.cpp
     src/features/playback/domain/EqualizerState.h
     src/features/playback/domain/PlaybackTypes.h
     src/features/playback/domain/LrcParser.cpp
     src/features/playback/domain/LrcParser.h
-    src/features/playback/infra/PlaybackApiClient.cpp
-    src/features/playback/infra/PlaybackApiClient.h
-    src/features/playback/infra/PlaybackSyncService.cpp
-    src/features/playback/infra/PlaybackSyncService.h
     src/features/playback/app/PlaybackController.cpp
     src/features/playback/app/PlaybackController.h
     src/features/playback/app/EqualizerController.cpp
@@ -88,19 +73,16 @@ set(PROJECT_SOURCES
     src/features/settings/app/SettingsController.h
     src/features/settings/app/SettingsWindowCapturer.cpp
     src/features/settings/app/SettingsWindowCapturer.h
-    src/features/library/domain/LibraryTrack.h
     src/features/library/infra/LibraryApiClient.cpp
     src/features/library/infra/LibraryApiClient.h
     src/features/library/infra/RecursiveDirectoryScanner.cpp
     src/features/library/infra/RecursiveDirectoryScanner.h
     src/features/library/app/LibraryController.cpp
     src/features/library/app/LibraryController.h
-    src/features/queue/domain/QueueTrack.h
     src/features/queue/infra/QueueApiClient.cpp
     src/features/queue/infra/QueueApiClient.h
     src/features/queue/app/QueueController.cpp
     src/features/queue/app/QueueController.h
-    src/features/playlists/domain/PlaylistModel.h
     src/features/playlists/infra/PlaylistApiClient.cpp
     src/features/playlists/infra/PlaylistApiClient.h
     src/features/playlists/app/PlaylistController.cpp

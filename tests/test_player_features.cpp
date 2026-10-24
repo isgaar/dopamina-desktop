@@ -42,14 +42,14 @@ private slots:
         QCOMPARE(queue.queueTracks().size(), 0);
     }
 
-    void testRadioSeedQueueing() {
+    void testMixSeedQueueing() {
         Dopamine::Core::ApiClient client;
         Dopamine::Features::Queue::Infra::QueueApiClient qApi(&client);
         QueueController queue(&qApi);
 
-        queue.startRadio(42, "Seed Song");
-        QVERIFY(queue.isRadioActive());
-        QCOMPARE(queue.radioSeedTitle(), QString("Seed Song"));
+        queue.startMix(42, "Seed Song");
+        QVERIFY(queue.isMixActive());
+        QCOMPARE(queue.mixSeedTitle(), QString("Seed Song"));
         QCOMPARE(queue.currentIndex(), 0);
         QVERIFY(queue.queueTracks().size() >= 1);
     }

@@ -1,7 +1,7 @@
 /**
  * Location: src/features/playback/ui/PlayerBarControls.qml
- * Function: Central player transport controls with play/pause, skip next, and
- * reactive duration track progress bar slider.
+ * Function: Central transport controls with play/pause, queue skip, and a
+ * reactive duration progress bar slider.
  * All Rights Reserved isgaar
  */
 import QtQuick
@@ -21,8 +21,8 @@ ColumnLayout {
                 Theme.primaryHover : Theme.primary
             AppIcon {
                 anchors.centerIn: parent; size: 16
-                name: playbackController.isPlaying ? "stop" : "play"
-                iconColor: Theme.textLight
+                name: playbackController.isPlaying ? "pause" : "play"
+                iconColor: Theme.bgDarkest
             }
             MouseArea {
                 id: playMouse; anchors.fill: parent; hoverEnabled: true
@@ -31,8 +31,11 @@ ColumnLayout {
             }
         }
         Rectangle {
+            readonly property bool hasQueue: queueController &&
+                queueController.queueTracks.length > 0
             width: 30; height: 30; radius: 15
-            color: skipMouse.containsMouse ?
+            opacity: hasQueue ? 1.0 : 0.4
+            color: skipMouse.containsMouse && hasQueue ?
                 Theme.bgSurface : "transparent"
             border.color: Theme.borderDark; border.width: 1
             AppIcon {
@@ -40,9 +43,12 @@ ColumnLayout {
                 iconColor: Theme.textLight
             }
             MouseArea {
-                id: skipMouse; anchors.fill: parent; hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: playbackController.skipNext()
+                id: skipMouse; anchors.fill: parent
+                enabled: parent.hasQueue
+                hoverEnabled: true
+                cursorShape: enabled ? Qt.PointingHandCursor :
+                    Qt.ArrowCursor
+                onClicked: queueController.next()
             }
         }
     }

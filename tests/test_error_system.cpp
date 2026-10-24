@@ -79,7 +79,7 @@ private slots:
 
     void test_system_doctor_redacted_report() {
         QString report = SystemDoctor::generateDoctorReport();
-        QVERIFY(report.contains(QStringLiteral("DopamineFM System Doctor")));
+        QVERIFY(report.contains(QStringLiteral("Dopamine System Doctor")));
         QVERIFY(report.contains(QStringLiteral("P0 Local Network")));
         QVERIFY(!report.contains(QStringLiteral("password")));
     }

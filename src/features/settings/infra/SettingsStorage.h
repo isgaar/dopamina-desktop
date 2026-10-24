@@ -23,6 +23,7 @@ struct SettingsData {
     QString folderPath;
     QString token;
     QString language;
+    QString theme;
     QString smbHost;
     QString smbShare;
     QString smbFolder;
@@ -47,6 +48,7 @@ public:
         Core::Service::LocalServiceManager *svc);
     static void setFirstRunCompleted();
     static void setTestScope(bool enabled);
+    static QString appearanceFilePath();
 };
 
 } // namespace Dopamine::Features::Settings::Infra

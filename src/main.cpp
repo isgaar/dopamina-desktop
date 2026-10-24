@@ -11,6 +11,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickWindow>
+#include <cstdio>
 #include "core/ApiClient.h"
 #include "core/ProjectConfig.h"
 #include "core/SingleInstance.h"
@@ -21,14 +22,13 @@
 #include "features/playback/app/EqualizerController.h"
 #include "features/playback/app/PlaybackController.h"
 #include "features/settings/app/SettingsController.h"
-#include "features/stations/app/StationController.h"
-#include "features/stations/infra/StationHttpService.h"
 #include "features/library/app/LibraryController.h"
 #include "features/queue/app/QueueController.h"
 #include "features/playlists/app/PlaylistController.h"
 #include "shared/Theme.h"
 #include "shared/colors/ColorManager.h"
 #include "shared/i18n/StringManager.h"
+#include <dopamine_desktop/src/bridge.cxxqt.h>
 
 int main(int argc, char *argv[]) {
     qputenv("QML_DISABLE_DISTANCEFIELD", "1");
@@ -39,7 +39,8 @@ int main(int argc, char *argv[]) {
     app.setWindowIcon(QIcon(":/Dopamine/Core/src/shared/assets/app-icon.png"));
     const QString pf = ":/Dopamine/Core/src/shared/assets/fonts/";
     for (const auto &fn : {"LumpySansLight.ttf", "LumpySansRegular.ttf",
-         "LumpySans-Medium.ttf", "LumpySansBold.ttf", "lucide.ttf"})
+         "LumpySans-Medium.ttf", "LumpySansBold.ttf",
+         "LumpySansHeavy.ttf", "lucide.ttf"})
         QFontDatabase::addApplicationFont(pf + fn);
     QFont f("LumpySans", 10); f.setStyleStrategy(QFont::PreferAntialias);
     app.setFont(f);
@@ -56,14 +57,24 @@ int main(int argc, char *argv[]) {
     auto &platform = Dopamine::Core::Platform::PlatformHelper::instance();
     auto &config = Dopamine::Core::ProjectConfig::instance();
     colors.initialize(); strings.initialize();
+    dopamine::rust::CoreBridge rustBridge;
+    rustBridge.setBaseUrl(config.apiUrl());
+    QObject::connect(&rustBridge, &dopamine::rust::CoreBridge::statusChanged,
+                     [&rustBridge]() {
+                         const QByteArray status =
+                             rustBridge.getStatus().toUtf8();
+                         std::fprintf(stderr, "[rust] %s\n",
+                                        status.constData());
+                     });
+    QObject::connect(&config, &Dopamine::Core::ProjectConfig::configChanged,
+                     &rustBridge, [&config, &rustBridge]() {
+                         rustBridge.setBaseUrl(config.apiUrl());
+                     });
     Dopamine::Core::ApiClient apiClient;
     Dopamine::Core::Audio::DspAudioBackend audioBackend;
     Dopamine::Core::Discovery::DiscoveryService discoveryService;
     using namespace Dopamine::Features;
-    Playback::App::PlaybackController playbackCtrl(&apiClient, &audioBackend);
-    Stations::Infra::StationHttpService httpService(&apiClient);
-    Stations::App::StationController stationCtrl(nullptr, &httpService);
-    stationCtrl.setAudioBackend(&audioBackend);
+    Playback::App::PlaybackController playbackCtrl(&audioBackend);
     Playback::App::EqualizerController eqCtrl;
     auto syncEq = [&]() {
         std::vector<float> g;
@@ -85,8 +96,8 @@ int main(int argc, char *argv[]) {
     QObject::connect(&queueCtrl,
         &Queue::App::QueueController::playTrackRequested,
         &playbackCtrl, [&playbackCtrl](int id, auto ti, auto ar,
-                                       auto al, int d) {
-            playbackCtrl.playLibraryTrack(id, ti, ar, al, "", d);
+                                       auto al, auto path, int d) {
+            playbackCtrl.playLibraryTrack(id, ti, ar, al, path, d);
         });
 
     discoveryService.startDiscovery();
@@ -97,23 +108,25 @@ int main(int argc, char *argv[]) {
         {"Colors", &colors}, {"Platform", &platform}, {"config", &config},
         {"playbackController", &playbackCtrl},
         {"discoveryService", &discoveryService},
-        {"stationController", &stationCtrl}, {"controller", &stationCtrl},
         {"equalizerController", &eqCtrl}, {"audioSettings", &audioSettings},
         {"settingsController", &settingsCtrl},
         {"libraryController", (QObject*)&libCtrl},
         {"queueController", (QObject*)&queueCtrl},
-        {"playlistController", (QObject*)&plCtrl}})
+        {"playlistController", (QObject*)&plCtrl},
+        {"rustBridge", (QObject*)&rustBridge}})
         ctx->setContextProperty(QString::fromLatin1(k), v);
+    rustBridge.checkConnection();
 
     const QUrl url(QStringLiteral("qrc:/Dopamine/Core/src/Main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
-        [url](QObject *o, const QUrl &u) {
-            if (!o && u == url) QCoreApplication::exit(-1);
+        [url, &platform](QObject *o, const QUrl &u) {
+            if (u != url) return;
+            if (!o) { QCoreApplication::exit(-1); return; }
+            if (auto *w = qobject_cast<QQuickWindow *>(o)) {
+                platform.setupWindow(w);
+                w->show();
+            }
         }, Qt::QueuedConnection);
     engine.load(url);
-    auto *rootObj = engine.rootObjects().value(0);
-    if (auto *w = qobject_cast<QQuickWindow *>(rootObj)) {
-        platform.setupWindow(w); w->show();
-    }
     return app.exec();
 }

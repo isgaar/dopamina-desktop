@@ -67,14 +67,14 @@ Rectangle {
 
         SettingsField {
             visible: root.srcType === "server"
-            label: Strings.get("settings_server_url"); monospace: true
+            label: Strings.get("settings_server_url")
             text: settingsController ? settingsController.draftApiUrl : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftApiUrl = v)
         }
         SettingsField {
             visible: root.srcType === "local"
-            label: Strings.get("settings_local_path"); monospace: true
+            label: Strings.get("settings_local_path")
             text: settingsController ? settingsController.draftLocalPath : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftLocalPath = v)
@@ -102,7 +102,6 @@ Rectangle {
                 text: Strings.get("wizard_btn_start"); variant: "primary"
                 onClicked: {
                     settingsController && settingsController.completeFirstRun()
-                    stationController && stationController.reload()
                 }
             }
         }

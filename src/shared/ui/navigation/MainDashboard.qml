@@ -12,12 +12,10 @@ import "root:/src/features/playback/ui"
 import "root:/src/features/library/ui"
 import "root:/src/features/playlists/ui"
 import "root:/src/features/queue/ui"
-import "root:/src/features/stations/ui"
 
 Item {
     id: root
     property string activeView: "tracks"
-    property bool isFloating: false
     signal openSettingsRequested()
     signal openEqualizerRequested()
     signal openTimerRequested()
@@ -63,11 +61,6 @@ Item {
             id: queueView; anchors.fill: parent
             visible: root.activeView === "queue"
             controller: queueController; playbackCtrl: playbackController
-        }
-        StationManagerView {
-            id: managerView; anchors.fill: parent
-            visible: root.activeView === "manager"
-            controller: stationController; isFloating: root.isFloating
         }
     }
 }

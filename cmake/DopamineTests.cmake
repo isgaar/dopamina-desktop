@@ -12,7 +12,8 @@ add_executable(test_settings_controller tests/test_settings_controller.cpp
     src/core/credentials/MemoryCredentialStore.cpp
     src/core/service/LocalServiceManager.cpp
     src/core/ApiClient.cpp src/core/ProjectConfig.cpp
-    src/core/platform/PlatformHelper.cpp src/shared/i18n/StringManager.cpp)
+    src/core/platform/PlatformHelper.cpp src/shared/i18n/StringManager.cpp
+    src/shared/colors/ColorManager.cpp)
 target_link_libraries(test_settings_controller PRIVATE
     Qt6::Core Qt6::Network Qt6::Quick Qt6::Test)
 target_include_directories(test_settings_controller PRIVATE src)
@@ -27,7 +28,8 @@ add_executable(test_smb_storage tests/test_smb_storage.cpp
     src/features/settings/app/SettingsController.cpp
     src/core/ApiClient.cpp src/core/ProjectConfig.cpp
     src/core/service/LocalServiceManager.cpp
-    src/core/platform/PlatformHelper.cpp src/shared/i18n/StringManager.cpp)
+    src/core/platform/PlatformHelper.cpp src/shared/i18n/StringManager.cpp
+    src/shared/colors/ColorManager.cpp)
 target_link_libraries(test_smb_storage PRIVATE
     Qt6::Core Qt6::Network Qt6::Quick Qt6::Test)
 target_include_directories(test_smb_storage PRIVATE src)
@@ -39,8 +41,6 @@ add_executable(test_playback_controller tests/test_playback_controller.cpp
     src/features/playback/app/EqualizerController.cpp
     src/features/playback/domain/EqualizerState.cpp
     src/features/playback/domain/LrcParser.cpp
-    src/features/playback/infra/PlaybackApiClient.cpp
-    src/features/playback/infra/PlaybackSyncService.cpp
     src/core/ApiClient.cpp src/core/ProjectConfig.cpp)
 target_link_libraries(test_playback_controller PRIVATE
     Qt6::Core Qt6::Network Qt6::Quick Qt6::Test)

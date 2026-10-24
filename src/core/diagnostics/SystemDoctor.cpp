@@ -18,7 +18,7 @@ QString SystemDoctor::generateDoctorReport(const QString& host, int port) {
     QString out;
     QTextStream ts(&out);
 
-    ts << QStringLiteral("=== DopamineFM System Doctor ===\n");
+    ts << QStringLiteral("=== Dopamine System Doctor ===\n");
     ts << QStringLiteral("App Version: ")
        << QCoreApplication::applicationVersion() << QStringLiteral("\n");
     ts << QStringLiteral("Qt Runtime: ")

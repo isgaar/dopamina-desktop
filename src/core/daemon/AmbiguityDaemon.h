@@ -34,7 +34,7 @@ public:
     int pendingCount();
 
 signals:
-    void ambiguityResolved(int trackId, const QString &station, double conf);
+    void ambiguityResolved(int trackId, const QString &source, double conf);
     void questionReady(int trackId, const QString &questionJson);
     void daemonPaused(bool paused);
 

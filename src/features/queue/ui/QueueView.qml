@@ -1,7 +1,7 @@
 /**
  * Location: src/features/queue/ui/QueueView.qml
  * Function: Queue drawer showing queued tracks, current playing item indicator,
- * radio seed title badge, operational toggles, and empty state feedback.
+ * mix seed title badge, operational toggles, and empty state feedback.
  * All Rights Reserved isgaar
  */
 import QtQuick
@@ -33,15 +33,15 @@ Rectangle {
             }
 
             Rectangle {
-                visible: root.controller && root.controller.isRadioActive
-                height: 24; width: radioText.implicitWidth + 16
+                visible: root.controller && root.controller.isMixActive
+                height: 24; width: mixText.implicitWidth + 16
                 radius: Theme.radiusSm; color: Theme.primaryDim
 
                 Text {
-                    id: radioText; anchors.centerIn: parent
+                    id: mixText; anchors.centerIn: parent
                     text: root.controller ?
-                        Strings.get("label_radio_of").replace("%1",
-                            root.controller.radioSeedTitle) : ""
+                        Strings.get("label_mix_of").replace("%1",
+                            root.controller.mixSeedTitle) : ""
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSm; color: Theme.primaryHover
                 }
@@ -87,8 +87,9 @@ Rectangle {
                     }
 
                     AppIcon {
-                        visible: modelData.isRadio === true
-                        name: "radio"; size: 16; iconColor: Theme.primaryHover
+                        visible: modelData.isMix === true
+                        name: "mix"; size: 16
+                        iconColor: Theme.primaryHover
                     }
                 }
             }

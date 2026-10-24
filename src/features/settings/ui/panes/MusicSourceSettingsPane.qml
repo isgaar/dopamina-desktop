@@ -47,49 +47,49 @@ SettingsPane {
 
         SettingsField {
             visible: root.srcType === "server"
-            label: Strings.get("settings_server_url"); monospace: true
+            label: Strings.get("settings_server_url")
             text: settingsController ? settingsController.draftApiUrl : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftApiUrl = v)
         }
         SettingsField {
             visible: root.srcType === "local"
-            label: Strings.get("settings_local_path"); monospace: true
+            label: Strings.get("settings_local_path")
             text: settingsController ? settingsController.draftLocalPath : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftLocalPath = v)
         }
         SettingsField {
             visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_host"); monospace: true
+            label: Strings.get("settings_smb_host")
             text: settingsController ? settingsController.draftSmbHost : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftSmbHost = v)
         }
         SettingsField {
             visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_share"); monospace: true
+            label: Strings.get("settings_smb_share")
             text: settingsController ? settingsController.draftSmbShare : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftSmbShare = v)
         }
         SettingsField {
             visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_folder"); monospace: true
+            label: Strings.get("settings_smb_folder")
             text: settingsController ? settingsController.draftSmbFolder : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftSmbFolder = v)
         }
         SettingsField {
             visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_user"); monospace: true
+            label: Strings.get("settings_smb_user")
             text: settingsController ? settingsController.draftSmbUser : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftSmbUser = v)
         }
         SettingsField {
             visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_password"); monospace: true
+            label: Strings.get("settings_smb_password")
             text: settingsController ? settingsController.draftSmbPassword : ""
             onTextEdited: v => settingsController &&
                 (settingsController.draftSmbPassword = v)

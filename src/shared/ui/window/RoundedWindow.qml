@@ -7,7 +7,9 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
 import QtQuick.Window
+import "root:/src/shared/ui"
 
 Window {
     id: root
@@ -32,8 +34,9 @@ Window {
         color: Theme.bgDarkest
         radius: root.isFloating ? Theme.radiusMd : 0
         border.color: root.isFloating ? Theme.borderDark : "transparent"
-        border.width: 1
-        clip: true
+        border.width: root.isFloating ? 1 : 0
+        layer.enabled: root.isFloating
+        layer.effect: MultiEffect { maskEnabled: true; maskSource: cornerMask }
 
         Rectangle {
             id: headerBar
@@ -41,16 +44,13 @@ Window {
             anchors.right: parent.right; height: 34
             color: "transparent"
 
-            MouseArea {
-                anchors.fill: parent
-                onPressed: root.startSystemMove()
-            }
+            MouseArea { anchors.fill: parent
+                onPressed: root.startSystemMove() }
 
             RowLayout {
                 anchors.fill: parent
                 anchors.leftMargin: Theme.spaceMd
-                anchors.rightMargin: Theme.spaceSm
-                spacing: Theme.spaceSm
+                anchors.rightMargin: Theme.spaceSm; spacing: Theme.spaceSm
 
                 Image {
                     source: "qrc:/Dopamine/Core/src/shared/assets/app-icon.png"
@@ -76,11 +76,10 @@ Window {
                         Theme.danger : "transparent"
                     visible: root.showCloseButton
 
-                    Text {
-                        anchors.centerIn: parent; text: "✕"
-                        color: closeBtnMouse.containsMouse ?
+                    AppIcon {
+                        anchors.centerIn: parent; name: "x"; size: 12
+                        iconColor: closeBtnMouse.containsMouse ?
                             Theme.bgDarkest : Theme.textMuted
-                        font.pixelSize: 11; font.family: Theme.fontFamily
                     }
 
                     MouseArea {
@@ -105,4 +104,7 @@ Window {
             anchors.bottom: parent.bottom
         }
     }
+
+    RoundedMask { id: cornerMask; anchors.fill: chromeRoot
+        cornerRadius: root.isFloating ? Theme.radiusMd : 0 }
 }

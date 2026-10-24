@@ -1,119 +1,131 @@
 /**
  * Location: src/features/playback/app/PlaybackController.cpp
- * Function: Master implementation of unified playback controller handling
- * radio tuning, stream lifecycle, track transitions, and metadata sync.
+ * Function: Implementation of library playback, transport controls, volume
+ * persistence, and sibling .lrc lyric synchronization.
  * All Rights Reserved isgaar
  */
 #include "PlaybackController.h"
-#include "../infra/PlaybackApiClient.h"
-#include "../infra/PlaybackSyncService.h"
 #include "../../../core/audio/IAudioBackend.h"
-#include "../../../core/ProjectConfig.h"
+#include <QFile>
+#include <QFileInfo>
 #include <QSettings>
-#include <QUrl>
-#include <QTimer>
 
 namespace Dopamine::Features::Playback::App {
-PlaybackController::PlaybackController(Core::ApiClient *api,
-                                       Core::Audio::IAudioBackend *aud,
-                                       QObject *parent)
-    : QObject(parent), m_api(new Infra::PlaybackApiClient(api, this)),
-      m_sync(new Infra::PlaybackSyncService(m_api, this)),
-      m_audio(aud), m_syncTimer(new QTimer(this)) {
+
+PlaybackController::PlaybackController(
+    Core::Audio::IAudioBackend *aud, QObject *parent)
+    : QObject(parent), m_audio(aud) {
     m_volume = QSettings("isgaar", "Dopamine")
         .value("Playback/Volume", 80).toInt();
-    if (m_audio) {
-        m_audio->setVolume(m_volume);
-        connect(m_audio, &Core::Audio::IAudioBackend::stateChanged,
-                this, &PlaybackController::onBackendStateChanged);
-        connect(m_audio, &Core::Audio::IAudioBackend::positionChanged,
-                this, &PlaybackController::onBackendPositionChanged);
-        connect(m_audio, &Core::Audio::IAudioBackend::icyMetadataReceived,
-                this, &PlaybackController::onBackendIcyMetadata);
-        connect(m_audio, &Core::Audio::IAudioBackend::errorOccurred, this,
-                [this](const QString &) { if (m_audio) m_audio->pause(); });
-    }
-    connect(m_syncTimer, &QTimer::timeout,
-            this, &PlaybackController::syncStationNowPlaying);
+    if (!m_audio) return;
+
+    m_audio->setVolume(m_volume);
+    connect(m_audio, &Core::Audio::IAudioBackend::stateChanged,
+            this, &PlaybackController::onBackendStateChanged);
+    connect(m_audio, &Core::Audio::IAudioBackend::positionChanged,
+            this, &PlaybackController::onBackendPositionChanged);
+    connect(m_audio, &Core::Audio::IAudioBackend::durationChanged,
+            this, &PlaybackController::onBackendDurationChanged);
+    connect(m_audio, &Core::Audio::IAudioBackend::errorOccurred, this,
+            [this](const QString &) { if (m_audio) m_audio->pause(); });
 }
+
 bool PlaybackController::isPlaying() const {
     return m_audio && m_audio->isPlaying();
 }
-int PlaybackController::volume() const { return m_volume; }
+
 void PlaybackController::setVolume(int vol) {
-    int c = qBound(0, vol, 100);
-    if (m_volume == c) return;
-    m_volume = c; if (m_audio) m_audio->setVolume(c);
-    QSettings("isgaar", "Dopamine").setValue("Playback/Volume", c);
+    const int clamped = qBound(0, vol, 100);
+    if (m_volume == clamped) return;
+    m_volume = clamped;
+    if (m_audio) m_audio->setVolume(m_volume);
+    QSettings("isgaar", "Dopamine")
+        .setValue("Playback/Volume", m_volume);
     emit volumeChanged();
 }
-void PlaybackController::tuneStation(const QString &id) {
-    m_origin = "radio"; m_station.id = id;
-    emit originChanged(); emit stationChanged();
-    m_sync->tune(id, [this, id](bool ok, auto st, auto tr, auto l, auto v,
-                                auto t, auto u) {
-        if (!ok) return;
-        m_station = st; m_track = tr; m_lyrics = l; m_lyricsVariant = v;
-        m_stationTracks = t; m_upcomingTracks = u; m_activeLyric = -1;
-        emit stationChanged(); emit trackChanged();
-        emit lyricsChanged(); emit catalogChanged();
-        if (m_audio) {
-            auto url = Core::ProjectConfig::instance().streamUrl(id);
-            m_audio->play(QUrl(url));
-        }
-        m_syncTimer->start(8000);
-    });
+
+void PlaybackController::togglePlay() {
+    isPlaying() ? pause() : play();
 }
-void PlaybackController::togglePlay() { isPlaying() ? stop() : play(); }
+
 void PlaybackController::play() {
-    if (m_origin != "radio" || m_station.id.isEmpty() || !m_station.hasTracks)
-        return;
-    auto u = Core::ProjectConfig::instance().streamUrl(m_station.id);
-    if (m_audio) m_audio->play(QUrl(u));
-    m_syncTimer->start(8000);
+    if (m_audio && m_currentUrl.isValid()) {
+        m_audio->play(m_currentUrl);
+    }
 }
+
+void PlaybackController::pause() {
+    if (m_audio) m_audio->pause();
+}
+
 void PlaybackController::stop() {
     if (m_audio) m_audio->stop();
-    m_syncTimer->stop(); m_station.isLive = false; emit statusChanged();
-}
-void PlaybackController::skipNext() {
-    if (!m_station.id.isEmpty())
-        m_api->requestNext(m_station.id,
-                           [this](bool) { syncStationNowPlaying(); });
-}
-void PlaybackController::setPlaybackOrigin(const QString &origin) {
-    if (m_origin != origin) { m_origin = origin; emit originChanged(); }
-}
-void PlaybackController::playLibraryTrack(int id, const QString &tit,
-                                         const QString &art, const QString &alb,
-                                         const QString &path, int dur) {
-    m_origin = "library"; m_track = {id, tit, art, alb, QString{}, dur};
-    if (m_audio && !path.isEmpty()) {
-        auto u = path.startsWith('/') ? QUrl::fromLocalFile(path) : QUrl(path);
-        m_audio->play(u);
+    if (m_position != 0) {
+        m_position = 0;
+        emit positionChanged();
     }
-    emit originChanged(); emit trackChanged();
 }
-void PlaybackController::onBackendStateChanged(bool p) {
-    if (m_origin == "radio") { m_station.isLive = p; emit statusChanged(); }
+
+void PlaybackController::playLibraryTrack(int id, const QString &title,
+                                          const QString &artist,
+                                          const QString &album,
+                                          const QString &path, int dur) {
+    m_track = {id, title, artist, album, QString{}, dur};
+    m_currentUrl.clear();
+    if (!path.isEmpty()) {
+        m_currentUrl = path.startsWith('/') ?
+            QUrl::fromLocalFile(path) : QUrl(path);
+    }
+    loadLyrics(path);
+    m_position = 0;
+    m_activeLyric = -1;
+    if (m_audio && m_currentUrl.isValid()) {
+        m_audio->play(m_currentUrl);
+    }
+    emit trackChanged();
+    emit positionChanged();
+    emit lyricsChanged();
+}
+
+void PlaybackController::loadLyrics(const QString &trackPath) {
+    m_lyrics.clear();
+    m_lyricsVariant.clear();
+    if (!trackPath.isEmpty() && !trackPath.contains("://")) {
+        const QFileInfo info(trackPath);
+        const QString lrcPath = info.absolutePath() + "/" +
+            info.completeBaseName() + ".lrc";
+        QFile file(lrcPath);
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            m_lyrics = Domain::LrcParser::parse(
+                QString::fromUtf8(file.readAll()));
+        }
+    }
+    for (const auto &line : m_lyrics) {
+        m_lyricsVariant.append(
+            QVariantMap{{"timeMs", line.timeMs}, {"text", line.text}});
+    }
+}
+
+void PlaybackController::onBackendStateChanged(bool) {
     emit playStateChanged();
 }
+
 void PlaybackController::onBackendPositionChanged(qint64 posMs) {
-    m_position = static_cast<int>(posMs / 1000); emit positionChanged();
-    int idx = Domain::LrcParser::activeLineIndex(m_lyrics, posMs);
-    if (idx != m_activeLyric) { m_activeLyric = idx; emit lyricsChanged(); }
+    m_position = static_cast<int>(posMs / 1000);
+    emit positionChanged();
+    const int idx = Domain::LrcParser::activeLineIndex(m_lyrics, posMs);
+    if (idx != m_activeLyric) {
+        m_activeLyric = idx;
+        emit lyricsChanged();
+    }
 }
-void PlaybackController::onBackendIcyMetadata(const QString &a,
-                                             const QString &t) {
-    if (t.isEmpty()) return;
-    m_track.title = t;
-    if (!a.isEmpty()) m_track.artist = a;
-    emit trackChanged();
+
+void PlaybackController::onBackendDurationChanged(qint64 durationMs) {
+    const int seconds = static_cast<int>(durationMs / 1000);
+    if (seconds > 0 && seconds != m_track.duration) {
+        m_track.duration = seconds;
+        emit positionChanged();
+    }
 }
-void PlaybackController::syncStationNowPlaying() {
-    m_sync->poll(m_station.id, m_track.id, [this](auto tr, auto l, auto v) {
-        m_track = tr; m_lyrics = l; m_lyricsVariant = v; m_activeLyric = -1;
-        emit trackChanged(); emit lyricsChanged();
-    });
-}
+
 } // namespace Dopamine::Features::Playback::App

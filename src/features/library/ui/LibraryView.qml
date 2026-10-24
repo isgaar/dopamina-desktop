@@ -93,8 +93,8 @@ Rectangle {
                         t.id, t.titulo || t.title || "",
                         t.artista || t.artist || "",
                         t.album || "", t.path || "", t.duracion || 0)
-                onRadioRequested: t => root.queueCtrl &&
-                    root.queueCtrl.startRadio(t.id, t.titulo || t.title || "")
+                onMixRequested: t => root.queueCtrl &&
+                    root.queueCtrl.startMix(t.id, t.titulo || t.title || "")
             }
         }
 

@@ -45,7 +45,7 @@ RoundedWindow {
                 }
                 Text {
                     text: Strings.get("about_version_label") +
-                          "1.0.0 • Qt 6.11 / C++20"
+                          "2.0.0 • Qt 6.11 / C++20"
                     color: Theme.textMuted; font.pixelSize: 11
                     font.family: Theme.fontFamily
                 }
@@ -61,14 +61,14 @@ RoundedWindow {
             Layout.fillWidth: true; spacing: Theme.spaceSm
 
             Text {
-                text: Strings.get("about_desc_gateway")
+                text: Strings.get("about_desc_engine")
                 color: Theme.textMuted; font.pixelSize: 12
                 font.family: Theme.fontFamily
                 horizontalAlignment: Text.AlignHCenter
                 Layout.fillWidth: true
             }
             Text {
-                text: Strings.get("about_desc_lpr")
+                text: Strings.get("about_desc_manager")
                 color: Theme.textDim; font.pixelSize: 11
                 font.family: Theme.fontFamily
                 horizontalAlignment: Text.AlignHCenter
