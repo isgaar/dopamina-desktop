@@ -26,12 +26,6 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true; spacing: Theme.spaceMd
 
-            Text {
-                text: Strings.get("queue_title"); font.family: Theme.fontFamily
-                font.pixelSize: Theme.fontLg; font.bold: true
-                color: Theme.textLight
-            }
-
             Rectangle {
                 visible: root.controller && root.controller.isMixActive
                 height: 24; width: mixText.implicitWidth + 16

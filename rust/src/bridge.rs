@@ -186,7 +186,7 @@ fn default_endpoint() -> String {
     std::env::var("DOPAMINE_SERVER_URL").unwrap_or_else(|_| String::from("http://127.0.0.1:8000"))
 }
 
-fn run_blocking<F>(future: F) -> Result<F::Output, String>
+pub(crate) fn run_blocking<F>(future: F) -> Result<F::Output, String>
 where
     F: Future,
 {

@@ -13,8 +13,8 @@ import "shared/ui/navigation"
 import "shared/ui/titlebar"
 import "shared/ui/window"
 import "features/playback/ui"
+import "features/session/ui"
 import "features/settings/ui"
-
 ApplicationWindow {
     id: window
     readonly property real dp: Screen.logicalPixelDensity > 0 ?
@@ -27,17 +27,15 @@ ApplicationWindow {
     readonly property int setupW: Math.round(540 * dp)
     readonly property int setupH: Math.round(480 * dp)
     readonly property int dashW: Math.round(1240 * dp)
-    readonly property int dashH: Math.round(780 * dp)
+    readonly property int dashH: Math.round(800 * dp)
     property string activeView: "tracks"
-
     width: isSetup ? setupW : dashW; height: isSetup ? setupH : dashH
-    minimumWidth: isSetup ? Math.round(440 * dp) : Math.round(980 * dp)
-    minimumHeight: isSetup ? Math.round(340 * dp) : Math.round(620 * dp)
+    minimumWidth: isSetup ? Math.round(440 * dp) : Math.round(960 * dp)
+    minimumHeight: isSetup ? Math.round(340 * dp) : Math.round(600 * dp)
     visible: true; title: Theme.appName + " • " + Strings.get("app_tagline")
     color: "transparent"
     flags: Platform.useCustomTitleBar ?
         (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
-
     function syncWindowSize() {
         if (!isSetup && visibility === Window.Maximized) return;
         var tw = isSetup ? setupW : dashW, th = isSetup ? setupH : dashH;
@@ -68,9 +66,11 @@ ApplicationWindow {
             id: titleBar; anchors.top: parent.top; window: window
             anchors.left: parent.left; anchors.right: parent.right
             isFirstRun: window.isSetup
-            onOpenAboutRequested: aboutWindow.showWindow()
-            onOpenSettingsRequested: settingsWindow.showSettings()
-            onOpenEqualizerRequested: equalizerWindow.showWindow()
+            onOpenSessionRequested: sessionWindow.showWindow()
+            onSearchEdited: text => {
+                window.activeView = "tracks"
+                if (libraryController) libraryController.search(text)
+            }
         }
 
         FirstRunWizardDialog {
@@ -91,6 +91,7 @@ ApplicationWindow {
                     onOpenSettingsRequested: settingsWindow.showSettings()
                     onOpenEqualizerRequested: equalizerWindow.showWindow()
                     onOpenTimerRequested: sleepTimerDialog.showWindow()
+                    onOpenAboutRequested: aboutWindow.showWindow()
                 }
             }
         }
@@ -99,12 +100,18 @@ ApplicationWindow {
     RoundedMask { id: cornerMask; anchors.fill: windowRoot
         cornerRadius: window.isFloat ? Theme.radiusMd : 0 }
 
+    WindowResizeHandles {
+        anchors.fill: parent
+        window: window
+    }
+
     Connections { target: settingsController
         function onFirstRunChanged() { window.syncWindowSize() }
     }
 
     AboutWindow { id: aboutWindow }
     SettingsWindow { id: settingsWindow; objectName: "settingsWindow" }
+    SessionWindow { id: sessionWindow }
     EqualizerDialog { id: equalizerWindow }
     SleepTimerDialog { id: sleepTimerDialog }
 }

@@ -1,33 +1,19 @@
 /**
  * Location: src/features/library/ui/LibraryView.qml
- * Function: Library view displaying searchable track list, album grid, and
- * artist collections with real-time discovery feedback and direct play.
+ * Function: Library view displaying the searchable track list, album grid,
+ * and artist collections with live loading feedback and direct playback.
  * All Rights Reserved isgaar
  */
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
-import "../../../shared/ui"
 import "../../../shared/ui/feedback"
 
-Rectangle {
+Item {
     id: root
-    color: Theme.bgCard
-    radius: Theme.radiusMd; clip: true
-    border.color: Theme.borderDark; border.width: 1
-
     property var controller: null
     property var queueCtrl: null
     property var playbackCtrl: null
     property string section: "tracks"
-
-    function sectionTitle() {
-        if (section === "albums") return Strings.get("nav_albums");
-        if (section === "artists") return Strings.get("nav_artists");
-        if (section === "genres") return Strings.get("nav_genres");
-        return section === "folders" ? Strings.get("nav_folders") :
-                                       Strings.get("nav_tracks");
-    }
 
     onSectionChanged: {
         if (!controller) return;
@@ -37,44 +23,24 @@ Rectangle {
     }
 
     ColumnLayout {
-        anchors.fill: parent; anchors.margins: Theme.spaceMd
-        spacing: Theme.spaceSm
+        anchors.fill: parent
+        spacing: 0
 
         RowLayout {
-            Layout.fillWidth: true; spacing: Theme.spaceMd
+            Layout.fillWidth: true
+            Layout.leftMargin: 12; Layout.rightMargin: 12
+            Layout.topMargin: 8
+            spacing: Theme.spaceSm
+            visible: root.controller && root.controller.isLoading
 
+            LoadingSpinner { size: 16; lineWidth: 2 }
             Text {
-                text: root.sectionTitle(); font.family: Theme.fontFamily
-                font.pixelSize: Theme.fontLg; font.bold: true
-                color: Theme.textLight
+                text: root.controller ? root.controller.statusMessage : ""
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSm
+                color: Theme.accent
             }
-
-            RowLayout {
-                spacing: Theme.spaceSm
-                visible: root.controller && root.controller.isLoading
-                LoadingSpinner { size: 16; lineWidth: 2 }
-                Text {
-                    text: root.controller ? root.controller.statusMessage : ""
-                    font.family: Theme.fontFamily; font.pixelSize: 11
-                    color: Theme.accent
-                }
-            }
-
             Item { Layout.fillWidth: true }
-
-            Rectangle {
-                width: 240; height: 36; color: Theme.bgSurface
-                radius: Theme.radiusMd; border.color: Theme.borderDark
-                border.width: 1
-
-                TextInput {
-                    anchors.fill: parent; anchors.margins: Theme.spaceSm
-                    color: Theme.textLight; font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontMd; clip: true
-                    onTextChanged: if (root.controller)
-                        root.controller.search(text)
-                }
-            }
         }
 
         ListView {
@@ -98,15 +64,11 @@ Rectangle {
             }
         }
 
-        EmptyStateView {
+        LibraryEmptyState {
             Layout.fillWidth: true; Layout.fillHeight: true
             visible: trackList.count === 0 &&
                 (!root.controller || !root.controller.isLoading)
-            iconName: root.section === "albums" ? "disc" :
-                (root.section === "artists" ? "mic" : "music")
-            showAction: true; actionText: Strings.get("btn_reload")
-            onActionTriggered: if (root.controller)
-                root.controller.loadTracks(1)
+            section: root.section
         }
     }
 

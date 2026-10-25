@@ -1,7 +1,7 @@
 /**
  * Location: src/shared/ui/navigation/MainDashboard.qml
- * Function: Primary music workspace container integrating SideNav navigation
- * rail, dynamic content views, and persistent audio player controls bar.
+ * Function: Primary music workspace integrating the navigation rail, resizer
+ * splitter, section tabs, dynamic content views, and persistent player bar.
  * All Rights Reserved isgaar
  */
 import QtQuick
@@ -19,48 +19,73 @@ Item {
     signal openSettingsRequested()
     signal openEqualizerRequested()
     signal openTimerRequested()
+    signal openAboutRequested()
 
     PlayerBar {
-        id: playerBar; anchors.left: parent.left
-        anchors.right: parent.right; anchors.bottom: parent.bottom
-        anchors.margins: Theme.spaceSm; anchors.topMargin: 0
-        visible: playbackController.currentTrackTitle.length > 0 ||
-                 playbackController.isPlaying
+        id: playerBar
+        anchors.left: parent.left; anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        onQueueRequested: root.activeView = "queue"
     }
 
     SideNav {
-        id: sideNav; anchors.top: parent.top; anchors.left: parent.left
-        anchors.bottom: playerBar.visible ? playerBar.top : parent.bottom
-        anchors.margins: Theme.spaceSm; anchors.rightMargin: 0
+        id: sideNav
+        anchors.top: parent.top; anchors.left: parent.left
+        anchors.bottom: playerBar.top
         currentMode: root.activeView
         onModeSelected: m => root.activeView = m
+        onNewPlaylistRequested: {
+            root.activeView = "playlists"; playlistsView.requestCreate()
+        }
         onOpenSettingsRequested: root.openSettingsRequested()
         onOpenEqualizerRequested: root.openEqualizerRequested()
         onOpenTimerRequested: root.openTimerRequested()
+        onOpenAboutRequested: root.openAboutRequested()
     }
 
-    Item {
-        id: contentArea; anchors.top: parent.top
-        anchors.left: sideNav.right; anchors.right: parent.right
-        anchors.bottom: playerBar.visible ? playerBar.top : parent.bottom
-        anchors.margins: Theme.spaceSm
+    SidebarResizer {
+        x: sideNav.width - 3; sideNav: sideNav
+        anchors.top: sideNav.top; anchors.bottom: sideNav.bottom
+        settingsController: windowRoot.settingsController
+        maxContainerWidth: root.width
+    }
 
-        LibraryView {
-            id: libraryView; anchors.fill: parent
-            visible: ["tracks","albums","artists","genres","folders",
-                      "library","home"].indexOf(root.activeView) !== -1
-            section: root.activeView; controller: libraryController
-            queueCtrl: queueController; playbackCtrl: playbackController
+    ColumnLayout {
+        id: content
+        anchors.top: parent.top; anchors.left: sideNav.right
+        anchors.right: parent.right; anchors.bottom: playerBar.top
+        anchors.margins: Theme.spaceMd; anchors.bottomMargin: 0
+        spacing: Theme.spaceMd
+
+        ContentTabs {
+            Layout.fillWidth: true; current: root.activeView
+            onSelected: mode => root.activeView = mode
         }
-        PlaylistsView {
-            id: playlistsView; anchors.fill: parent
-            visible: root.activeView === "playlists"
-            controller: playlistController
-        }
-        QueueView {
-            id: queueView; anchors.fill: parent
-            visible: root.activeView === "queue"
-            controller: queueController; playbackCtrl: playbackController
+
+        Item {
+            Layout.fillWidth: true; Layout.fillHeight: true
+
+            LibraryView {
+                id: libraryView; anchors.fill: parent
+                visible: ["tracks", "albums", "artists", "genres",
+                          "folders"].indexOf(root.activeView) !== -1
+                section: root.activeView; controller: libraryController
+                queueCtrl: queueController; playbackCtrl: playbackController
+            }
+            FavoritesView {
+                anchors.fill: parent; visible: root.activeView === "favorites"
+                libraryCtrl: libraryController; likesCtrl: playlistController
+                playbackCtrl: playbackController; queueCtrl: queueController
+            }
+            PlaylistsView {
+                id: playlistsView; anchors.fill: parent
+                visible: root.activeView === "playlists"
+                controller: playlistController
+            }
+            QueueView {
+                anchors.fill: parent; visible: root.activeView === "queue"
+                controller: queueController; playbackCtrl: playbackController
+            }
         }
     }
 }

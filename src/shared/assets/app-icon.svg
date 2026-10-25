@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Location: src/shared/assets/app-icon.svg -->
+<!-- Function: Dopamine desktop application icon ported from the Android
+adaptive launcher foreground and Rose Glow background.
+All Rights Reserved isgaar -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"
+     viewBox="0 0 108 108">
+  <rect width="108" height="108" rx="24" fill="#FA2D48" />
+  <path d="M46.5,69V36.5L76.5,31.5V64 M31.5,69a7.5,7.5 0 1,0 15,0a7.5,7.5 0 1,0 -15,0 M61.5,64a7.5,7.5 0 1,0 15,0a7.5,7.5 0 1,0 -15,0"
+        fill="none" stroke="#FFFFFF" stroke-width="5.75"
+        stroke-linecap="round" stroke-linejoin="round" />
+</svg>

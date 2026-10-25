@@ -9,6 +9,7 @@
 #include "core/ApiClient.h"
 #include "core/credentials/MemoryCredentialStore.h"
 #include "core/service/LocalServiceManager.h"
+#include <QSettings>
 
 namespace Dopamine::Features::Settings::App {
 
@@ -78,6 +79,24 @@ void SettingsController::apply() {
     m_saved = m_draft; updateDirtyState(); testSourceConnection();
 }
 
+void SettingsController::adoptRemoteServer(const QString &url) {
+    QString clean = url.trimmed();
+    while (clean.endsWith(QLatin1Char('/'))) clean.chop(1);
+    if (clean.isEmpty()) return;
+    m_draft.serverUrl = clean;
+    m_draft.mode = QStringLiteral("server");
+    m_draft.folderPath.clear();
+    m_draft.isFirstRun = false;
+    Infra::SettingsStorage::save(m_draft, m_creds);
+    Infra::SettingsStorage::setFirstRunCompleted();
+    Infra::SettingsStorage::apply(m_draft, m_apiClient, m_service);
+    m_saved = m_draft;
+    updateDirtyState();
+    emit draftApiUrlChanged(); emit sourceDraftsChanged();
+    emit firstRunChanged();
+    testSourceConnection();
+}
+
 void SettingsController::discard() { resetDrafts(); }
 void SettingsController::completeFirstRun() {
     Infra::SettingsStorage::setFirstRunCompleted();
@@ -116,6 +135,34 @@ void SettingsController::testSourceConnection() {
     Infra::SourceProbe::probeApi(m_apiClient, m_draft.serverUrl,
         [finish](bool ok) { finish(ok ? QStringLiteral("ok") :
                                         QStringLiteral("error")); });
+}
+
+int SettingsController::sidebarWidth() const {
+    QSettings s(QStringLiteral("isgaar"), QStringLiteral("Dopamine"));
+    return s.value(QStringLiteral("Navigation/sidebarWidth"), 240).toInt();
+}
+
+void SettingsController::setSidebarWidth(int w) {
+    if (w < 160 || w > 500) return;
+    if (sidebarWidth() != w) {
+        QSettings s(QStringLiteral("isgaar"), QStringLiteral("Dopamine"));
+        s.setValue(QStringLiteral("Navigation/sidebarWidth"), w);
+        emit sidebarWidthChanged();
+    }
+}
+
+bool SettingsController::sidebarCollapsed() const {
+    QSettings s(QStringLiteral("isgaar"), QStringLiteral("Dopamine"));
+    return s.value(QStringLiteral("Navigation/sidebarCollapsed"),
+                   false).toBool();
+}
+
+void SettingsController::setSidebarCollapsed(bool c) {
+    if (sidebarCollapsed() != c) {
+        QSettings s(QStringLiteral("isgaar"), QStringLiteral("Dopamine"));
+        s.setValue(QStringLiteral("Navigation/sidebarCollapsed"), c);
+        emit sidebarCollapsedChanged();
+    }
 }
 
 } // namespace Dopamine::Features::Settings::App

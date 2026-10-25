@@ -45,6 +45,8 @@ set(PROJECT_SOURCES
     src/shared/i18n/StringManager.cpp
     src/shared/i18n/StringManager.h
     src/core/credentials/ICredentialStore.h
+    src/core/credentials/FileCredentialStore.cpp
+    src/core/credentials/FileCredentialStore.h
     src/core/credentials/MemoryCredentialStore.cpp
     src/core/credentials/MemoryCredentialStore.h
     src/core/daemon/AmbiguitySupervisor.cpp

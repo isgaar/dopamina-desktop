@@ -10,8 +10,16 @@ layer is Qt 6/QML; the core is being migrated to Rust with
   synchronized lyrics. FM stations and the legacy playback sync API are gone.
 - Queue with song mix ("Oír mix"), playlists, folders, albums, artists, and
   genres.
+- Dynamic resizable sidebar with drag-to-resize splitter, snap collapse
+  under 120px, double-click collapse toggle, and width persistence.
+- Full capsule navigation pills (`Theme.radiusFull`) with contrast-aware
+  adaptive text colors for extracted album accents, and floating `ContentTabs`.
+- Native window caption controls docked flush to the real corner with hover
+  fill and window-radius matching.
 - Five themes ported from Android: Rose Glow (default), ExoBlur, TheGrand,
   Redline, and Flat. The interface is dark by default.
+- Seamless handoff from web console with automatic listener session and token
+  adoption, instant catalog population, and single-instance IPC window focus.
 - Theme and language persist in `appearance.xml`; remaining preferences stay in
   the native INI settings.
 - Lumpy Sans is the only interface typeface. Main and secondary windows use
@@ -39,6 +47,21 @@ them at runtime and `Theme` exposes the active palette and language tokens.
 - `src/`: C++/QML application shell and feature controllers.
 - `rust/`: Rust core built in parallel, mirroring the Android layers.
 - `cmake/`: source, QML, test, and Rust manifests.
+
+## Sessions
+
+Desktop sessions are owned by Rust under `rust/src/session/`. The
+`SessionBridge` QObject, exposed to QML as `sessionController`, validates the
+cached token, drives login and logout, and handles `dopamine://connect`
+handoffs from the web console.
+
+- Profile: `~/.config/isgaar/Dopamine/session.xml`
+- Token: `~/.config/isgaar/Dopamine/credentials/session.token`, mode `0600`
+- Handoff: `/auth/qr/sessions` for real accounts, otherwise the server URL
+  deep link
+
+`install.sh` registers `x-scheme-handler/dopamine`, so browsers open the
+running desktop instance instead of starting a duplicate process.
 
 ## Rust core
 

@@ -11,13 +11,23 @@ set(DOPAMINE_QML_FILES
     src/shared/ui/RoundedMask.qml
     src/Main.qml
     src/shared/ui/titlebar/AppTitleBar.qml
-    src/shared/ui/titlebar/TitleMenuBar.qml
+    src/shared/ui/titlebar/AppBrand.qml
     src/shared/ui/titlebar/WindowControls.qml
+    src/shared/ui/titlebar/TopSearch.qml
     src/shared/ui/window/RoundedWindow.qml
     src/shared/ui/window/AboutWindow.qml
     src/shared/ui/window/SettingsWindow.qml
     src/shared/ui/window/SleepTimerDialog.qml
+    src/shared/ui/window/WindowResizeHandle.qml
+    src/shared/ui/window/WindowResizeHandles.qml
     src/shared/ui/StatusPill.qml
+    src/features/session/ui/SessionWindow.qml
+    src/features/session/ui/SessionView.qml
+    src/features/session/ui/SessionLoginForm.qml
+    src/features/session/ui/SessionConnectionCard.qml
+    src/features/session/ui/SessionProfileCard.qml
+    src/features/session/ui/SessionAvatar.qml
+    src/features/session/ui/components/SessionMenuRow.qml
     src/shared/ui/feedback/LoadingSpinner.qml
     src/shared/ui/feedback/EmptyStateView.qml
     src/shared/ui/feedback/ProgressBar.qml
@@ -45,12 +55,25 @@ set(DOPAMINE_QML_FILES
     src/features/playback/ui/EqualizerDialog.qml
     src/features/playback/ui/PlayerBarControls.qml
     src/features/playback/ui/PlayerBar.qml
+    src/features/playback/ui/playerbar/PlayerIdentity.qml
+    src/features/playback/ui/playerbar/PlayerUtilities.qml
+    src/features/playback/ui/playerbar/TransportButton.qml
+    src/features/playback/ui/playerbar/TransportControls.qml
     src/shared/ui/navigation/SideNav.qml
+    src/shared/ui/navigation/SideNavItem.qml
+    src/shared/ui/navigation/SideNavPlaylistCard.qml
+    src/shared/ui/navigation/SideNavLikedCard.qml
+    src/shared/ui/navigation/SideNavTools.qml
+    src/shared/ui/navigation/SidebarResizer.qml
     src/shared/ui/navigation/MainDashboard.qml
     src/features/library/ui/LibraryView.qml
+    src/features/library/ui/LibraryEmptyState.qml
     src/features/library/ui/LibraryTrackDelegate.qml
+    src/features/library/ui/FavoritesView.qml
+    src/features/library/ui/ContentTabs.qml
     src/features/queue/ui/QueueView.qml
     src/features/playlists/ui/PlaylistsView.qml
+    src/features/playlists/ui/PlaylistRow.qml
 )
 
 

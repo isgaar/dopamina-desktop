@@ -1,110 +1,99 @@
 /**
  * Location: src/shared/ui/navigation/SideNav.qml
- * Function: Stellio-inspired side navigation rail featuring 7 library sections,
- * upper collection statistics panel, and bottom shortcuts for audio tools.
+ * Function: Android-inspired navigation rail with grouped destinations,
+ * playlist actions, tools, and a collapsible icon-only mode.
  * All Rights Reserved isgaar
  */
 import QtQuick
-import QtQuick.Layouts
 import ".."
 
-Rectangle {
+Item {
     id: root
-    width: 92; color: Theme.bgCard
-    radius: Theme.radiusMd; clip: true
-    border.color: Theme.borderDark; border.width: 1
-
+    property bool collapsed: settingsController ?
+        settingsController.sidebarCollapsed : false
+    property int targetWidth: settingsController ?
+        settingsController.sidebarWidth : 240
+    property int lastExpandedWidth: 240
+    property bool animating: true
     property string currentMode: "tracks"
     signal modeSelected(string mode)
+    signal newPlaylistRequested()
     signal openSettingsRequested()
     signal openEqualizerRequested()
     signal openTimerRequested()
+    signal openAboutRequested()
+    readonly property int inset: collapsed ? Theme.spaceSm : Theme.spaceMd
+    width: collapsed ? 64 : targetWidth
+
+    Behavior on width {
+        enabled: root.animating
+        SpringAnimation { spring: 3.2; damping: 1.0 }
+    }
 
     readonly property var navItems: [
-        { mode: "tracks", icon: "music", label: Strings.get("nav_tracks") },
-        { mode: "albums", icon: "disc", label: Strings.get("nav_albums") },
-        { mode: "artists", icon: "users", label: Strings.get("nav_artists") },
-        { mode: "genres", icon: "tag", label: Strings.get("nav_genres") },
-        { mode: "folders", icon: "folder", label: Strings.get("nav_folders") },
-        { mode: "playlists", icon: "list",
-          label: Strings.get("nav_playlists") },
-        { mode: "queue", icon: "clock", label: Strings.get("nav_queue") }
+        { mode: "tracks", icon: "house", label: Strings.get("nav_principal") },
+        { mode: "genres", icon: "compass", label: Strings.get("nav_explore") },
+        { mode: "folders", icon: "layers",
+          label: Strings.get("nav_local_library") }
     ]
 
-    ColumnLayout {
-        anchors.fill: parent; anchors.margins: 4; spacing: 2
+    Column {
+        id: destinations
+        anchors.top: parent.top; anchors.topMargin: Theme.spaceMd
+        anchors.left: parent.left; anchors.right: parent.right
+        anchors.leftMargin: root.inset; anchors.rightMargin: root.inset
+        spacing: Theme.spaceSm
 
-        Rectangle {
-            Layout.fillWidth: true; Layout.preferredHeight: 38
-            radius: Theme.radiusSm; color: Theme.bgSurface
-            border.color: Theme.borderDark; border.width: 1
-            ColumnLayout {
-                anchors.centerIn: parent; spacing: 1
-                Text {
-                    text: (libraryController ?
-                           libraryController.totalTracks : 0) + " " +
-                          Strings.get("nav_songs_suffix")
-                    font.family: Theme.fontFamily; font.pixelSize: 9
-                    font.bold: true; color: Theme.primary
-                }
-                Text {
-                    text: (libraryController ?
-                           libraryController.totalDurationHours.toFixed(1) :
-                           "0.0") + " " + Strings.get("nav_hours_suffix")
-                    font.family: Theme.fontFamily; font.pixelSize: 9
-                    color: Theme.textMuted
-                }
-            }
+        Text {
+            visible: !root.collapsed
+            text: Strings.get("nav_section_library")
+            font.family: Theme.fontFamily; font.pixelSize: 11
+            font.bold: true; color: Theme.textDim
+            leftPadding: Theme.spaceXs
         }
 
         Repeater {
             model: root.navItems
-            delegate: Rectangle {
-                Layout.fillWidth: true; Layout.preferredHeight: 44
-                radius: Theme.radiusMd
-                color: root.currentMode === modelData.mode ?
-                    Theme.primaryDim : (itemArea.containsMouse ?
-                        Theme.bgSurface : "transparent")
-                ColumnLayout {
-                    anchors.centerIn: parent; spacing: 1
-                    AppIcon {
-                        name: modelData.icon; size: 16
-                        iconColor: root.currentMode === modelData.mode ?
-                            Theme.primaryHover : (itemArea.containsMouse ?
-                                Theme.textLight : Theme.textMuted)
-                    }
-                    Text {
-                        text: modelData.label; font.family: Theme.fontFamily
-                        font.pixelSize: 10; font.bold: true
-                        color: root.currentMode === modelData.mode ?
-                            Theme.primaryHover : (itemArea.containsMouse ?
-                                Theme.textLight : Theme.textMuted)
-                    }
-                }
-                MouseArea {
-                    id: itemArea; anchors.fill: parent; hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.modeSelected(modelData.mode)
-                }
+            delegate: SideNavItem {
+                width: destinations.width; collapsed: root.collapsed
+                iconName: modelData.icon; label: modelData.label
+                active: root.currentMode === modelData.mode
+                onClicked: root.modeSelected(modelData.mode)
             }
         }
+    }
 
-        Item { Layout.fillHeight: true }
+    SideNavPlaylistCard {
+        id: playlistCard
+        anchors.top: destinations.bottom; anchors.topMargin: Theme.spaceMd
+        anchors.left: parent.left; anchors.right: parent.right
+        anchors.leftMargin: root.inset; anchors.rightMargin: root.inset
+        collapsed: root.collapsed
+        onNewPlaylistRequested: root.newPlaylistRequested()
+    }
 
-        RowLayout {
-            Layout.fillWidth: true; spacing: 2
-            Repeater {
-                model: [
-                    { i: "sliders", f: () => root.openEqualizerRequested() },
-                    { i: "moon", f: () => root.openTimerRequested() },
-                    { i: "settings", f: () => root.openSettingsRequested() }
-                ]
-                delegate: AppButton {
-                    Layout.fillWidth: true; Layout.preferredHeight: 30
-                    iconName: modelData.i; variant: "ghost"
-                    onClicked: modelData.f()
-                }
-            }
+    SideNavLikedCard {
+        anchors.top: playlistCard.bottom
+        anchors.topMargin: Theme.spaceSm + Theme.spaceXs
+        anchors.left: parent.left; anchors.right: parent.right
+        anchors.leftMargin: root.inset; anchors.rightMargin: root.inset
+        collapsed: root.collapsed
+        onLikedMusicRequested: root.modeSelected("favorites")
+    }
+
+    SideNavTools {
+        anchors.left: parent.left; anchors.right: parent.right
+        anchors.leftMargin: root.inset; anchors.rightMargin: root.inset
+        anchors.bottom: parent.bottom; anchors.bottomMargin: Theme.spaceSm
+        collapsed: root.collapsed
+        onCollapseRequested: {
+            root.animating = true; root.collapsed = !root.collapsed
+            if (settingsController)
+                settingsController.sidebarCollapsed = root.collapsed
         }
+        onEqualizerRequested: root.openEqualizerRequested()
+        onTimerRequested: root.openTimerRequested()
+        onAboutRequested: root.openAboutRequested()
+        onSettingsRequested: root.openSettingsRequested()
     }
 }

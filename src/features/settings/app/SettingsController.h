@@ -45,6 +45,10 @@ class SettingsController : public QObject {
                WRITE setDraftSmbPassword NOTIFY sourceDraftsChanged)
     Q_PROPERTY(bool draftSaveCredentials READ draftSaveCredentials
                WRITE setDraftSaveCredentials NOTIFY sourceDraftsChanged)
+    Q_PROPERTY(int sidebarWidth READ sidebarWidth WRITE setSidebarWidth
+               NOTIFY sidebarWidthChanged)
+    Q_PROPERTY(bool sidebarCollapsed READ sidebarCollapsed
+               WRITE setSidebarCollapsed NOTIFY sidebarCollapsedChanged)
     Q_PROPERTY(bool dirty READ isDirty NOTIFY dirtyChanged)
     Q_PROPERTY(bool isFirstRun READ isFirstRun NOTIFY firstRunChanged)
     Q_PROPERTY(QString connectionStatus READ connectionStatus
@@ -94,15 +98,22 @@ public:
     QString version() const { return QStringLiteral("2.0.0"); }
     QString qtVersion() const;
 
+    int sidebarWidth() const;
+    void setSidebarWidth(int w);
+    bool sidebarCollapsed() const;
+    void setSidebarCollapsed(bool c);
+
     Q_INVOKABLE void apply(); Q_INVOKABLE void discard();
     Q_INVOKABLE void resetDrafts(); Q_INVOKABLE void completeFirstRun();
     Q_INVOKABLE void testConnection();
     Q_INVOKABLE void testSourceConnection();
+    Q_INVOKABLE void adoptRemoteServer(const QString &url);
 
 signals:
     void draftApiUrlChanged(); void tokenChanged();
     void draftLanguageChanged(); void draftThemeChanged();
     void sourceDraftsChanged();
+    void sidebarWidthChanged(); void sidebarCollapsedChanged();
     void dirtyChanged(); void firstRunChanged();
     void connectionStatusChanged(); void sourceStatusChanged();
 private:

@@ -11,11 +11,13 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickWindow>
+#include <QTimer>
 #include <cstdio>
 #include "core/ApiClient.h"
 #include "core/ProjectConfig.h"
 #include "core/SingleInstance.h"
 #include "core/audio/DspAudioBackend.h"
+#include "core/credentials/FileCredentialStore.h"
 #include "core/discovery/DiscoveryService.h"
 #include "core/platform/PlatformHelper.h"
 #include "features/playback/app/AudioSettingsController.h"
@@ -29,6 +31,7 @@
 #include "shared/colors/ColorManager.h"
 #include "shared/i18n/StringManager.h"
 #include <dopamine_desktop/src/bridge.cxxqt.h>
+#include <dopamine_desktop/src/session/session_bridge.cxxqt.h>
 
 int main(int argc, char *argv[]) {
     qputenv("QML_DISABLE_DISTANCEFIELD", "1");
@@ -46,9 +49,15 @@ int main(int argc, char *argv[]) {
     app.setFont(f);
     QCommandLineParser parser;
     parser.addOption({{"u", "uri"}, "URI", "uri"});
+    parser.addPositionalArgument("uri", "dopamine:// handoff URI", "[uri]");
     parser.process(app);
+    QString initialUri = parser.value("uri");
+    if (initialUri.isEmpty()) {
+        const QStringList positional = parser.positionalArguments();
+        if (!positional.isEmpty()) initialUri = positional.first();
+    }
     Dopamine::Core::SingleInstance singleInstance("dopamine_native");
-    if (singleInstance.checkAndForward(parser.value("uri"))) return 0;
+    if (singleInstance.checkAndForward(initialUri)) return 0;
     singleInstance.startListening();
     using namespace Dopamine::Shared;
     auto &theme = Theme::instance();
@@ -86,13 +95,36 @@ int main(int argc, char *argv[]) {
         &Playback::App::EqualizerController::paramsChanged, syncEq);
     syncEq();
     Playback::App::AudioSettingsController audioSettings;
-    Settings::App::SettingsController settingsCtrl(&apiClient);
+    Dopamine::Core::Credentials::FileCredentialStore credentials;
+    Settings::App::SettingsController settingsCtrl(&apiClient, &credentials);
+    dopamine::rust::SessionBridge sessionBridge;
+    QObject::connect(&sessionBridge,
+        &dopamine::rust::SessionBridge::serverAdopted,
+        &settingsCtrl, &Settings::App::SettingsController::adoptRemoteServer);
+    QObject::connect(&sessionBridge,
+        &dopamine::rust::SessionBridge::bearerTokenChanged,
+        &apiClient, [&apiClient](const QString &token) {
+            apiClient.setBearerToken(token);
+        });
+    QString pendingUri = initialUri;
+    bool qmlReady = false;
+    sessionBridge.initialize();
     Library::Infra::LibraryApiClient libApi(&apiClient);
     Library::App::LibraryController libCtrl(&libApi);
     Queue::Infra::QueueApiClient qApi(&apiClient);
     Queue::App::QueueController queueCtrl(&qApi);
     Playlists::Infra::PlaylistApiClient plApi(&apiClient);
     Playlists::App::PlaylistController plCtrl(&plApi);
+    QObject::connect(&sessionBridge,
+        &dopamine::rust::SessionBridge::serverAdopted,
+        &libCtrl, [&libCtrl](const QString &) {
+            libCtrl.loadTracks(1);
+        });
+    QObject::connect(&sessionBridge,
+        &dopamine::rust::SessionBridge::loginSucceeded,
+        &libCtrl, [&libCtrl]() {
+            libCtrl.loadTracks(1);
+        });
     QObject::connect(&queueCtrl,
         &Queue::App::QueueController::playTrackRequested,
         &playbackCtrl, [&playbackCtrl](int id, auto ti, auto ar,
@@ -102,6 +134,19 @@ int main(int argc, char *argv[]) {
 
     discoveryService.startDiscovery();
     QQmlApplicationEngine engine;
+    QObject::connect(&singleInstance,
+        &Dopamine::Core::SingleInstance::messageReceived,
+        &app, [&pendingUri, &qmlReady, &sessionBridge, &engine]
+        (const QString &uri) {
+            const auto objects = engine.rootObjects();
+            if (!objects.isEmpty()) {
+                if (auto *w = qobject_cast<QQuickWindow *>(objects.first())) {
+                    w->show(); w->raise(); w->requestActivate();
+                }
+            }
+            if (qmlReady) sessionBridge.handleUri(uri);
+            else pendingUri = uri;
+        });
     auto *ctx = engine.rootContext();
     for (auto [k, v] : {
         std::pair{"Theme", (QObject*)&theme}, {"Strings", &strings},
@@ -110,6 +155,7 @@ int main(int argc, char *argv[]) {
         {"discoveryService", &discoveryService},
         {"equalizerController", &eqCtrl}, {"audioSettings", &audioSettings},
         {"settingsController", &settingsCtrl},
+        {"sessionController", &sessionBridge},
         {"libraryController", (QObject*)&libCtrl},
         {"queueController", (QObject*)&queueCtrl},
         {"playlistController", (QObject*)&plCtrl},
@@ -119,13 +165,21 @@ int main(int argc, char *argv[]) {
 
     const QUrl url(QStringLiteral("qrc:/Dopamine/Core/src/Main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
-        [url, &platform](QObject *o, const QUrl &u) {
+        [url, &app, &platform, &sessionBridge, &qmlReady, &pendingUri]
+        (QObject *o, const QUrl &u) {
             if (u != url) return;
             if (!o) { QCoreApplication::exit(-1); return; }
             if (auto *w = qobject_cast<QQuickWindow *>(o)) {
                 platform.setupWindow(w);
                 w->show();
             }
+            qmlReady = true;
+            QTimer::singleShot(0, &app, [&sessionBridge, &pendingUri]() {
+                if (pendingUri.isEmpty()) return;
+                const QString uri = pendingUri;
+                pendingUri.clear();
+                sessionBridge.handleUri(uri);
+            });
         }, Qt::QueuedConnection);
     engine.load(url);
     return app.exec();

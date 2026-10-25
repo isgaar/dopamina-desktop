@@ -1,27 +1,27 @@
 /**
  * Location: src/shared/ui/titlebar/AppTitleBar.qml
- * Function: Master custom title bar assembling integrated menu bar, center
- * window title, server connection status pill, and window controls.
+ * Function: Wide application header pairing the Dopamine wordmark with a
+ * centered library search, account avatar, and desktop window controls.
  * All Rights Reserved isgaar
  */
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Window
-import "../settings"
+import "root:/src/shared"
+import "root:/src/features/session/ui"
 
 Rectangle {
     id: root
-    height: 34
+    height: 56
     color: "transparent"
 
     property var window: null
     property bool isFirstRun: false
-    signal openAboutRequested()
-    signal openSettingsRequested()
-    signal openEqualizerRequested()
+    signal searchEdited(string text)
+    signal openSessionRequested()
 
     Rectangle {
-        anchors.bottom: parent.bottom; width: parent.width; height: 1
+        anchors.bottom: parent.bottom
+        width: parent.width; height: 1
         color: Theme.borderDark
     }
 
@@ -34,68 +34,40 @@ Rectangle {
         }
     }
 
-    RowLayout {
-        anchors.fill: parent; spacing: 0
-        Item { width: Theme.spaceSm }
+    AppBrand {
+        anchors.left: parent.left
+        anchors.leftMargin: Theme.spaceMd
+        anchors.verticalCenter: parent.verticalCenter
+    }
 
-        Image {
-            source: "qrc:/Dopamine/Core/src/shared/assets/app-icon.png"
-            Layout.preferredWidth: 16; Layout.preferredHeight: 16
-            Layout.alignment: Qt.AlignVCenter
-            fillMode: Image.PreserveAspectFit
-        }
-        Item { width: Theme.spaceSm }
+    TopSearch {
+        id: search
+        height: 34
+        width: Math.min(400, root.width * 0.38)
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        visible: !root.isFirstRun
+        onEdited: text => root.searchEdited(text)
+    }
 
-        TitleMenuBar {
-            id: titleMenuBar
-            Layout.preferredHeight: 26; Layout.alignment: Qt.AlignVCenter
-            visible: Platform.useCustomTitleBar &&
-                !Platform.useSystemMenuExport && !root.isFirstRun
-            onOpenAboutRequested: root.openAboutRequested()
-            onOpenSettingsRequested: root.openSettingsRequested()
-            onOpenEqualizerRequested: root.openEqualizerRequested()
-        }
+    WindowControls {
+        id: windowControls
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        window: root.window
+        visible: Platform.useCustomTitleBar
+        canMaximize: !root.isFirstRun
+    }
 
-        Item { Layout.fillWidth: true }
-
-        Text {
-            text: Theme.appName
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSm
-            font.bold: true
-            color: Theme.textMuted
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        }
-
-        Item { Layout.fillWidth: true }
-
-        StatusPill {
-            Layout.alignment: Qt.AlignVCenter
-            visible: !root.isFirstRun
-            variant: {
-                var s = settingsController.connectionStatus
-                return s === "ok" ? "ok" :
-                    (s === "connecting" ? "warn" : "error")
-            }
-            text: {
-                var s = settingsController.connectionStatus
-                if (s === "ok") {
-                    return Strings.get("status_connected_to") + " " +
-                        (config.targetHost.length > 0 ?
-                            config.targetHost : "127.0.0.1")
-                }
-                return s === "connecting" ?
-                    Strings.get("settings_status_checking") :
-                    Strings.get("settings_status_disconnected")
-            }
-        }
-
-        Item { width: Theme.spaceSm }
-
-        WindowControls {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            visible: Platform.useCustomTitleBar
-            window: root.window; canMaximize: !root.isFirstRun
-        }
+    SessionAvatar {
+        id: avatar
+        avatarSize: 32
+        visible: !root.isFirstRun
+        anchors.right: windowControls.visible ?
+            windowControls.left : parent.right
+        anchors.rightMargin: Theme.spaceMd
+        anchors.verticalCenter: parent.verticalCenter
+        onClicked: root.openSessionRequested()
     }
 }

@@ -19,6 +19,16 @@ Text {
 
     text: {
         switch (name) {
+        case "home":
+        case "house": return "\ue0f8";
+        case "compass": return "\ue09f";
+        case "layers": return "\ue104";
+        case "library": return "\ue106";
+        case "plus": return "\ue141";
+        case "heart": return "\ue0f5";
+        case "radio": return "\ue146";
+        case "sparkles": return "\ue417";
+        case "audio-lines": return "\ue55f";
         case "music": return "\ue126";
         case "music-2": return "\ue34e";
         case "disc": return "\ue0b3";
@@ -32,6 +42,9 @@ Text {
         case "square": return "\ue16b";
         case "next":
         case "skip-forward": return "\ue164";
+        case "previous":
+        case "skip-back": return "\ue163";
+        case "repeat": return "\ue14a";
         case "mix":
         case "shuffle": return "\ue162";
         case "refresh":
@@ -52,10 +65,22 @@ Text {
         case "chevron-right": return "\ue073";
         case "left":
         case "chevron-left": return "\ue072";
+        case "panel-left": return "\ue12e";
+        case "panel-right": return "\ue436";
         case "info": return "\ue0fe";
         case "power": return "\ue144";
         case "star": return "\ue17a";
         case "server": return "\ue157";
+        case "wifi": return "\ue1ae";
+        case "wifi-off": return "\ue1af";
+        case "user":
+        case "user-round": return "\ue46d";
+        case "log-in": return "\ue111";
+        case "log-out": return "\ue112";
+        case "qr-code": return "\ue1df";
+        case "external-link": return "\ue0bd";
+        case "shield-check": return "\ue1ff";
+        case "mail": return "\ue113";
         case "lock": return "\ue10f";
         case "bookmark": return "\ue064";
         case "rotate-ccw": return "\ue14c";

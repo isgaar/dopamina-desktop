@@ -1,5 +1,5 @@
 // Location: rust/build.rs
-// Function: Generates and compiles the cxx-qt C++ bridge for the Rust core.
+// Function: Generates and compiles the cxx-qt C++ bridges for the Rust core.
 // All Rights Reserved isgaar
 
 use cxx_qt_build::CxxQtBuilder;
@@ -7,6 +7,6 @@ use cxx_qt_build::CxxQtBuilder;
 fn main() {
     CxxQtBuilder::new()
         .qt_module("Qml")
-        .files(["src/bridge.rs"])
+        .files(["src/bridge.rs", "src/session/session_bridge.rs"])
         .build();
 }
