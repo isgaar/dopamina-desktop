@@ -43,6 +43,8 @@ public:
     Q_INVOKABLE void startMix(int seedTrackId, const QString &seedTitle);
     Q_INVOKABLE void toggleShuffle();
     Q_INVOKABLE void toggleRepeat();
+    Q_INVOKABLE void applySessionQueue(const QVariantList &tracks,
+                                       int currentIndex, int positionSec);
 
 signals:
     void queueChanged();
@@ -53,6 +55,10 @@ signals:
     void playTrackRequested(int id, const QString &title,
                             const QString &artist, const QString &album,
                             const QString &path, int duration);
+    void sessionTrackRequested(int id, const QString &title,
+                               const QString &artist, const QString &album,
+                               const QString &path, int duration,
+                               int positionSec);
 
 private:
     void refillMixIfNeeded();

@@ -22,8 +22,13 @@ class MockAudio : public Dopamine::Core::Audio::IAudioBackend {
 public:
     using IAudioBackend::IAudioBackend;
     bool m_play = false; QUrl m_u; int m_v = 80; qint64 m_p = 0;
+    qint64 m_lastStart = -1;
     void play(const QUrl &u) override {
         m_u = u; m_play = true; emit stateChanged(true);
+    }
+    void playAt(const QUrl &u, qint64 p) override {
+        m_lastStart = p;
+        play(u);
     }
     void pause() override { m_play = false; emit stateChanged(false); }
     void stop() override { m_play = false; emit stateChanged(false); }
@@ -88,6 +93,27 @@ private slots:
 
         ctrl.playLibraryTrack(100, "Other", "Artist", "Album", "", 0);
         QCOMPARE(ctrl.trackTitle(), QString("Other"));
+    }
+
+    void testRestoresRemoteQueuePosition() {
+        MockAudio audio;
+        PlaybackController ctrl(&audio);
+
+        ctrl.loadLibraryTrack(7, "Remote", "Artist", "Album",
+                              "http://server/api/v1/streams/7", 180, 42);
+        QCOMPARE(ctrl.trackTitle(), QString("Remote"));
+        QCOMPARE(ctrl.position(), 42);
+        QVERIFY(!audio.isPlaying());
+        QCOMPARE(audio.m_lastStart, qint64(-1));
+
+        ctrl.play();
+        QVERIFY(audio.isPlaying());
+        QCOMPARE(audio.m_lastStart, qint64(42000));
+
+        audio.tick(55000);
+        ctrl.pause();
+        ctrl.play();
+        QCOMPARE(audio.m_lastStart, qint64(55000));
     }
 
     void testLocalLyrics() {

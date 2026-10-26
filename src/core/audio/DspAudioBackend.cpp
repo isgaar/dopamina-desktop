@@ -5,7 +5,9 @@
  * All Rights Reserved isgaar
  */
 #include "DspAudioBackend.h"
+#include "PcmConversion.h"
 #include <QMediaDevices>
+#include <vector>
 
 namespace Dopamine::Core::Audio {
 
@@ -24,10 +26,14 @@ void DspAudioBackend::setVolume(int volume) {
     emit volumeChanged(m_volume);
 }
 
-void DspAudioBackend::play(const QUrl &url) {
+void DspAudioBackend::play(const QUrl &url) { playAt(url, 0); }
+
+void DspAudioBackend::playAt(const QUrl &url, qint64 positionMs) {
     if (!url.isValid()) { emit errorOccurred("URL no válida."); return; }
     stop();
     m_currentUrl = url; m_framesWritten = 0;
+    m_startMs = qMax<qint64>(0, positionMs);
+    m_skipFrames = -1;
     m_decoder = new QAudioDecoder(this);
     connect(m_decoder, &QAudioDecoder::bufferReady,
             this, &DspAudioBackend::handleBufferReady);
@@ -54,6 +60,7 @@ void DspAudioBackend::stop() {
     if (m_sink) { m_sink->stop(); m_sink->deleteLater(); }
     m_decoder = nullptr; m_sink = nullptr; m_sinkIo = nullptr;
     m_isPlaying = false; m_isPaused = false; m_framesWritten = 0;
+    m_startMs = 0; m_skipFrames = 0;
     m_eqFilter.resetStates();
     emit stateChanged(false); emit positionChanged(0);
 }
@@ -89,11 +96,44 @@ void DspAudioBackend::handleBufferReady() {
     QAudioBuffer buf = m_decoder->read();
     if (!buf.isValid()) return;
     if (!m_sink) setupSink(buf.format());
-    int frames = buf.frameCount(), ch = buf.format().channelCount();
-    QByteArray raw(reinterpret_cast<const char*>(buf.constData<float>()),
-                   frames * ch * sizeof(float));
-    m_gainStage.process(reinterpret_cast<float*>(raw.data()), frames, ch);
-    m_eqFilter.process(reinterpret_cast<float*>(raw.data()), frames, ch);
+    if (m_skipFrames < 0) {
+        m_skipFrames = (m_startMs * m_format.sampleRate()) / 1000;
+    }
+    const QAudioFormat format = buf.format();
+    int frames = buf.frameCount();
+    const int ch = format.channelCount();
+    const int bytesPerSample = format.bytesPerSample();
+    if (frames <= 0 || ch <= 0 || bytesPerSample <= 0) return;
+
+    std::vector<float> samples(
+        static_cast<size_t>(frames) * static_cast<size_t>(ch));
+    const char *source = buf.constData<char>();
+    for (int i = 0; i < frames * ch; ++i) {
+        samples[static_cast<size_t>(i)] =
+            Pcm::decodeSample(source, format.sampleFormat(), i);
+    }
+
+    int offset = 0;
+    if (m_skipFrames > 0) {
+        const qint64 drop = qMin<qint64>(m_skipFrames, frames);
+        m_skipFrames -= drop;
+        m_framesWritten += drop;
+        offset = static_cast<int>(drop);
+        frames -= offset;
+        if (frames <= 0) {
+            emit positionChanged(position());
+            return;
+        }
+    }
+
+    float *processed = samples.data() + offset * ch;
+    m_gainStage.process(processed, frames, ch);
+    m_eqFilter.process(processed, frames, ch);
+
+    QByteArray raw(frames * ch * bytesPerSample, Qt::Uninitialized);
+    for (int i = 0; i < frames * ch; ++i) {
+        Pcm::encodeSample(raw.data(), format.sampleFormat(), i, processed[i]);
+    }
     if (m_sinkIo) m_sinkIo->write(raw);
     m_framesWritten += frames;
     emit positionChanged(position());

@@ -14,6 +14,7 @@ set(PROJECT_SOURCES
     src/core/audio/IAudioBackend.h
     src/core/audio/DspAudioBackend.cpp
     src/core/audio/DspAudioBackend.h
+    src/core/audio/PcmConversion.h
     src/core/audio/dsp/GainStage.cpp
     src/core/audio/dsp/GainStage.h
     src/core/audio/automix/CrossfadeMixer.cpp
@@ -85,6 +86,10 @@ set(PROJECT_SOURCES
     src/features/queue/infra/QueueApiClient.h
     src/features/queue/app/QueueController.cpp
     src/features/queue/app/QueueController.h
+    src/features/interconnect/infra/SessionPlaybackApiClient.cpp
+    src/features/interconnect/infra/SessionPlaybackApiClient.h
+    src/features/interconnect/app/SessionPlaybackController.cpp
+    src/features/interconnect/app/SessionPlaybackController.h
     src/features/playlists/infra/PlaylistApiClient.cpp
     src/features/playlists/infra/PlaylistApiClient.h
     src/features/playlists/app/PlaylistController.cpp

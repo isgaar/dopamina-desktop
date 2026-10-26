@@ -20,6 +20,16 @@ public:
     ~IAudioBackend() override = default;
 
     virtual void play(const QUrl &url) = 0;
+
+    /**
+     * Starts a stream at a known offset. Backends without random access may
+     * fall back to playing from the beginning.
+     */
+    virtual void playAt(const QUrl &url, qint64 positionMs) {
+        Q_UNUSED(positionMs);
+        play(url);
+    }
+
     virtual void pause() = 0;
     virtual void stop() = 0;
     virtual void seek(qint64 positionMs) = 0;

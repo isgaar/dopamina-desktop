@@ -20,6 +20,8 @@
 #include "core/credentials/FileCredentialStore.h"
 #include "core/discovery/DiscoveryService.h"
 #include "core/platform/PlatformHelper.h"
+#include "features/interconnect/app/SessionPlaybackController.h"
+#include "features/interconnect/infra/SessionPlaybackApiClient.h"
 #include "features/playback/app/AudioSettingsController.h"
 #include "features/playback/app/EqualizerController.h"
 #include "features/playback/app/PlaybackController.h"
@@ -113,6 +115,10 @@ int main(int argc, char *argv[]) {
     Library::App::LibraryController libCtrl(&libApi);
     Queue::Infra::QueueApiClient qApi(&apiClient);
     Queue::App::QueueController queueCtrl(&qApi);
+    Interconnect::Infra::SessionPlaybackApiClient sessionPlaybackApi(
+        &apiClient);
+    Interconnect::App::SessionPlaybackController sessionPlayback(
+        &sessionPlaybackApi, &queueCtrl);
     Playlists::Infra::PlaylistApiClient plApi(&apiClient);
     Playlists::App::PlaylistController plCtrl(&plApi);
     QObject::connect(&sessionBridge,
@@ -131,6 +137,26 @@ int main(int argc, char *argv[]) {
                                        auto al, auto path, int d) {
             playbackCtrl.playLibraryTrack(id, ti, ar, al, path, d);
         });
+    QObject::connect(&queueCtrl,
+        &Queue::App::QueueController::sessionTrackRequested,
+        &playbackCtrl, [&playbackCtrl](int id, auto ti, auto ar, auto al,
+                                       auto path, int d, int pos) {
+            playbackCtrl.loadLibraryTrack(id, ti, ar, al, path, d, pos);
+        });
+    QObject::connect(&sessionBridge,
+        &dopamine::rust::SessionBridge::serverAdopted,
+        &sessionPlayback, [&sessionPlayback](const QString &) {
+            sessionPlayback.start();
+        });
+    QObject::connect(&sessionBridge,
+        &dopamine::rust::SessionBridge::isLoggedInChanged,
+        &sessionPlayback, [&sessionBridge, &sessionPlayback]() {
+            if (sessionBridge.getIsLoggedIn())
+                sessionPlayback.start();
+            else
+                sessionPlayback.stop();
+        });
+    if (sessionBridge.getIsLoggedIn()) sessionPlayback.start();
 
     discoveryService.startDiscovery();
     QQmlApplicationEngine engine;
@@ -158,6 +184,7 @@ int main(int argc, char *argv[]) {
         {"sessionController", &sessionBridge},
         {"libraryController", (QObject*)&libCtrl},
         {"queueController", (QObject*)&queueCtrl},
+        {"sessionPlaybackController", (QObject*)&sessionPlayback},
         {"playlistController", (QObject*)&plCtrl},
         {"rustBridge", (QObject*)&rustBridge}})
         ctx->setContextProperty(QString::fromLatin1(k), v);

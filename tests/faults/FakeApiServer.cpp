@@ -56,7 +56,8 @@ void FakeApiServer::onNewConnection() {
     }
 
     connect(sock, &QTcpSocket::readyRead, this, [this, sock]() {
-        sock->readAll(); // Consume incoming request headers
+        const QByteArray request = sock->readAll();
+        if (m_lastRequest.isEmpty()) m_lastRequest = request;
 
         QByteArray resp;
         resp += QStringLiteral("HTTP/1.1 %1 OK\r\n").arg(m_statusCode).toUtf8();

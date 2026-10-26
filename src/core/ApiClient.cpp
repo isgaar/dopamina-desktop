@@ -17,13 +17,16 @@ ApiClient::ApiClient(QObject *parent)
     : QObject(parent), m_networkManager(this) {}
 
 QNetworkRequest ApiClient::createRequest(const QString &url) const {
-    if (!ProjectConfig::instance().isProduction()) {
-        QUrl parsed(url);
-        qInfo().noquote() << "[ApiClient] Consulta Dopamine Engine:"
-                          << parsed.host() << ":" << parsed.port(8000)
-                          << parsed.path();
+    QUrl target(url);
+    if (target.isRelative()) {
+        target = QUrl(ProjectConfig::instance().apiUrl()).resolved(target);
     }
-    QNetworkRequest request{QUrl(url)};
+    if (!ProjectConfig::instance().isProduction()) {
+        qInfo().noquote() << "[ApiClient] Consulta Dopamine Engine:"
+                          << target.host() << ":" << target.port(8000)
+                          << target.path();
+    }
+    QNetworkRequest request{target};
     request.setTransferTimeout(5000);
     request.setRawHeader("Accept", "application/json");
     if (!m_bearerToken.isEmpty()) {

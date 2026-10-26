@@ -244,4 +244,7 @@
     <string name="mix_ambiguity_later">Ahora no</string>
     <string name="mix_ambiguity_apply_album">Aplicar a todo este álbum</string>
     <string name="mix_ambiguity_preview">15 s</string>
+    <string name="session_source_mobile">Sesión móvil</string>
+    <string name="session_source_web">Sesión web</string>
+    <string name="session_source_playing">En reproducción</string>
 </resources>

@@ -6,12 +6,15 @@
  */
 #include <QTest>
 #include <cmath>
+#include <limits>
 #include <vector>
+#include "core/audio/PcmConversion.h"
 #include "core/audio/dsp/LoudnessGain.h"
 #include "core/audio/dsp/GainStage.h"
 #include "core/audio/automix/CrossfadeMixer.h"
 
 using namespace Dopamine::Core::Audio::Dsp;
+using namespace Dopamine::Core::Audio::Pcm;
 
 class TestAudioDsp : public QObject {
     Q_OBJECT
@@ -86,6 +89,55 @@ private slots:
         // Step at 1 (pure in)
         mixer.mix(out.data(), in.data(), mixed.data(), 2, 2, 1.0f, 1.0f);
         QCOMPARE(mixed[0], 0.5f);
+    }
+
+    void testPcmRoundTrip_data() {
+        QTest::addColumn<int>("format");
+        QTest::addColumn<int>("bytesPerSample");
+        QTest::addColumn<float>("tolerance");
+        QTest::newRow("uint8") << int(QAudioFormat::UInt8) << 1 << 0.008f;
+        QTest::newRow("int16") << int(QAudioFormat::Int16) << 2 << 1e-4f;
+        QTest::newRow("int32") << int(QAudioFormat::Int32) << 4 << 1e-7f;
+        QTest::newRow("float") << int(QAudioFormat::Float) << 4 << 0.0f;
+    }
+
+    void testPcmRoundTrip() {
+        QFETCH(int, format);
+        QFETCH(int, bytesPerSample);
+        QFETCH(float, tolerance);
+        const auto sampleFormat =
+            static_cast<QAudioFormat::SampleFormat>(format);
+        const std::vector<float> input = {-1.0f, -0.5f, 0.0f, 0.5f, 1.0f};
+        std::vector<char> buffer(input.size() * bytesPerSample);
+        for (size_t i = 0; i < input.size(); ++i) {
+            encodeSample(buffer.data(), sampleFormat, int(i), input[i]);
+        }
+        for (size_t i = 0; i < input.size(); ++i) {
+            const float decoded =
+                decodeSample(buffer.data(), sampleFormat, int(i));
+            QVERIFY2(std::abs(decoded - input[i]) <= tolerance,
+                     qPrintable(QString("sample %1: %2 != %3")
+                                    .arg(i)
+                                    .arg(decoded)
+                                    .arg(input[i])));
+        }
+    }
+
+    void testPcmKnownValuesAndClamping() {
+        const quint8 silence = 128;
+        QCOMPARE(decodeSample(reinterpret_cast<const char *>(&silence),
+                              QAudioFormat::UInt8, 0), 0.0f);
+
+        const qint16 minimum = std::numeric_limits<qint16>::min();
+        QCOMPARE(decodeSample(reinterpret_cast<const char *>(&minimum),
+                              QAudioFormat::Int16, 0), -1.0f);
+
+        qint16 encoded = 0;
+        encodeSample(reinterpret_cast<char *>(&encoded),
+                     QAudioFormat::Int16, 0, 2.0f);
+        QCOMPARE(encoded, std::numeric_limits<qint16>::max());
+        QCOMPARE(decodeSample(reinterpret_cast<const char *>(&encoded),
+                              QAudioFormat::Int16, 0) > 0.999f, true);
     }
 };
 

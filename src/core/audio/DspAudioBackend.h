@@ -29,6 +29,7 @@ public:
     ~DspAudioBackend() override;
 
     void play(const QUrl &url) override;
+    void playAt(const QUrl &url, qint64 positionMs) override;
     void pause() override;
     void stop() override;
     void seek(qint64 positionMs) override;
@@ -82,6 +83,8 @@ private:
     QNetworkAccessManager *m_nam = nullptr;
 
     qint64 m_framesWritten = 0;
+    qint64 m_startMs = 0;
+    qint64 m_skipFrames = 0;
     qint64 m_durationMs = 0;
     int m_volume = 100;
     int m_crossfadeMs = 0;

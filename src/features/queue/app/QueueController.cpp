@@ -34,6 +34,38 @@ void QueueController::clearQueue() {
     emit queueChanged(); emit indexChanged();
 }
 
+void QueueController::applySessionQueue(const QVariantList &tracks,
+                                        int currentIndex, int positionSec) {
+    if (tracks.isEmpty()) return;
+    m_queue = tracks;
+    m_currentIndex = qBound(0, currentIndex, tracks.size() - 1);
+    m_history.clear();
+    const bool hadMix = m_isMixActive;
+    m_isMixActive = false;
+    m_seedId = 0;
+    m_mixSeedTitle.clear();
+    if (hadMix) emit mixChanged();
+    emit queueChanged();
+    emit indexChanged();
+
+    const QVariantMap track = m_queue[m_currentIndex].toMap();
+    const int id = track.value(QStringLiteral("id")).toInt();
+    if (id <= 0) return;
+    QString title = track.value(QStringLiteral("title")).toString();
+    if (title.isEmpty())
+        title = track.value(QStringLiteral("titulo")).toString();
+    QString artist = track.value(QStringLiteral("artist")).toString();
+    if (artist.isEmpty())
+        artist = track.value(QStringLiteral("artista")).toString();
+    int duration = track.value(QStringLiteral("duration")).toInt();
+    if (duration <= 0)
+        duration = track.value(QStringLiteral("duracion")).toInt();
+    emit sessionTrackRequested(
+        id, title, artist, track.value(QStringLiteral("album")).toString(),
+        track.value(QStringLiteral("path")).toString(), duration,
+        qMax(0, positionSec));
+}
+
 void QueueController::toggleShuffle() {
     m_isShuffle = !m_isShuffle; emit shuffleChanged();
 }

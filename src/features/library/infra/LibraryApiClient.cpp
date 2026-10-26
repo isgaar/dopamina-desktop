@@ -17,19 +17,29 @@ LibraryApiClient::LibraryApiClient(Core::ApiClient *client, QObject *parent)
 void LibraryApiClient::fetchTracks(int page, int limit, const QString &query,
                                    CatalogCallback cb) {
     if (!m_client) { if (cb) cb(false, {}); return; }
+    const int offset = qMax(0, page - 1) * limit;
     QUrlQuery q;
-    q.addQueryItem("page", QString::number(page));
     q.addQueryItem("limit", QString::number(limit));
+    q.addQueryItem("offset", QString::number(offset));
     if (!query.isEmpty()) q.addQueryItem("q", query);
 
-    QString path = "/api/v1/catalog/tracks?" + q.toString(QUrl::FullyEncoded);
+    QString path = "/api/v1/tracks?" + q.toString(QUrl::FullyEncoded);
     m_client->get(path, [cb](bool ok, const QByteArray &data) {
         if (!ok || !cb) { if (cb) cb(false, {}); return; }
         auto doc = QJsonDocument::fromJson(data);
-        if (doc.isObject()) {
-            cb(true, doc.object().value("items").toArray());
-        } else if (doc.isArray()) {
-            cb(true, doc.array());
+        if (doc.isArray()) {
+            QJsonArray normalized;
+            for (const auto &value : doc.array()) {
+                QJsonObject track = value.toObject();
+                QString stream =
+                    track.value("streamUrl").toString();
+                if (stream.isEmpty())
+                    stream = track.value("stream_url").toString();
+                if (!stream.isEmpty())
+                    track.insert("path", stream);
+                normalized.append(track);
+            }
+            cb(true, normalized);
         } else {
             cb(false, {});
         }

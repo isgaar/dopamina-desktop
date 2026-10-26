@@ -56,6 +56,7 @@ set(DOPAMINE_QML_FILES
     src/features/playback/ui/PlayerBarControls.qml
     src/features/playback/ui/PlayerBar.qml
     src/features/playback/ui/playerbar/PlayerIdentity.qml
+    src/features/playback/ui/playerbar/PlayerSessionSource.qml
     src/features/playback/ui/playerbar/PlayerUtilities.qml
     src/features/playback/ui/playerbar/TransportButton.qml
     src/features/playback/ui/playerbar/TransportControls.qml

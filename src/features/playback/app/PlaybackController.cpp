@@ -50,15 +50,18 @@ void PlaybackController::togglePlay() {
 
 void PlaybackController::play() {
     if (m_audio && m_currentUrl.isValid()) {
-        m_audio->play(m_currentUrl);
+        m_audio->playAt(m_currentUrl, m_resumeMs);
+        m_resumeMs = 0;
     }
 }
 
 void PlaybackController::pause() {
+    m_resumeMs = static_cast<qint64>(m_position) * 1000;
     if (m_audio) m_audio->pause();
 }
 
 void PlaybackController::stop() {
+    m_resumeMs = 0;
     if (m_audio) m_audio->stop();
     if (m_position != 0) {
         m_position = 0;
@@ -78,10 +81,33 @@ void PlaybackController::playLibraryTrack(int id, const QString &title,
     }
     loadLyrics(path);
     m_position = 0;
+    m_resumeMs = 0;
     m_activeLyric = -1;
     if (m_audio && m_currentUrl.isValid()) {
         m_audio->play(m_currentUrl);
     }
+    emit trackChanged();
+    emit positionChanged();
+    emit lyricsChanged();
+}
+
+void PlaybackController::loadLibraryTrack(int id, const QString &title,
+                                          const QString &artist,
+                                          const QString &album,
+                                          const QString &path, int dur,
+                                          int positionSec) {
+    if (m_audio) m_audio->stop();
+    m_track = {id, title, artist, album, QString{}, dur};
+    m_currentUrl.clear();
+    if (!path.isEmpty()) {
+        m_currentUrl = path.startsWith('/') ?
+            QUrl::fromLocalFile(path) : QUrl(path);
+    }
+    loadLyrics(path);
+    m_position = qMax(0, positionSec);
+    m_resumeMs = static_cast<qint64>(m_position) * 1000;
+    m_activeLyric = Domain::LrcParser::activeLineIndex(
+        m_lyrics, m_resumeMs);
     emit trackChanged();
     emit positionChanged();
     emit lyricsChanged();

@@ -64,6 +64,11 @@ public:
                                       const QString &artist,
                                       const QString &album,
                                       const QString &path, int dur);
+    Q_INVOKABLE void loadLibraryTrack(int id, const QString &title,
+                                      const QString &artist,
+                                      const QString &album,
+                                      const QString &path, int dur,
+                                      int positionSec);
 
 signals:
     void trackChanged();
@@ -83,6 +88,7 @@ private:
     Core::Audio::IAudioBackend *m_audio = nullptr;
     Domain::ActiveTrackInfo m_track;
     QUrl m_currentUrl;
+    qint64 m_resumeMs = 0;
     int m_position = 0;
     int m_volume = 80;
     int m_activeLyric = -1;

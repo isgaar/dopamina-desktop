@@ -24,6 +24,7 @@ public:
     void stop();
     quint16 port() const;
     QString url() const;
+    QByteArray lastRequest() const { return m_lastRequest; }
 
     void setNextResponse(
         int statusCode,
@@ -39,6 +40,7 @@ private:
     QTcpServer m_server;
     int m_statusCode{200};
     QByteArray m_responseBody{R"({"status":"ok","api_version":"1.0.0"})"};
+    QByteArray m_lastRequest;
     QString m_extraHeader;
     bool m_closeImmediately{false};
 };

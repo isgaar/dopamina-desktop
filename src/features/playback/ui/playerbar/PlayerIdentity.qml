@@ -62,5 +62,9 @@ RowLayout {
             color: Theme.textMuted
             elide: Text.ElideRight
         }
+
+        PlayerSessionSource {
+            Layout.fillWidth: true
+        }
     }
 }
