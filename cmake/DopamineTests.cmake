@@ -74,6 +74,7 @@ target_include_directories(test_session_playback PRIVATE src)
 add_test(NAME SessionPlaybackTest COMMAND test_session_playback)
 
 add_executable(test_player_features tests/test_player_features.cpp
+    tests/faults/FakeApiServer.cpp
     src/features/library/infra/LibraryApiClient.cpp
     src/features/library/infra/RecursiveDirectoryScanner.cpp
     src/features/library/app/LibraryController.cpp

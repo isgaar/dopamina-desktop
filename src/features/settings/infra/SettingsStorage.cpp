@@ -180,6 +180,7 @@ void SettingsStorage::apply(
                          data.smbFolder, data.smbUser);
         if (svc) svc->stop();
     } else {
+        cfg.setServerSource();
         cfg.setApiUrl(data.serverUrl);
         if (svc) svc->stop();
     }

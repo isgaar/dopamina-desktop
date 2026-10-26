@@ -61,9 +61,10 @@ void LibraryController::applySearchFilter() {
     emit tracksChanged();
 }
 void LibraryController::setSearchQuery(const QString &q) {
-    if (m_searchQuery != q) {
-        m_searchQuery = q; emit searchQueryChanged(); applySearchFilter();
-    }
+    if (m_searchQuery == q) return;
+    m_searchQuery = q; emit searchQueryChanged();
+    if (m_localSource) applySearchFilter();
+    else loadTracks(1);
 }
 double LibraryController::totalDurationHours() const {
     double s = 0.0;
@@ -73,25 +74,42 @@ double LibraryController::totalDurationHours() const {
 }
 void LibraryController::search(const QString &q) { setSearchQuery(q); }
 void LibraryController::loadTracks(int page) {
+    page = qMax(1, page);
     QString dir = Infra::RecursiveDirectoryScanner::resolveRootPath();
     if (!dir.isEmpty()) {
+        if (page > 1) return;
+        m_localSource = true; m_hasMoreTracks = false;
+        m_trackPage = 0;
         m_isLoading = true; m_statusMessage = QStringLiteral("Buscando...");
         emit loadingChanged(); emit statusMessageChanged();
         m_allTracks.clear(); m_tracks.clear(); m_albums.clear();
         m_artists.clear(); m_knownAlbums.clear(); m_knownArtists.clear();
         emit tracksChanged(); m_scanner->startScan(dir); return;
     }
+    m_localSource = false;
 
     if (!m_api) return;
+    if (page > 1 && (m_isLoading || !m_hasMoreTracks)) return;
+    const bool reset = page <= 1;
+    if (reset) ++m_requestGeneration;
+    const quint64 generation = m_requestGeneration;
     m_isLoading = true; emit loadingChanged();
-    m_api->fetchTracks(page, 50, m_searchQuery, [this](bool ok, auto arr) {
+    m_api->fetchTracks(page, 100, m_searchQuery,
+                       [this, page, reset, generation](bool ok, auto arr) {
+        if (generation != m_requestGeneration) return;
         m_isLoading = false; emit loadingChanged();
         if (!ok) return;
-        m_tracks.clear();
+        if (reset) m_tracks.clear();
         for (const auto &val : arr)
             m_tracks.append(val.toObject().toVariantMap());
+        m_trackPage = page;
+        m_hasMoreTracks = arr.size() >= 100;
         emit tracksChanged();
     });
+}
+
+void LibraryController::loadMoreTracks() {
+    if (!m_isLoading && m_hasMoreTracks) loadTracks(m_trackPage + 1);
 }
 void LibraryController::loadAlbums(int page) {
     if (!m_albums.isEmpty() || !m_api) return;

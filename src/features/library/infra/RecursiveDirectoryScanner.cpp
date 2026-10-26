@@ -24,7 +24,8 @@ void RecursiveDirectoryScanner::stopScan() { m_stopRequested.store(true); }
 
 QString RecursiveDirectoryScanner::resolveRootPath() {
     auto &cfg = Core::ProjectConfig::instance();
-    if (cfg.sourceType() == QLatin1String("smb")) {
+    if (cfg.sourceType() == QLatin1String("smb") &&
+        !cfg.smbHost().isEmpty()) {
         Core::Storage::SmbStorageProvider prov(
             cfg.smbHost(), cfg.smbShare(), cfg.smbFolder(), cfg.smbUser());
         return prov.rootPath();

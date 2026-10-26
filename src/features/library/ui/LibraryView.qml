@@ -51,6 +51,23 @@ Item {
                 root.section === "albums" ? root.controller.albums :
                 (root.section === "artists" ? root.controller.artists :
                  root.controller.tracks)) : []
+            onAtYEndChanged: if (atYEnd && root.section === "tracks" &&
+                                 root.controller &&
+                                 root.controller.hasMoreTracks)
+                                 root.controller.loadMoreTracks()
+
+            footer: Item {
+                width: trackList.width
+                height: root.section === "tracks" && root.controller &&
+                        root.controller.isLoading && trackList.count > 0 ?
+                        48 : 0
+
+                LoadingSpinner {
+                    anchors.centerIn: parent
+                    size: 18; lineWidth: 2
+                    visible: parent.height > 0
+                }
+            }
 
             delegate: LibraryTrackDelegate {
                 width: trackList.width

@@ -68,6 +68,18 @@ void ProjectConfig::setApiUrl(const QString &url) {
     if (m_apiUrl != url) { m_apiUrl = url; emit configChanged(); }
 }
 
+void ProjectConfig::setServerSource() {
+    const bool changed = m_sourceType != QLatin1String("server") ||
+        !m_smbHost.isEmpty() || !m_smbShare.isEmpty() ||
+        !m_smbFolder.isEmpty() || !m_smbUser.isEmpty() ||
+        !m_localPath.isEmpty();
+    m_sourceType = QStringLiteral("server");
+    m_smbHost.clear(); m_smbShare.clear();
+    m_smbFolder.clear(); m_smbUser.clear();
+    m_localPath.clear();
+    if (changed) emit configChanged();
+}
+
 QString ProjectConfig::smbShareUrl() const {
     if (m_smbHost.isEmpty()) return {};
     QString u = m_smbUser.isEmpty() ? "" : m_smbUser + "@";

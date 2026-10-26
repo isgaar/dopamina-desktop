@@ -21,6 +21,7 @@ class LibraryController : public QObject {
     Q_PROPERTY(QVariantList albums READ albums NOTIFY albumsChanged)
     Q_PROPERTY(QVariantList artists READ artists NOTIFY artistsChanged)
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY loadingChanged)
+    Q_PROPERTY(bool hasMoreTracks READ hasMoreTracks NOTIFY tracksChanged)
     Q_PROPERTY(QString searchQuery READ searchQuery WRITE setSearchQuery
                NOTIFY searchQueryChanged)
     Q_PROPERTY(QString statusMessage READ statusMessage
@@ -37,6 +38,7 @@ public:
     QVariantList albums() const { return m_albums; }
     QVariantList artists() const { return m_artists; }
     bool isLoading() const { return m_isLoading; }
+    bool hasMoreTracks() const { return m_hasMoreTracks; }
     QString searchQuery() const { return m_searchQuery; }
     QString statusMessage() const { return m_statusMessage; }
     int totalTracks() const { return m_tracks.size(); }
@@ -46,6 +48,7 @@ public:
 
     Q_INVOKABLE void search(const QString &query);
     Q_INVOKABLE void loadTracks(int page = 1);
+    Q_INVOKABLE void loadMoreTracks();
     Q_INVOKABLE void loadAlbums(int page = 1);
     Q_INVOKABLE void loadArtists(int page = 1);
 
@@ -72,6 +75,10 @@ private:
     QString m_searchQuery;
     QString m_statusMessage;
     bool m_isLoading = false;
+    bool m_hasMoreTracks = false;
+    bool m_localSource = false;
+    int m_trackPage = 0;
+    quint64 m_requestGeneration = 0;
 };
 
 } // namespace Dopamine::Features::Library::App

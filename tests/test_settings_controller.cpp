@@ -78,6 +78,9 @@ private slots:
                  QStringLiteral("http://persisted:7000"));
         QCOMPARE(ProjectConfig::instance().apiUrl(),
                  QStringLiteral("http://persisted:7000"));
+        QCOMPARE(ProjectConfig::instance().sourceType(),
+                 QStringLiteral("server"));
+        QVERIFY(ProjectConfig::instance().smbHost().isEmpty());
     }
 
     void testCredentialIsolationAndQSettings() {

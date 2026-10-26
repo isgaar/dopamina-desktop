@@ -50,6 +50,7 @@ public:
     }
 
     void setApiUrl(const QString &url);
+    void setServerSource();
     void setSmbSource(const QString &h, const QString &s,
                       const QString &f, const QString &u);
     void setLocalSource(const QString &path);

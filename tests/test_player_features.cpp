@@ -4,12 +4,18 @@
  * PlaylistController with mocked network responses and state transitions.
  * All Rights Reserved isgaar
  */
-#include <QTest>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QSignalSpy>
+#include <QTest>
+#include "core/ApiClient.h"
+#include "core/ProjectConfig.h"
+#include "faults/FakeApiServer.h"
 #include "features/library/app/LibraryController.h"
+#include "features/library/infra/RecursiveDirectoryScanner.h"
 #include "features/queue/app/QueueController.h"
 #include "features/playlists/app/PlaylistController.h"
-#include "core/ApiClient.h"
 
 using namespace Dopamine::Features::Library::App;
 using namespace Dopamine::Features::Queue::App;
@@ -93,6 +99,67 @@ private slots:
         QVERIFY(pl.isLiked(99));
         pl.toggleLike(99);
         QVERIFY(!pl.isLiked(99));
+    }
+
+    void testTrackPaginationAppendsPages() {
+        Tests::Faults::FakeApiServer server;
+        QVERIFY(server.start());
+        auto &cfg = Dopamine::Core::ProjectConfig::instance();
+        cfg.setServerSource();
+        cfg.setApiUrl(server.url());
+
+        Dopamine::Core::ApiClient client;
+        Dopamine::Features::Library::Infra::LibraryApiClient api(&client);
+        LibraryController controller(&api);
+
+        auto makePage = [](int firstId) {
+            QJsonArray page;
+            for (int i = 0; i < 100; ++i) {
+                page.append(QJsonObject{
+                    {"id", firstId + i},
+                    {"title", QStringLiteral("Track %1").arg(firstId + i)}});
+            }
+            return QJsonDocument(page).toJson(QJsonDocument::Compact);
+        };
+
+        server.setNextResponse(200, makePage(1));
+        QSignalSpy spy(&controller, &LibraryController::tracksChanged);
+        controller.loadTracks(1);
+        QVERIFY(spy.wait(3000));
+        QCOMPARE(controller.tracks().size(), 100);
+        QVERIFY(controller.hasMoreTracks());
+
+        server.setNextResponse(200, makePage(101));
+        controller.loadMoreTracks();
+        QVERIFY(spy.wait(3000));
+        QCOMPARE(controller.tracks().size(), 200);
+        QVERIFY(controller.hasMoreTracks());
+
+        QJsonArray lastPage;
+        lastPage.append(QJsonObject{{"id", 201}, {"title", "Last"}});
+        server.setNextResponse(
+            200, QJsonDocument(lastPage).toJson(QJsonDocument::Compact));
+        controller.loadMoreTracks();
+        QVERIFY(spy.wait(3000));
+        QCOMPARE(controller.tracks().size(), 201);
+        QVERIFY(!controller.hasMoreTracks());
+
+        cfg.setApiUrl(QStringLiteral("http://127.0.0.1:8000"));
+    }
+
+    void testServerModeDoesNotScanSmbRoot() {
+        auto &cfg = Dopamine::Core::ProjectConfig::instance();
+        cfg.setSmbSource(QString(), QString(), QString(), QString());
+        QCOMPARE(Dopamine::Features::Library::Infra::
+                     RecursiveDirectoryScanner::resolveRootPath(),
+                 QString());
+
+        cfg.setServerSource();
+        QCOMPARE(cfg.sourceType(), QStringLiteral("server"));
+        QVERIFY(cfg.smbHost().isEmpty());
+        QCOMPARE(Dopamine::Features::Library::Infra::
+                     RecursiveDirectoryScanner::resolveRootPath(),
+                 QString());
     }
 };
 
