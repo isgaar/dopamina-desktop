@@ -66,7 +66,7 @@ Rectangle {
                     spacing: Theme.spaceSm
 
                     Text {
-                        text: QString("%1.").arg(index + 1)
+                        text: (index + 1) + "."
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontSm; color: Theme.textMuted
                         Layout.preferredWidth: 28
