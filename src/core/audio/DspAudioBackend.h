@@ -20,6 +20,8 @@
 #include <memory>
 #include <cmath>
 
+class QTimer;
+
 namespace Dopamine::Core::Audio {
 
 class DspAudioBackend : public IAudioBackend {
@@ -39,6 +41,8 @@ public:
     bool isPlaying() const override { return m_isPlaying; }
     QUrl currentUrl() const override { return m_currentUrl; }
     qint64 position() const override {
+        if (m_sink)
+            return m_startMs + m_sink->processedUSecs() / 1000;
         if (m_format.sampleRate() > 0)
             return (m_framesWritten * 1000) / m_format.sampleRate();
         return 0;
@@ -60,9 +64,13 @@ private slots:
     void handleBufferReady();
     void handleDecoderFinished();
     void handleDecoderError(QAudioDecoder::Error error);
+    void pump();
 
 private:
     void setupSink(const QAudioFormat &format);
+    void flushPending();
+    void finishPlayback();
+    qint64 maxPendingBytes() const;
 
     QUrl m_currentUrl;
     QUrl m_nextUrl;
@@ -81,7 +89,9 @@ private:
     std::unique_ptr<Source::AudioDiskCache> m_cache;
     std::unique_ptr<Source::TrackPrefetcher> m_prefetcher;
     QNetworkAccessManager *m_nam = nullptr;
+    QTimer *m_pump = nullptr;
 
+    QByteArray m_pendingPcm;
     qint64 m_framesWritten = 0;
     qint64 m_startMs = 0;
     qint64 m_skipFrames = 0;
@@ -90,6 +100,8 @@ private:
     int m_crossfadeMs = 0;
     bool m_isPlaying = false;
     bool m_isPaused = false;
+    bool m_stopping = false;
+    bool m_decoderFinished = false;
 };
 
 } // namespace Dopamine::Core::Audio
