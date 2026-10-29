@@ -43,7 +43,7 @@ Item {
 
         ScrollBar.vertical: ScrollBar {
             policy: ScrollBar.AsNeeded
-            active: flick.moving || flick.fllicking
+            active: flick.moving || flick.flicking
         }
 
         ColumnLayout {
@@ -467,8 +467,8 @@ Item {
                     }
                     StatusPill {
                         text: "NUEVO"
-                        pillColor: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2)
-                        textColor: Theme.primary
+                        variant: "warn"
+                        iconName: "sparkles"
                     }
                     Item { Layout.fillWidth: true }
                 }

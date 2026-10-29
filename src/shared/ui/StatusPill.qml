@@ -14,12 +14,15 @@ Rectangle {
     property string variant: "neutral"
     property string text: ""
     property string iconName: ""
+    property color pillColor: "transparent"
+    property color textColor: "transparent"
 
     implicitHeight: 24
     implicitWidth: pillRow.implicitWidth + Theme.spaceSm * 2
     radius: Theme.radiusFull
 
     color: {
+        if (root.pillColor !== "transparent" && root.pillColor !== "#00000000") return root.pillColor
         if (root.variant === "ok") return Theme.color("success_badge")
         if (root.variant === "error") return Theme.color("danger_badge")
         if (root.variant === "warn") return Theme.color("primary_dim")
@@ -27,6 +30,7 @@ Rectangle {
     }
 
     border.color: {
+        if (root.textColor !== "transparent" && root.textColor !== "#00000000") return root.textColor
         if (root.variant === "ok") return Theme.success
         if (root.variant === "error") return Theme.danger
         if (root.variant === "warn") return Theme.warning
@@ -49,6 +53,7 @@ Rectangle {
             }
             size: 11
             iconColor: {
+                if (root.textColor !== "transparent" && root.textColor !== "#00000000") return root.textColor
                 if (root.variant === "ok") return Theme.success
                 if (root.variant === "error") return Theme.danger
                 if (root.variant === "warn") return Theme.warning
@@ -62,6 +67,7 @@ Rectangle {
             font.pixelSize: 11
             font.bold: true
             color: {
+                if (root.textColor !== "transparent" && root.textColor !== "#00000000") return root.textColor
                 if (root.variant === "ok") return Theme.success
                 if (root.variant === "error") return Theme.danger
                 if (root.variant === "warn") return Theme.warning
