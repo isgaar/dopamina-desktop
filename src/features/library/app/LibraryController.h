@@ -19,6 +19,7 @@ namespace Dopamine::Features::Library::App {
 class LibraryController : public QObject {
     Q_OBJECT
     Q_PROPERTY(QVariantList tracks READ tracks NOTIFY tracksChanged)
+    Q_PROPERTY(QVariantList recentTracks READ recentTracks NOTIFY recentTracksChanged)
     Q_PROPERTY(QVariantList albums READ albums NOTIFY albumsChanged)
     Q_PROPERTY(QVariantList artists READ artists NOTIFY artistsChanged)
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY loadingChanged)
@@ -48,6 +49,9 @@ public:
     void setSearchQuery(const QString &q);
 
     Q_INVOKABLE void search(const QString &query);
+    QVariantList recentTracks() const { return m_recentTracks; }
+    Q_INVOKABLE void loadRecentTracks();
+    Q_INVOKABLE bool isTrackDownloaded(int trackId) const;
     Q_INVOKABLE void loadTracks(int page = 1);
     Q_INVOKABLE void loadMoreTracks();
     Q_INVOKABLE void loadAlbums(int page = 1);
@@ -61,6 +65,7 @@ public:
 
 signals:
     void tracksChanged();
+    void recentTracksChanged();
     void albumsChanged();
     void artistsChanged();
     void loadingChanged();
@@ -78,6 +83,8 @@ private:
     Infra::RecursiveDirectoryScanner *m_scanner = nullptr;
     QVariantList m_allTracks;
     QVariantList m_tracks;
+    QVariantList m_recentTracks;
+    mutable QSet<int> m_downloadedTrackIds;
     QVariantList m_albums;
     QVariantList m_artists;
     QSet<QString> m_knownAlbums;

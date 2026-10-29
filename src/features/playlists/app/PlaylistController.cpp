@@ -1,3 +1,7 @@
+#include <QSettings>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QFile>
 /**
  * Location: src/features/playlists/app/PlaylistController.cpp
  * Function: Implementation of playlist controller populating user collections,
@@ -20,29 +24,132 @@ PlaylistController::PlaylistController(Infra::PlaylistApiClient *apiClient,
 }
 
 void PlaylistController::loadPlaylists() {
-    if (!m_api) return;
+    if (!m_api) {
+        loadCachedPlaylists();
+        return;
+    }
     m_isLoading = true; emit loadingChanged();
     m_api->fetchPlaylists([this](bool ok, auto arr) {
         m_isLoading = false; emit loadingChanged();
-        if (!ok) return;
-        m_playlists.clear();
-        for (const auto &val : arr) {
-            m_playlists.append(val.toObject().toVariantMap());
+        if (ok) {
+            m_isServerOnline = true;
+            emit serverOnlineChanged();
+            m_playlists.clear();
+            QJsonArray cachedArr;
+            for (const auto &val : arr) {
+                QJsonObject obj = val.toObject();
+                m_playlists.append(obj.toVariantMap());
+                cachedArr.append(obj);
+            }
+            QSettings settings(QStringLiteral("DopamineFM"), QStringLiteral("Playlists"));
+            settings.setValue(QStringLiteral("cached_json"), QJsonDocument(cachedArr).toJson(QJsonDocument::Compact));
+            emit playlistsChanged();
+        } else {
+            m_isServerOnline = false;
+            emit serverOnlineChanged();
+            loadCachedPlaylists();
         }
-        emit playlistsChanged();
     });
 }
 
-void PlaylistController::loadLikes() {
-    if (!m_api) return;
-    m_api->fetchLikes([this](bool ok, auto arr) {
-        if (!ok) return;
-        m_likedSet.clear();
-        for (const auto &val : arr) {
-            m_likedSet.insert(val.toObject().value("cancion_id").toInt());
+void PlaylistController::loadCachedPlaylists() {
+    QSettings settings(QStringLiteral("DopamineFM"), QStringLiteral("Playlists"));
+    QByteArray json = settings.value(QStringLiteral("cached_json")).toByteArray();
+    if (!json.isEmpty()) {
+        auto doc = QJsonDocument::fromJson(json);
+        if (doc.isArray()) {
+            m_playlists.clear();
+            for (const auto &val : doc.array()) {
+                m_playlists.append(val.toObject().toVariantMap());
+            }
+            emit playlistsChanged();
         }
-        emit likesChanged();
+    }
+}
+
+QVariantList PlaylistController::effectivePlaylists() const {
+    if (m_isServerOnline) return m_playlists;
+    QVariantList filtered;
+    for (const QVariant &item : m_playlists) {
+        QVariantMap map = item.toMap();
+        int total = map.value(QStringLiteral("total_pistas")).toInt();
+        QVariantList tracks = map.value(QStringLiteral("pistas")).toList();
+        bool hasDownloaded = false;
+        if (!tracks.isEmpty()) {
+            for (const QVariant &t : tracks) {
+                int tid = t.toMap().value(QStringLiteral("id")).toInt();
+                if (isTrackDownloaded(tid)) {
+                    hasDownloaded = true;
+                    break;
+                }
+            }
+        } else if (total > 0) {
+            QSettings dlSettings(QStringLiteral("DopamineFM"), QStringLiteral("Downloads"));
+            if (!dlSettings.allKeys().isEmpty()) hasDownloaded = true;
+        }
+        if (hasDownloaded) filtered.append(map);
+    }
+    return filtered;
+}
+
+bool PlaylistController::isTrackDownloaded(int trackId) const {
+    if (trackId <= 0) return false;
+    QSettings settings(QStringLiteral("DopamineFM"), QStringLiteral("Downloads"));
+    QString key = QStringLiteral("track_%1").arg(trackId);
+    if (settings.contains(key)) {
+        QString path = settings.value(key).toString();
+        return (!path.isEmpty() && QFile::exists(path));
+    }
+    return false;
+}
+
+void PlaylistController::loadLikes() {
+    if (!m_api) {
+        loadCachedLikes();
+        return;
+    }
+    m_api->fetchLikes([this](bool ok, auto arr) {
+        if (ok) {
+            m_isServerOnline = true;
+            emit serverOnlineChanged();
+            m_likedSet.clear();
+            QJsonArray cachedArr;
+            for (const auto &val : arr) {
+                QJsonObject obj = val.toObject();
+                int tid = obj.value(QStringLiteral("cancion_id")).toInt();
+                if (tid <= 0) tid = obj.value(QStringLiteral("id")).toInt();
+                if (tid > 0) {
+                    m_likedSet.insert(tid);
+                    cachedArr.append(obj);
+                }
+            }
+            QSettings settings(QStringLiteral("DopamineFM"), QStringLiteral("Likes"));
+            settings.setValue(QStringLiteral("cached_json"), QJsonDocument(cachedArr).toJson(QJsonDocument::Compact));
+            emit likesChanged();
+        } else {
+            m_isServerOnline = false;
+            emit serverOnlineChanged();
+            loadCachedLikes();
+        }
     });
+}
+
+void PlaylistController::loadCachedLikes() {
+    QSettings settings(QStringLiteral("DopamineFM"), QStringLiteral("Likes"));
+    QByteArray json = settings.value(QStringLiteral("cached_json")).toByteArray();
+    if (!json.isEmpty()) {
+        auto doc = QJsonDocument::fromJson(json);
+        if (doc.isArray()) {
+            m_likedSet.clear();
+            for (const auto &val : doc.array()) {
+                QJsonObject obj = val.toObject();
+                int tid = obj.value(QStringLiteral("cancion_id")).toInt();
+                if (tid <= 0) tid = obj.value(QStringLiteral("id")).toInt();
+                if (tid > 0) m_likedSet.insert(tid);
+            }
+            emit likesChanged();
+        }
+    }
 }
 
 void PlaylistController::createPlaylist(const QString &name) {

@@ -63,6 +63,50 @@ void LibraryApiClient::fetchTracks(int page, int limit, const QString &query,
     });
 }
 
+void LibraryApiClient::fetchRecentTracks(int limit, CatalogCallback cb) {
+    if (!m_client) { if (cb) cb(false, {}); return; }
+    QString path = QStringLiteral("/api/v1/tracks?sort=recent&limit=%1").arg(limit);
+    m_client->get(path, [cb](bool ok, const QByteArray &data) {
+        if (!ok || !cb) { if (cb) cb(false, {}); return; }
+        auto doc = QJsonDocument::fromJson(data);
+        QJsonArray sourceArray;
+        if (doc.isArray()) {
+            sourceArray = doc.array();
+        } else if (doc.isObject()) {
+            sourceArray = doc.object().value(QStringLiteral("items")).toArray();
+        } else {
+            cb(false, {});
+            return;
+        }
+        QJsonArray normalized;
+        for (const auto &value : sourceArray) {
+            QJsonObject track = value.toObject();
+            const int id = track.value(QStringLiteral("id")).toInt();
+            QString stream = track.value(QStringLiteral("streamUrl")).toString();
+            if (stream.isEmpty())
+                stream = track.value(QStringLiteral("stream_url")).toString();
+            track.insert(QStringLiteral("path"), stream);
+            QString cover = track.value(QStringLiteral("coverUrl")).toString();
+            if (cover.isEmpty())
+                cover = track.value(QStringLiteral("cover_url")).toString();
+            if (cover.isEmpty() && id > 0 && stream.contains(QLatin1String("/api/v1/"))) {
+                const int idx = stream.indexOf(QLatin1String("/api/v1/"));
+                cover = stream.left(idx) + QStringLiteral("/api/v1/covers/%1").arg(id);
+            }
+            if (!cover.isEmpty()) {
+                track.insert(QStringLiteral("coverUrl"), cover);
+                track.insert(QStringLiteral("cover"), cover);
+            }
+            if (track.value(QStringLiteral("duration")).toInt() <= 0) {
+                track.insert(QStringLiteral("duration"),
+                             track.value(QStringLiteral("duracion")));
+            }
+            normalized.append(track);
+        }
+        cb(true, normalized);
+    });
+}
+
 void LibraryApiClient::fetchAlbums(int page, int limit, CatalogCallback cb) {
     if (!m_client) { if (cb) cb(false, {}); return; }
     QString path = QString("/api/v1/catalog/albums?page=%1&limit=%2")

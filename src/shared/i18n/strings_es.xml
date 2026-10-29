@@ -30,6 +30,7 @@
     <string name="sidebar_expand">Expandir panel</string>
     <string name="nav_section_library">TU BIBLIOTECA</string>
     <string name="nav_principal">Principal</string>
+    <string name="nav_listen">Escuchar</string>
     <string name="nav_explore">Explorar</string>
     <string name="nav_local_library">Biblioteca</string>
     <string name="nav_new_playlist">Nueva playlist</string>

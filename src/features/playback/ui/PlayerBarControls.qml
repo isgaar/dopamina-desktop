@@ -37,7 +37,12 @@ ColumnLayout {
             to: Math.max(1, playbackController.duration)
             value: playbackController.position
             barColor: Theme.primary
-            onMoved: v => playbackController.seek(Math.round(v))
+            onMoved: v => {
+                if (sessionPlaybackController.isControllingAndroid)
+                    sessionPlaybackController.remoteSeek(Math.round(v));
+                else
+                    playbackController.seek(Math.round(v));
+            }
         }
 
         Text {

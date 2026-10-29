@@ -24,9 +24,17 @@ Rectangle {
     function refresh() {
         var source = root.libraryCtrl ? root.libraryCtrl.tracks : []
         var result = []
+        var isOnline = root.likesCtrl ? root.likesCtrl.isServerOnline : true
         for (var i = 0; i < source.length; ++i) {
-            if (root.likesCtrl && root.likesCtrl.isLiked(source[i].id))
-                result.push(source[i])
+            var tid = source[i].id
+            if (root.likesCtrl && root.likesCtrl.isLiked(tid)) {
+                if (!isOnline) {
+                    if (root.likesCtrl.isTrackDownloaded(tid))
+                        result.push(source[i])
+                } else {
+                    result.push(source[i])
+                }
+            }
         }
         root.tracks = result
     }
@@ -39,6 +47,7 @@ Rectangle {
     Connections {
         target: root.likesCtrl
         function onLikesChanged() { root.refresh() }
+        function onServerOnlineChanged() { root.refresh() }
     }
 
     Component.onCompleted: refresh()

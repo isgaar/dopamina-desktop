@@ -70,6 +70,10 @@ public:
     Q_INVOKABLE void switchToDesktop();
     Q_INVOKABLE void switchToAndroid();
     Q_INVOKABLE void toggleRemotePlay();
+    Q_INVOKABLE void remoteNext();
+    Q_INVOKABLE void remotePrevious();
+    Q_INVOKABLE void remoteSeek(int posSec);
+    Q_INVOKABLE void remoteSetVolume(int volumePct);
     void syncLocalPlayback(int trackId, int positionSec, bool playing,
                            int volume);
     void sendRemoteCommandToAndroid(int trackId, int positionSec, bool playing,

@@ -17,6 +17,8 @@ namespace Dopamine::Features::Playlists::App {
 class PlaylistController : public QObject {
     Q_OBJECT
     Q_PROPERTY(QVariantList playlists READ playlists NOTIFY playlistsChanged)
+    Q_PROPERTY(QVariantList effectivePlaylists READ effectivePlaylists NOTIFY playlistsChanged)
+    Q_PROPERTY(bool isServerOnline READ isServerOnline NOTIFY serverOnlineChanged)
     Q_PROPERTY(bool isLoading READ isLoading NOTIFY loadingChanged)
 
 public:
@@ -24,6 +26,8 @@ public:
                               QObject *parent = nullptr);
 
     QVariantList playlists() const { return m_playlists; }
+    QVariantList effectivePlaylists() const;
+    bool isServerOnline() const { return m_isServerOnline; }
     bool isLoading() const { return m_isLoading; }
 
     Q_INVOKABLE void loadPlaylists();
@@ -34,19 +38,24 @@ public:
     Q_INVOKABLE bool isLiked(int trackId) const {
         return m_likedSet.contains(trackId);
     }
+    Q_INVOKABLE bool isTrackDownloaded(int trackId) const;
 
 signals:
     void playlistsChanged();
     void likesChanged();
+    void serverOnlineChanged();
     void loadingChanged();
 
 private:
     void loadLikes();
+    void loadCachedPlaylists();
+    void loadCachedLikes();
 
     Infra::PlaylistApiClient *m_api = nullptr;
     QVariantList m_playlists;
     QSet<int> m_likedSet;
     bool m_isLoading = false;
+    bool m_isServerOnline = true;
 };
 
 } // namespace Dopamine::Features::Playlists::App

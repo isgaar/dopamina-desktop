@@ -20,6 +20,7 @@ Item {
         primaryLum > 0.6 ? "#121212" : "#FFFFFF"
 
     readonly property var tabs: [
+        { mode: "listen", label: Strings.get("nav_listen") || "Escuchar" },
         { mode: "tracks", label: Strings.get("nav_tracks") },
         { mode: "albums", label: Strings.get("nav_albums") },
         { mode: "artists", label: Strings.get("nav_artists") },
@@ -41,7 +42,9 @@ Item {
                     modelData.mode === "tracks" ?
                     (root.current === "tracks" ||
                      root.current === "folders" ||
-                     root.current === "principal") :
+                     false) :
+                    (modelData.mode === "listen" ?
+                        (root.current === "listen" || root.current === "principal") :
                     (root.current === modelData.mode)
                 width: label.implicitWidth + 28
                 height: 32

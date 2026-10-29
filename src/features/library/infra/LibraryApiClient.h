@@ -30,6 +30,7 @@ public:
 
     void fetchTracks(int page, int limit, const QString &query,
                      CatalogCallback cb);
+    void fetchRecentTracks(int limit, CatalogCallback cb);
     void fetchAlbums(int page, int limit, CatalogCallback cb);
     void fetchArtists(int page, int limit, CatalogCallback cb);
     void fetchTrackMetadata(int trackId, ObjectCallback cb);

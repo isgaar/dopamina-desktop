@@ -20,7 +20,12 @@ Row {
     TransportButton {
         anchors.verticalCenter: parent.verticalCenter
         iconName: "skip-back"; iconSize: 16
-        onClicked: queueController.previous()
+        onClicked: {
+            if (sessionPlaybackController.isControllingAndroid)
+                sessionPlaybackController.remotePrevious();
+            else
+                queueController.previous();
+        }
     }
 
     Rectangle {
@@ -61,7 +66,12 @@ Row {
     TransportButton {
         anchors.verticalCenter: parent.verticalCenter
         iconName: "skip-forward"; iconSize: 16
-        onClicked: queueController.next()
+        onClicked: {
+            if (sessionPlaybackController.isControllingAndroid)
+                sessionPlaybackController.remoteNext();
+            else
+                queueController.next();
+        }
     }
     TransportButton {
         anchors.verticalCenter: parent.verticalCenter

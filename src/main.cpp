@@ -212,6 +212,21 @@ int main(int argc, char *argv[]) {
     QObject::connect(&playbackCtrl,
         &Playback::App::PlaybackController::trackChanged,
         &sessionPlayback, publishLocalState);
+    QObject::connect(&playbackCtrl,
+        &Playback::App::PlaybackController::positionChanged,
+        &sessionPlayback, [&]() {
+            if (!playbackCtrl.isPlaying()) return;
+            const int pos = playbackCtrl.position();
+            if (qAbs(pos - lastPublishedSec) >= 2) {
+                lastPublishedSec = pos;
+                publishLocalState();
+            }
+        });
+    QObject::connect(&playbackCtrl,
+        &Playback::App::PlaybackController::volumeChanged,
+        &sessionPlayback, [&]() {
+            publishLocalState();
+        });
     const bool isDynamicAccent = settingsCtrl.getSetting(
         QStringLiteral("Appearance/dynamicAccent"), true).toBool();
     colors.setDynamicAccentEnabled(isDynamicAccent);

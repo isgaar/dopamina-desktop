@@ -71,7 +71,7 @@ Rectangle {
             id: playlistList
             Layout.fillWidth: true; Layout.fillHeight: true; clip: true
             visible: count > 0
-            model: root.controller ? root.controller.playlists : []
+            model: root.controller ? root.controller.effectivePlaylists : []
 
             delegate: PlaylistRow {
                 entry: modelData

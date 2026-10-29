@@ -68,7 +68,9 @@ set(DOPAMINE_QML_FILES
     src/shared/ui/navigation/SideNavTools.qml
     src/shared/ui/navigation/SidebarResizer.qml
     src/shared/ui/navigation/MainDashboard.qml
+    src/features/listen/ui/ListenView.qml
     src/features/library/ui/LibraryView.qml
+    src/features/library/ui/PrincipalView.qml
     src/features/library/ui/LibraryEmptyState.qml
     src/features/library/ui/LibraryTrackDelegate.qml
     src/features/library/ui/FavoritesView.qml

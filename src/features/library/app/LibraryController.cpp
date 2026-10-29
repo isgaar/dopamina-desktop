@@ -1,3 +1,5 @@
+#include <QSettings>
+#include <QFile>
 /**
  * Location: src/features/library/app/LibraryController.cpp
  * Function: Implementation of library controller binding catalog API responses
@@ -137,6 +139,140 @@ LibraryController::LibraryController(Infra::LibraryApiClient *apiClient,
             });
 }
 
+static int computeFidelityScore(const QVariantMap &m) {
+    int score = 0;
+    double dur = m.value(QStringLiteral("duracion")).toDouble();
+    if (dur <= 0.0) dur = m.value(QStringLiteral("duration")).toDouble();
+    if (dur > 1.0) score += 1000;
+
+    QString fmt = m.value(QStringLiteral("formato")).toString().toLower();
+    if (fmt.isEmpty()) fmt = m.value(QStringLiteral("format")).toString().toLower();
+    if (fmt.contains(QLatin1String("flac")) || fmt.contains(QLatin1String("wav")) ||
+        fmt.contains(QLatin1String("alac")) || fmt.contains(QLatin1String("aiff"))) {
+        score += 500;
+    } else if (fmt.contains(QLatin1String("aac")) || fmt.contains(QLatin1String("m4a")) ||
+               fmt.contains(QLatin1String("opus"))) {
+        score += 300;
+    } else if (fmt.contains(QLatin1String("mp3"))) {
+        score += 200;
+    } else {
+        score += 100;
+    }
+
+    int br = m.value(QStringLiteral("bitrate")).toInt();
+    if (br >= 1411) score += 400;
+    else if (br >= 320) score += 300;
+    else if (br >= 256) score += 200;
+    else if (br >= 192) score += 100;
+    else if (br > 0) score += 50;
+
+    int sr = m.value(QStringLiteral("sample_rate")).toInt();
+    if (sr <= 0) sr = m.value(QStringLiteral("sampleRate")).toInt();
+    if (sr >= 96000) score += 100;
+    else if (sr >= 48000) score += 50;
+    else if (sr >= 44100) score += 25;
+
+    int bd = m.value(QStringLiteral("bit_depth")).toInt();
+    if (bd <= 0) bd = m.value(QStringLiteral("bitDepth")).toInt();
+    if (bd >= 24) score += 100;
+    else if (bd >= 16) score += 50;
+
+    return score;
+}
+
+static std::pair<QString, QString> extractBaseAndVersion(const QString &title) {
+    static const QRegularExpression verRegex(
+        QStringLiteral("\\b(remix|edit|live|acoustic|instrumental|dub|club\\s*mix|extended|radio\\s*edit|vip|vocal|acapella|cover|version|session|demo|orchestral)\\b"),
+        QRegularExpression::CaseInsensitiveOption
+    );
+    QString t = title.trimmed();
+    QRegularExpressionMatch match = verRegex.match(t);
+    QString ver = match.hasMatch() ? match.captured(0).toLower() : QString();
+
+    QString clean = t;
+    clean.remove(QRegularExpression(QStringLiteral("[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]")));
+    clean.remove(QRegularExpression(QStringLiteral("[-–—]\\s*.*$")));
+    clean.remove(QRegularExpression(QStringLiteral("[^\\w\\s]")));
+    clean = clean.trimmed().toLower();
+    return {clean.isEmpty() ? t.toLower() : clean, ver};
+}
+
+static bool areTracksDuplicates(const QVariantMap &a, const QVariantMap &b) {
+    QString artA = a.value(QStringLiteral("artista")).toString().trimmed();
+    if (artA.isEmpty()) artA = a.value(QStringLiteral("artist")).toString().trimmed();
+    QString artB = b.value(QStringLiteral("artista")).toString().trimmed();
+    if (artB.isEmpty()) artB = b.value(QStringLiteral("artist")).toString().trimmed();
+
+    artA.remove(QRegularExpression(QStringLiteral("[^\\w\\s]")));
+    artB.remove(QRegularExpression(QStringLiteral("[^\\w\\s]")));
+    if (artA.isEmpty() || artB.isEmpty() || artA.compare(artB, Qt::CaseInsensitive) != 0)
+        return false;
+
+    QString titA = a.value(QStringLiteral("titulo")).toString().trimmed();
+    if (titA.isEmpty()) titA = a.value(QStringLiteral("title")).toString().trimmed();
+    QString titB = b.value(QStringLiteral("titulo")).toString().trimmed();
+    if (titB.isEmpty()) titB = b.value(QStringLiteral("title")).toString().trimmed();
+
+    auto [baseA, verA] = extractBaseAndVersion(titA);
+    auto [baseB, verB] = extractBaseAndVersion(titB);
+
+    if (baseA != baseB) return false;
+    if (verA != verB) return false;
+
+    double durA = a.value(QStringLiteral("duracion")).toDouble();
+    if (durA <= 0.0) durA = a.value(QStringLiteral("duration")).toDouble();
+    double durB = b.value(QStringLiteral("duracion")).toDouble();
+    if (durB <= 0.0) durB = b.value(QStringLiteral("duration")).toDouble();
+
+    // Corrupt / 00:00 duration detection
+    if ((durA <= 1.0 && durB > 1.0) || (durB <= 1.0 && durA > 1.0))
+        return true;
+    if (durA <= 1.0 && durB <= 1.0)
+        return true;
+
+    double durDiff = std::abs(durA - durB);
+    double maxDur = std::max(durA, durB);
+    if (durDiff > 3.0 && (durDiff / maxDur) > 0.015)
+        return false;
+
+    double bpmA = a.value(QStringLiteral("bpm")).toDouble();
+    double bpmB = b.value(QStringLiteral("bpm")).toDouble();
+    if (bpmA > 10.0 && bpmB > 10.0) {
+        double bpmDiff = std::abs(bpmA - bpmB);
+        double oct1 = std::abs(bpmA * 2 - bpmB);
+        double oct2 = std::abs(bpmA - bpmB * 2);
+        if (bpmDiff > 1.5 && oct1 > 2.0 && oct2 > 2.0)
+            return false;
+    }
+
+    return true;
+}
+
+static void deduplicateTracksInPlace(QVariantList &list) {
+    QVariantList deduped;
+    for (const QVariant &item : list) {
+        QVariantMap m = item.toMap();
+        int score = computeFidelityScore(m);
+        m[QStringLiteral("fidelityScore")] = score;
+
+        int matchedIdx = -1;
+        for (int i = 0; i < deduped.size(); ++i) {
+            if (areTracksDuplicates(m, deduped[i].toMap())) {
+                matchedIdx = i;
+                break;
+            }
+        }
+        if (matchedIdx == -1) {
+            deduped.append(m);
+        } else {
+            if (score > deduped[matchedIdx].toMap().value(QStringLiteral("fidelityScore")).toInt()) {
+                deduped[matchedIdx] = m;
+            }
+        }
+    }
+    list = deduped;
+}
+
 void LibraryController::enrichAndSortTracks(QVariantList &list) {
     for (int i = 0; i < list.size(); ++i) {
         QVariantMap m = list[i].toMap();
@@ -147,6 +283,8 @@ void LibraryController::enrichAndSortTracks(QVariantList &list) {
         enrichTrackQuality(m);
         list[i] = m;
     }
+
+    deduplicateTracksInPlace(list);
 
     std::stable_sort(list.begin(), list.end(),
                      [](const QVariant &a, const QVariant &b) {
@@ -389,3 +527,40 @@ void LibraryController::downloadTrack(int trackId, const QString &title,
 }
 
 } // namespace Dopamine::Features::Library::App
+
+
+void LibraryController::loadRecentTracks() {
+    if (!m_api) {
+        m_recentTracks.clear();
+        for (int i = 0; i < qMin(20, m_tracks.size()); ++i)
+            m_recentTracks.append(m_tracks[i]);
+        emit recentTracksChanged();
+        return;
+    }
+    m_api->fetchRecentTracks(20, [this](bool ok, const QJsonArray &arr) {
+        m_recentTracks.clear();
+        if (ok && !arr.isEmpty()) {
+            for (const auto &val : arr)
+                m_recentTracks.append(val.toObject().toVariantMap());
+        } else {
+            for (int i = 0; i < qMin(20, m_tracks.size()); ++i)
+                m_recentTracks.append(m_tracks[i]);
+        }
+        emit recentTracksChanged();
+    });
+}
+
+bool LibraryController::isTrackDownloaded(int trackId) const {
+    if (trackId <= 0) return false;
+    if (m_downloadedTrackIds.contains(trackId)) return true;
+    QSettings settings(QStringLiteral("DopamineFM"), QStringLiteral("Downloads"));
+    QString key = QStringLiteral("track_%1").arg(trackId);
+    if (settings.contains(key)) {
+        QString path = settings.value(key).toString();
+        if (!path.isEmpty() && QFile::exists(path)) {
+            m_downloadedTrackIds.insert(trackId);
+            return true;
+        }
+    }
+    return false;
+}

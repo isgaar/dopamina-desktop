@@ -8,6 +8,7 @@ import QtQuick
 import QtQuick.Layouts
 import "root:/src/shared"
 import "root:/src/shared/ui/navigation"
+import "root:/src/features/listen/ui"
 import "root:/src/features/playback/ui"
 import "root:/src/features/library/ui"
 import "root:/src/features/playlists/ui"
@@ -16,7 +17,7 @@ import "root:/src/features/queue/ui"
 Item {
     id: root
     clip: true
-    property string activeView: "tracks"
+    property string activeView: "listen"
     signal openSettingsRequested()
     signal openEqualizerRequested()
     signal openTimerRequested()
@@ -68,9 +69,16 @@ Item {
             Layout.fillWidth: true; Layout.fillHeight: true
             clip: true
 
+                        ListenView {
+                id: listenView; anchors.fill: parent
+                visible: root.activeView === "listen" || root.activeView === "principal"
+                libraryCtrl: libraryController; playlistCtrl: playlistController
+                playbackCtrl: playbackController; queueCtrl: queueController
+                sessionCtrl: sessionPlaybackController
+            }
             LibraryView {
                 id: libraryView; anchors.fill: parent
-                visible: ["tracks", "principal", "albums", "artists", "genres",
+                visible: ["tracks", "albums", "artists", "genres",
                           "folders"].indexOf(root.activeView) !== -1
                 section: root.activeView; controller: libraryController
                 queueCtrl: queueController; playbackCtrl: playbackController

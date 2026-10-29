@@ -527,3 +527,44 @@ void SessionPlaybackController::updateSession(bool active,
 }
 
 } // namespace Dopamine::Features::Interconnect::App
+
+
+void SessionPlaybackController::remoteNext() {
+    if (!m_queue) return;
+    const QVariantList tracks = m_queue->queueTracks();
+    if (tracks.isEmpty()) return;
+    int curIdx = m_queue->currentIndex();
+    int nextIdx = (curIdx + 1) % tracks.size();
+    m_queue->playAtIndex(nextIdx);
+    int nextId = tracks[nextIdx].toMap().value(QStringLiteral("id")).toInt();
+    if (nextId > 0) {
+        sendRemoteCommandToAndroid(nextId, 0, true, m_localVolume);
+    }
+}
+
+void SessionPlaybackController::remotePrevious() {
+    if (!m_queue) return;
+    const QVariantList tracks = m_queue->queueTracks();
+    if (tracks.isEmpty()) return;
+    int curIdx = m_queue->currentIndex();
+    int prevIdx = (curIdx - 1 + tracks.size()) % tracks.size();
+    m_queue->playAtIndex(prevIdx);
+    int prevId = tracks[prevIdx].toMap().value(QStringLiteral("id")).toInt();
+    if (prevId > 0) {
+        sendRemoteCommandToAndroid(prevId, 0, true, m_localVolume);
+    }
+}
+
+void SessionPlaybackController::remoteSeek(int posSec) {
+    m_localPositionSec = qMax(0, posSec);
+    sendRemoteCommandToAndroid(m_localTrackId, m_localPositionSec,
+                               m_remotePlaying, m_localVolume);
+    emit remoteProgressUpdated(m_localPositionSec, m_localVolume, m_remotePlaying);
+}
+
+void SessionPlaybackController::remoteSetVolume(int volumePct) {
+    m_localVolume = qBound(0, volumePct, 100);
+    sendRemoteCommandToAndroid(m_localTrackId, m_localPositionSec,
+                               m_remotePlaying, m_localVolume);
+    emit remoteProgressUpdated(m_localPositionSec, m_localVolume, m_remotePlaying);
+}

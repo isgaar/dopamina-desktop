@@ -45,8 +45,15 @@ Rectangle {
             Layout.preferredWidth: 240
             Layout.maximumWidth: 240
             Layout.fillWidth: false
-            volume: playbackController.volume
-            onMoved: value => playbackController.setVolume(value)
+            volume: sessionPlaybackController.isControllingAndroid ?
+                Math.round(sessionPlaybackController.remoteVolume * 100) :
+                playbackController.volume
+            onMoved: value => {
+                if (sessionPlaybackController.isControllingAndroid)
+                    sessionPlaybackController.remoteSetVolume(value);
+                else
+                    playbackController.setVolume(value);
+            }
             onQueueRequested: root.queueRequested()
         }
     }

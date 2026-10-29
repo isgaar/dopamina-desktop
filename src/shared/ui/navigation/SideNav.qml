@@ -32,7 +32,7 @@ Item {
     }
 
     readonly property var navItems: [
-        { mode: "principal", icon: "house", label: Strings.get("nav_principal") },
+        { mode: "listen", icon: "play-circle", label: Strings.get("nav_listen") || "Escuchar" },
         { mode: "genres", icon: "compass", label: Strings.get("nav_explore") },
         { mode: "tracks", icon: "layers",
           label: Strings.get("nav_local_library") }
@@ -60,6 +60,11 @@ Item {
                 iconName: modelData.icon; label: modelData.label
                 active: modelData.mode === "tracks" ?
                     (root.currentMode === "tracks" ||
+                     root.currentMode === "folders" ||
+                     root.currentMode === "albums" ||
+                     root.currentMode === "artists") :
+                    (modelData.mode === "listen" ?
+                        (root.currentMode === "listen" || root.currentMode === "principal") :
                      root.currentMode === "folders" ||
                      root.currentMode === "albums" ||
                      root.currentMode === "artists") :
