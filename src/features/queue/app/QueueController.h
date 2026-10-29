@@ -68,6 +68,7 @@ signals:
 private:
     void refillMixIfNeeded();
     void playCurrentTrack();
+    void recordListenFeedback();
 
     Infra::QueueApiClient *m_api = nullptr;
     QVariantList m_queue;
@@ -78,6 +79,13 @@ private:
     bool m_isMixActive = false;
     bool m_isShuffle = false;
     bool m_isRepeat = false;
+
+    // Listen feedback & debounce metrics
+    int m_currentTrackId = 0;
+    int m_currentTrackDurationSec = 0;
+    qint64 m_currentTrackStartTimeMs = 0;
+    qint64 m_lastNextCallMs = 0;
+    bool m_isRefillingMix = false;
 };
 
 } // namespace Dopamine::Features::Queue::App

@@ -9,6 +9,8 @@
 #include <QJsonObject>
 #include <QSignalSpy>
 #include <QTest>
+#include <QSettings>
+#include <QTemporaryFile>
 #include "core/ApiClient.h"
 #include "core/ProjectConfig.h"
 #include "faults/FakeApiServer.h"
@@ -145,6 +147,111 @@ private slots:
         QVERIFY(!controller.hasMoreTracks());
 
         cfg.setApiUrl(QStringLiteral("http://127.0.0.1:8000"));
+    }
+
+    void testMixDeduplicationAndAffinity() {
+        Tests::Faults::FakeApiServer server;
+        QVERIFY(server.start());
+        auto &cfg = Dopamine::Core::ProjectConfig::instance();
+        cfg.setApiUrl(server.url());
+
+        // Pre-set affinity for seed 500:
+        // Track 503 has high positive affinity (+5.0), Track 501 has neutral (0.0)
+        {
+            QSettings aff(QStringLiteral("DopamineFM"), QStringLiteral("MixAffinity"));
+            aff.setValue(QStringLiteral("pair_500_503"), 5.0);
+            aff.setValue(QStringLiteral("pair_500_501"), 0.0);
+        }
+
+        QJsonObject resp;
+        QJsonArray tracks;
+        // Track 1
+        tracks.append(QJsonObject{
+            {QStringLiteral("id"), 501},
+            {QStringLiteral("title"), QStringLiteral("Rock That Body")},
+            {QStringLiteral("artist"), QStringLiteral("The Black Eyed Peas")},
+            {QStringLiteral("duration"), 240}
+        });
+        // Track 2: duplicate signature of 501 (Remastered version without 'The')
+        tracks.append(QJsonObject{
+            {QStringLiteral("id"), 502},
+            {QStringLiteral("title"), QStringLiteral("Rock That Body (Remastered 2020)")},
+            {QStringLiteral("artist"), QStringLiteral("Black Eyed Peas")},
+            {QStringLiteral("duration"), 242}
+        });
+        // Track 3: distinct song with high affinity
+        tracks.append(QJsonObject{
+            {QStringLiteral("id"), 503},
+            {QStringLiteral("title"), QStringLiteral("I Gotta Feeling")},
+            {QStringLiteral("artist"), QStringLiteral("Black Eyed Peas")},
+            {QStringLiteral("duration"), 280}
+        });
+        resp[QStringLiteral("tracks")] = tracks;
+        resp[QStringLiteral("ids")] = QJsonArray{501, 502, 503};
+
+        server.setNextResponse(200, QJsonDocument(resp).toJson(QJsonDocument::Compact));
+
+        Dopamine::Core::ApiClient client;
+        Dopamine::Features::Queue::Infra::QueueApiClient qApi(&client);
+        QueueController queue(&qApi);
+
+        QSignalSpy spy(&queue, &QueueController::queueChanged);
+        queue.startMix(500, QStringLiteral("Boom Boom Pow"));
+
+        // Wait for refillMixIfNeeded to complete via fake server
+        QVERIFY(spy.wait(3000));
+
+        // Queue should contain:
+        // index 0: seed track 500 (Boom Boom Pow)
+        // index 1: track 503 (I Gotta Feeling) - sorted first due to +5.0 affinity
+        // index 2: track 501 (Rock That Body)
+        // track 502 MUST be skipped because it is a duplicate signature of 501
+        const auto qTracks = queue.queueTracks();
+        QCOMPARE(qTracks.size(), 3);
+        QCOMPARE(qTracks[0].toMap().value(QStringLiteral("id")).toInt(), 500);
+        QCOMPARE(qTracks[1].toMap().value(QStringLiteral("id")).toInt(), 503);
+        QCOMPARE(qTracks[2].toMap().value(QStringLiteral("id")).toInt(), 501);
+
+        // Clean up QSettings
+        {
+            QSettings aff(QStringLiteral("DopamineFM"), QStringLiteral("MixAffinity"));
+            aff.remove(QStringLiteral("pair_500_503"));
+            aff.remove(QStringLiteral("pair_500_501"));
+        }
+
+        cfg.setApiUrl(QStringLiteral("http://127.0.0.1:8000"));
+    }
+
+    void testDownloadIntegrityAndDeduplication() {
+        Dopamine::Core::ApiClient client;
+        Dopamine::Features::Library::Infra::LibraryApiClient api(&client);
+        LibraryController controller(&api);
+
+        QTemporaryFile tempFile;
+        QVERIFY(tempFile.open());
+        QString tempPath = tempFile.fileName();
+        tempFile.close();
+
+        // Mark track 999 as downloaded in QSettings
+        {
+            QSettings dl(QStringLiteral("DopamineFM"), QStringLiteral("Downloads"));
+            dl.setValue(QStringLiteral("track_999"), tempPath);
+        }
+
+        QVERIFY(controller.isTrackDownloaded(999));
+
+        QSignalSpy spyDl(&controller, &LibraryController::trackDownloaded);
+        controller.downloadTrack(999, QStringLiteral("Song"), QStringLiteral("flac"), QStringLiteral("http://fake/stream"));
+
+        // Must immediately notify already_downloaded and not perform duplicate network work
+        QCOMPARE(spyDl.count(), 1);
+        QCOMPARE(spyDl.takeFirst().at(0).toString(), QStringLiteral("already_downloaded"));
+
+        // Clean up QSettings
+        {
+            QSettings dl(QStringLiteral("DopamineFM"), QStringLiteral("Downloads"));
+            dl.remove(QStringLiteral("track_999"));
+        }
     }
 
     void testServerModeDoesNotScanSmbRoot() {

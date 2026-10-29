@@ -85,6 +85,7 @@ private:
     QVariantList m_tracks;
     QVariantList m_recentTracks;
     mutable QSet<int> m_downloadedTrackIds;
+    mutable QSet<int> m_activeDownloads;
     QVariantList m_albums;
     QVariantList m_artists;
     QSet<QString> m_knownAlbums;

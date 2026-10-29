@@ -12,6 +12,8 @@
 #include <QQmlContext>
 #include <QQuickWindow>
 #include <QTimer>
+#include <QDateTime>
+#include <memory>
 #include <cstdio>
 #include "core/ApiClient.h"
 #include "core/ProjectConfig.h"
@@ -144,9 +146,15 @@ int main(int argc, char *argv[]) {
         &sessionPlaybackApi, &queueCtrl);
     Playlists::Infra::PlaylistApiClient plApi(&apiClient);
     Playlists::App::PlaylistController plCtrl(&plApi);
+    auto lastTrackFinishedMs = std::make_shared<qint64>(0);
     QObject::connect(&audioBackend,
         &Dopamine::Core::Audio::IAudioBackend::trackFinished,
-        &queueCtrl, &Queue::App::QueueController::next);
+        &queueCtrl, [&queueCtrl, lastTrackFinishedMs]() {
+            const qint64 now = QDateTime::currentMSecsSinceEpoch();
+            if (now - *lastTrackFinishedMs < 400) return;
+            *lastTrackFinishedMs = now;
+            queueCtrl.next();
+        });
     QObject::connect(&sessionBridge,
         &dopamine::rust::SessionBridge::serverAdopted,
         &libCtrl, [&libCtrl](const QString &) {

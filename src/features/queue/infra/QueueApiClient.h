@@ -21,7 +21,7 @@ public:
                             QObject *parent = nullptr);
 
     using MixCallback =
-        std::function<void(bool ok, const QJsonArray &trackIds)>;
+        std::function<void(bool ok, const QJsonArray &trackIds, const QJsonArray &tracks)>;
 
     void fetchMixNext(int seedTrackId,
                         const QList<int> &historyIds,
@@ -29,6 +29,12 @@ public:
                         const QString &mode,
                         int count,
                         MixCallback cb);
+
+    void reportMixEvent(int seedTrackId,
+                        int trackId,
+                        const QString &type,
+                        double playedSec,
+                        const QList<int> &historyIds = {});
 
     void recordHistory(int trackId);
 

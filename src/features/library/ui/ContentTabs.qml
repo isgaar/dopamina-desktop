@@ -45,7 +45,7 @@ Item {
                      false) :
                     (modelData.mode === "listen" ?
                         (root.current === "listen" || root.current === "principal") :
-                    (root.current === modelData.mode)
+                        (root.current === modelData.mode))
                 width: label.implicitWidth + 28
                 height: 32
                 radius: Theme.radiusFull

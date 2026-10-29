@@ -526,8 +526,6 @@ void SessionPlaybackController::updateSession(bool active,
     emit sessionChanged();
 }
 
-} // namespace Dopamine::Features::Interconnect::App
-
 
 void SessionPlaybackController::remoteNext() {
     if (!m_queue) return;
@@ -568,3 +566,6 @@ void SessionPlaybackController::remoteSetVolume(int volumePct) {
                                m_remotePlaying, m_localVolume);
     emit remoteProgressUpdated(m_localPositionSec, m_localVolume, m_remotePlaying);
 }
+
+} // namespace Dopamine::Features::Interconnect::App
+

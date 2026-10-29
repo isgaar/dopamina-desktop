@@ -478,6 +478,21 @@ void LibraryController::fetchTrackMetadata(int trackId) {
 void LibraryController::downloadTrack(int trackId, const QString &title,
                                       const QString &format,
                                       const QString &streamPath) {
+    if (trackId <= 0) return;
+
+    if (isTrackDownloaded(trackId)) {
+        m_statusMessage = QStringLiteral("La pista ya se encuentra descargada");
+        emit statusMessageChanged();
+        emit trackDownloaded(QStringLiteral("already_downloaded"), true);
+        return;
+    }
+
+    if (m_activeDownloads.contains(trackId)) {
+        m_statusMessage = QStringLiteral("Descarga ya en curso");
+        emit statusMessageChanged();
+        return;
+    }
+
     QString dlDir = QStandardPaths::writableLocation(
         QStandardPaths::DownloadLocation);
     if (dlDir.isEmpty()) dlDir = QDir::homePath();
@@ -485,12 +500,21 @@ void LibraryController::downloadTrack(int trackId, const QString &title,
 
     QString safeTitle = title.trimmed();
     if (safeTitle.isEmpty()) safeTitle = QStringLiteral("pista_%1").arg(trackId);
-    safeTitle.replace(QLatin1Char('/'), QLatin1Char('_'));
-    safeTitle.replace(QLatin1Char('\\'), QLatin1Char('_'));
+    static const QRegularExpression illegalChars(QStringLiteral("[\\\\/:*?\"<>|]"));
+    safeTitle.replace(illegalChars, QStringLiteral("_"));
+
     QString ext = format.trimmed().toLower();
-    if (ext.isEmpty()) ext = QStringLiteral("flac");
+    if (ext.contains(QLatin1String("flac"))) ext = QStringLiteral("flac");
+    else if (ext.contains(QLatin1String("mp3"))) ext = QStringLiteral("mp3");
+    else if (ext.contains(QLatin1String("aac")) || ext.contains(QLatin1String("m4a"))) ext = QStringLiteral("m4a");
+    else if (ext.contains(QLatin1String("opus"))) ext = QStringLiteral("opus");
+    else if (ext.contains(QLatin1String("wav"))) ext = QStringLiteral("wav");
+    else if (ext.isEmpty()) ext = QStringLiteral("flac");
+
     const QString destPath = dlDir + QLatin1Char('/') + safeTitle +
                              QLatin1Char('.') + ext;
+
+    m_activeDownloads.insert(trackId);
 
     if (!streamPath.isEmpty() && !streamPath.startsWith(QLatin1String("http"))) {
         QString localSrc = streamPath;
@@ -498,6 +522,12 @@ void LibraryController::downloadTrack(int trackId, const QString &title,
             localSrc = localSrc.mid(7);
         QFile::remove(destPath);
         const bool ok = QFile::copy(localSrc, destPath);
+        if (ok) {
+            QSettings settings(QStringLiteral("DopamineFM"), QStringLiteral("Downloads"));
+            settings.setValue(QStringLiteral("track_%1").arg(trackId), destPath);
+            m_downloadedTrackIds.insert(trackId);
+        }
+        m_activeDownloads.remove(trackId);
         m_statusMessage = ok ? QStringLiteral("Guardado en %1").arg(destPath)
                              : QStringLiteral("Error al guardar pista");
         emit statusMessageChanged();
@@ -505,11 +535,15 @@ void LibraryController::downloadTrack(int trackId, const QString &title,
         return;
     }
 
-    if (!m_api || trackId <= 0) return;
+    if (!m_api) {
+        m_activeDownloads.remove(trackId);
+        return;
+    }
     m_statusMessage = QStringLiteral("Descargando %1...").arg(safeTitle);
     emit statusMessageChanged();
     m_api->downloadTrackStream(trackId,
-        [this, destPath, safeTitle](bool ok, const QByteArray &data) {
+        [this, trackId, destPath, safeTitle](bool ok, const QByteArray &data) {
+            m_activeDownloads.remove(trackId);
             bool saved = false;
             if (ok && !data.isEmpty()) {
                 QFile f(destPath);
@@ -518,6 +552,11 @@ void LibraryController::downloadTrack(int trackId, const QString &title,
                     f.close();
                 }
             }
+            if (saved) {
+                QSettings settings(QStringLiteral("DopamineFM"), QStringLiteral("Downloads"));
+                settings.setValue(QStringLiteral("track_%1").arg(trackId), destPath);
+                m_downloadedTrackIds.insert(trackId);
+            }
             m_statusMessage = saved
                 ? QStringLiteral("Descarga completada: %1").arg(safeTitle)
                 : QStringLiteral("Error al descargar %1").arg(safeTitle);
@@ -525,9 +564,6 @@ void LibraryController::downloadTrack(int trackId, const QString &title,
             emit trackDownloaded(destPath, saved);
         });
 }
-
-} // namespace Dopamine::Features::Library::App
-
 
 void LibraryController::loadRecentTracks() {
     if (!m_api) {
@@ -564,3 +600,5 @@ bool LibraryController::isTrackDownloaded(int trackId) const {
     }
     return false;
 }
+
+} // namespace Dopamine::Features::Library::App

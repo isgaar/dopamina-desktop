@@ -19,7 +19,7 @@ void QueueApiClient::fetchMixNext(int seedTrackId,
                                     const QString &mode,
                                     int count,
                                     MixCallback cb) {
-    if (!m_client) { if (cb) cb(false, {}); return; }
+    if (!m_client) { if (cb) cb(false, {}, {}); return; }
     QJsonObject payload;
     payload["seed_track_id"] = seedTrackId;
     QJsonArray histArr;
@@ -31,17 +31,37 @@ void QueueApiClient::fetchMixNext(int seedTrackId,
 
     QByteArray body = QJsonDocument(payload).toJson(QJsonDocument::Compact);
     m_client->post("/api/v1/mix/next", body, [cb](bool ok, auto data) {
-        if (!ok || !cb) { if (cb) cb(false, {}); return; }
+        if (!ok || !cb) { if (cb) cb(false, {}, {}); return; }
         auto doc = QJsonDocument::fromJson(data);
         if (doc.isObject()) {
             auto arr = doc.object().value("ids").toArray();
             if (arr.isEmpty())
                 arr = doc.object().value("track_ids").toArray();
-            cb(true, arr);
+            auto tracks = doc.object().value("tracks").toArray();
+            cb(true, arr, tracks);
         } else {
-            cb(false, {});
+            cb(false, {}, {});
         }
     });
+}
+
+void QueueApiClient::reportMixEvent(int seedTrackId,
+                                    int trackId,
+                                    const QString &type,
+                                    double playedSec,
+                                    const QList<int> &historyIds) {
+    if (!m_client || trackId <= 0) return;
+    QJsonObject payload;
+    payload["seed_track_id"] = seedTrackId;
+    payload["cancion_id"] = trackId;
+    payload["tipo"] = type;
+    payload["duracion_escuchada_s"] = playedSec;
+    QJsonArray histArr;
+    for (int id : historyIds) histArr.append(id);
+    payload["historial_ids"] = histArr;
+
+    QByteArray body = QJsonDocument(payload).toJson(QJsonDocument::Compact);
+    m_client->post("/api/v1/mix/event", body, [](bool, auto) {});
 }
 
 void QueueApiClient::recordHistory(int trackId) {

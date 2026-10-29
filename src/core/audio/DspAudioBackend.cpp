@@ -48,6 +48,7 @@ void DspAudioBackend::playAt(const QUrl &url, qint64 positionMs) {
     const bool keepCrossfadeTail = m_crossfadeTriggered;
     stop();
     m_crossfadeTriggered = false;
+    m_trackFinishedEmitted = false;
     if (!keepCrossfadeTail) {
         dopamine_dsp_set_crossfade_out_target(1.0f);
     }
@@ -110,6 +111,7 @@ void DspAudioBackend::stop() {
     }
     m_isPlaying = false; m_isPaused = false; m_framesWritten = 0;
     m_startMs = 0; m_skipFrames = 0;
+    m_trackFinishedEmitted = false;
     if (!m_crossfadeTriggered) {
         m_eqFilter.resetStates();
     }
@@ -302,6 +304,7 @@ void DspAudioBackend::handleBufferReady() {
                 QUrl next = m_nextUrl; m_nextUrl = QUrl();
                 play(next);
             } else {
+                m_trackFinishedEmitted = true;
                 emit trackFinished();
             }
         }
@@ -329,7 +332,10 @@ void DspAudioBackend::finishPlayback() {
         play(next);
     } else {
         stop();
-        emit trackFinished();
+        if (!m_trackFinishedEmitted) {
+            m_trackFinishedEmitted = true;
+            emit trackFinished();
+        }
     }
 }
 

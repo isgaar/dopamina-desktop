@@ -110,6 +110,7 @@ private:
     bool m_stopping = false;
     bool m_decoderFinished = false;
     bool m_crossfadeTriggered = false;
+    bool m_trackFinishedEmitted = false;
 };
 
 } // namespace Dopamine::Core::Audio

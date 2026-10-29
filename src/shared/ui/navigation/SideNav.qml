@@ -65,10 +65,7 @@ Item {
                      root.currentMode === "artists") :
                     (modelData.mode === "listen" ?
                         (root.currentMode === "listen" || root.currentMode === "principal") :
-                     root.currentMode === "folders" ||
-                     root.currentMode === "albums" ||
-                     root.currentMode === "artists") :
-                    (root.currentMode === modelData.mode)
+                        (root.currentMode === modelData.mode))
                 onClicked: root.modeSelected(modelData.mode)
             }
         }
