@@ -24,6 +24,7 @@ Item {
     signal openAboutRequested()
     readonly property int inset: collapsed ? Theme.spaceSm : Theme.spaceMd
     width: collapsed ? 64 : targetWidth
+    clip: true
 
     Behavior on width {
         enabled: root.animating
@@ -31,9 +32,9 @@ Item {
     }
 
     readonly property var navItems: [
-        { mode: "tracks", icon: "house", label: Strings.get("nav_principal") },
+        { mode: "principal", icon: "house", label: Strings.get("nav_principal") },
         { mode: "genres", icon: "compass", label: Strings.get("nav_explore") },
-        { mode: "folders", icon: "layers",
+        { mode: "tracks", icon: "layers",
           label: Strings.get("nav_local_library") }
     ]
 
@@ -57,7 +58,12 @@ Item {
             delegate: SideNavItem {
                 width: destinations.width; collapsed: root.collapsed
                 iconName: modelData.icon; label: modelData.label
-                active: root.currentMode === modelData.mode
+                active: modelData.mode === "tracks" ?
+                    (root.currentMode === "tracks" ||
+                     root.currentMode === "folders" ||
+                     root.currentMode === "albums" ||
+                     root.currentMode === "artists") :
+                    (root.currentMode === modelData.mode)
                 onClicked: root.modeSelected(modelData.mode)
             }
         }
@@ -79,21 +85,5 @@ Item {
         anchors.leftMargin: root.inset; anchors.rightMargin: root.inset
         collapsed: root.collapsed
         onLikedMusicRequested: root.modeSelected("favorites")
-    }
-
-    SideNavTools {
-        anchors.left: parent.left; anchors.right: parent.right
-        anchors.leftMargin: root.inset; anchors.rightMargin: root.inset
-        anchors.bottom: parent.bottom; anchors.bottomMargin: Theme.spaceSm
-        collapsed: root.collapsed
-        onCollapseRequested: {
-            root.animating = true; root.collapsed = !root.collapsed
-            if (settingsController)
-                settingsController.sidebarCollapsed = root.collapsed
-        }
-        onEqualizerRequested: root.openEqualizerRequested()
-        onTimerRequested: root.openTimerRequested()
-        onAboutRequested: root.openAboutRequested()
-        onSettingsRequested: root.openSettingsRequested()
     }
 }

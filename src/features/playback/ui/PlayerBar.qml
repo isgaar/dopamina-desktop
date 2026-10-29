@@ -30,9 +30,9 @@ Rectangle {
         spacing: Theme.spaceMd
 
         PlayerIdentity {
-            Layout.preferredWidth: 240
-            Layout.minimumWidth: 220
-            Layout.maximumWidth: 240
+            Layout.preferredWidth: 360
+            Layout.minimumWidth: 280
+            Layout.maximumWidth: 400
             Layout.fillWidth: false
         }
 

@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QSet>
 #include <QVariantList>
+#include <QVariantMap>
 #include "../infra/LibraryApiClient.h"
 #include "../infra/RecursiveDirectoryScanner.h"
 
@@ -51,6 +52,12 @@ public:
     Q_INVOKABLE void loadMoreTracks();
     Q_INVOKABLE void loadAlbums(int page = 1);
     Q_INVOKABLE void loadArtists(int page = 1);
+    Q_INVOKABLE int indexForSection(const QString &letter) const;
+    Q_INVOKABLE QVariantMap findTrackById(int trackId) const;
+    Q_INVOKABLE void fetchTrackMetadata(int trackId);
+    Q_INVOKABLE void downloadTrack(int trackId, const QString &title,
+                                   const QString &format,
+                                   const QString &streamPath);
 
 signals:
     void tracksChanged();
@@ -59,10 +66,13 @@ signals:
     void loadingChanged();
     void searchQueryChanged();
     void statusMessageChanged();
+    void trackMetadataLoaded(int trackId, const QVariantMap &metadata);
+    void trackDownloaded(const QString &filePath, bool ok);
 
 private:
     void handleDiscoveredBatch(const QVariantList &batch);
     void applySearchFilter();
+    static void enrichAndSortTracks(QVariantList &list);
 
     Infra::LibraryApiClient *m_api = nullptr;
     Infra::RecursiveDirectoryScanner *m_scanner = nullptr;

@@ -13,11 +13,13 @@ Rectangle {
     id: root
     height: 56
     color: "transparent"
+    clip: true
 
     property var window: null
     property bool isFirstRun: false
     signal searchEdited(string text)
     signal openSessionRequested()
+    signal openSettingsRequested()
 
     Rectangle {
         anchors.bottom: parent.bottom
@@ -52,9 +54,9 @@ Rectangle {
 
     WindowControls {
         id: windowControls
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
+        anchors.rightMargin: Theme.spaceMd
         window: root.window
         visible: Platform.useCustomTitleBar
         canMaximize: !root.isFirstRun
@@ -66,8 +68,33 @@ Rectangle {
         visible: !root.isFirstRun
         anchors.right: windowControls.visible ?
             windowControls.left : parent.right
-        anchors.rightMargin: Theme.spaceMd
+        anchors.rightMargin: 10
         anchors.verticalCenter: parent.verticalCenter
         onClicked: root.openSessionRequested()
+    }
+
+    Rectangle {
+        id: settingsBtn
+        width: 32; height: 32; radius: 16
+        color: settingsHover.containsMouse ? Theme.bgSurface : "transparent"
+        visible: !root.isFirstRun
+        anchors.right: avatar.left
+        anchors.rightMargin: 8
+        anchors.verticalCenter: parent.verticalCenter
+
+        AppIcon {
+            anchors.centerIn: parent
+            name: "settings"
+            size: 17
+            iconColor: settingsHover.containsMouse ? Theme.textLight : Theme.textMuted
+        }
+
+        MouseArea {
+            id: settingsHover
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.openSettingsRequested()
+        }
     }
 }

@@ -54,12 +54,12 @@ RowLayout {
             anchors.verticalCenter: parent.verticalCenter
             width: 2 + (parent.width - 4) * parent.ratio
             height: 4; radius: 2
-            color: Theme.textLight
+            color: Theme.primary
         }
 
         Rectangle {
             width: 10; height: 10; radius: 5
-            color: Theme.textLight
+            color: Theme.primary
             anchors.verticalCenter: parent.verticalCenter
             x: Math.max(-1, Math.min(parent.width - width + 1,
                                      fill.width - width / 2))

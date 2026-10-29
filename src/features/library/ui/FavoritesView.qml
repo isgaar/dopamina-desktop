@@ -47,18 +47,26 @@ Rectangle {
         id: list
         anchors.fill: parent
         anchors.margins: Theme.spaceMd
+        clip: true
+        spacing: 8
         visible: count > 0
         model: root.tracks
 
         delegate: LibraryTrackDelegate {
             width: list.width
+            currentPlayingId: root.playbackCtrl ?
+                root.playbackCtrl.currentTrackId : 0
+            currentPlayingTitle: root.playbackCtrl ?
+                root.playbackCtrl.currentTrackTitle : ""
             onPlayRequested: t => root.playbackCtrl &&
                 root.playbackCtrl.playLibraryTrack(
-                    t.id, t.titulo || t.title || "",
+                    t.id || 0, t.titulo || t.title || "",
                     t.artista || t.artist || "",
-                    t.album || "", t.path || "", t.duracion || 0)
+                    t.album || "", t.path || "",
+                    t.duracion || t.duration || 0,
+                    t.coverUrl || t.cover_url || t.cover || "")
             onMixRequested: t => root.queueCtrl &&
-                root.queueCtrl.startMix(t.id, t.titulo || t.title || "")
+                root.queueCtrl.startMix(t.id || 0, t.titulo || t.title || "")
         }
     }
 

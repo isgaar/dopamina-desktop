@@ -24,9 +24,14 @@ Rectangle {
 
     height: 42
     radius: Theme.radiusFull
-    color: root.active ? Theme.primary :
+    color: root.active ?
+        Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.16) :
         (hover.containsMouse ? Theme.bgSurface : "transparent")
-    Behavior on color { ColorAnimation { duration: 120 } }
+    border.width: root.active ? 1 : 0
+    border.color: root.active ?
+        Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.40) : "transparent"
+    Behavior on color { ColorAnimation { duration: 160 } }
+    Behavior on border.color { ColorAnimation { duration: 160 } }
 
     AppIcon {
         id: glyph
@@ -35,7 +40,8 @@ Rectangle {
         width: size; height: size
         x: root.collapsed ? (root.width - width) / 2 : Theme.spaceMd
         anchors.verticalCenter: parent.verticalCenter
-        iconColor: root.active ? root.activeFg : Theme.textMuted
+        iconColor: root.active ? Theme.primary : (hover.containsMouse ? "#FFFFFF" : Theme.textMuted)
+        Behavior on iconColor { ColorAnimation { duration: 160 } }
     }
 
     Text {
@@ -47,8 +53,9 @@ Rectangle {
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontBase
         font.bold: root.active
-        color: root.active ? root.activeFg : Theme.textLight
+        color: root.active ? Theme.primary : (hover.containsMouse ? "#FFFFFF" : Theme.textLight)
         elide: Text.ElideRight
+        Behavior on color { ColorAnimation { duration: 160 } }
     }
 
     MouseArea {

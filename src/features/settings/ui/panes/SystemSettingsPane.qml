@@ -1,7 +1,8 @@
 /**
  * Location: src/features/settings/ui/panes/SystemSettingsPane.qml
  * Function: System settings pane configuring application lifecycle options,
- * volume hotkeys, power-saving modes, and runtime environment versions.
+ * headphone connect/disconnect, audio focus loss, bluetooth events, volume hotkeys,
+ * zero-volume pausing, power-saving modes, and runtime environment versions.
  * All Rights Reserved isgaar
  */
 import QtQuick
@@ -21,17 +22,74 @@ SettingsPane {
 
         SettingsSwitchRow {
             title: Strings.get("settings_resume_call")
-            checked: true
+            subtitle: Strings.get("settings_resume_call_desc")
+            checked: settingsController ? settingsController.getSetting("System/resumeAfterCall", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("System/resumeAfterCall", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_pause_focus_title")
+            subtitle: Strings.get("settings_pause_focus_desc")
+            checked: settingsController ? settingsController.getSetting("System/pauseOnFocusLoss", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("System/pauseOnFocusLoss", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_headphone_unplug_title")
+            subtitle: Strings.get("settings_headphone_unplug_desc")
+            checked: settingsController ? settingsController.getSetting("System/headphoneUnplugPause", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("System/headphoneUnplugPause", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_headphone_plug_title")
+            subtitle: Strings.get("settings_headphone_plug_desc")
+            checked: settingsController ? settingsController.getSetting("System/headphonePlugResume", false) : false
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("System/headphonePlugResume", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_bt_connect_title")
+            subtitle: Strings.get("settings_bt_connect_desc")
+            checked: settingsController ? settingsController.getSetting("System/bluetoothConnectResume", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("System/bluetoothConnectResume", isChecked)
+            }
         }
 
         SettingsSwitchRow {
             title: Strings.get("settings_vol_keys")
-            checked: false
+            subtitle: Strings.get("settings_vol_keys_desc")
+            checked: settingsController ? settingsController.getSetting("System/volumeKeysEnabled", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("System/volumeKeysEnabled", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_vol_zero_title")
+            subtitle: Strings.get("settings_vol_zero_desc")
+            checked: settingsController ? settingsController.getSetting("System/pauseOnVolumeZero", false) : false
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("System/pauseOnVolumeZero", isChecked)
+            }
         }
 
         SettingsSwitchRow {
             title: Strings.get("settings_powersaving")
-            checked: false
+            subtitle: Strings.get("settings_powersaving_desc")
+            checked: settingsController ? settingsController.getSetting("System/powerSaving", false) : false
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("System/powerSaving", isChecked)
+            }
         }
 
         RowLayout {

@@ -34,6 +34,8 @@ set(PROJECT_SOURCES
     src/core/discovery/DiscoveryService.h
     src/core/platform/PlatformHelper.cpp
     src/core/platform/PlatformHelper.h
+    src/core/platform/media/PlatformMediaService.cpp
+    src/core/platform/media/PlatformMediaService.h
     src/core/storage/IStorageProvider.h
     src/core/storage/SmbStorageProvider.cpp
     src/core/storage/SmbStorageProvider.h

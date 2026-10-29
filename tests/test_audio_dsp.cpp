@@ -9,6 +9,7 @@
 #include <limits>
 #include <vector>
 #include "core/audio/PcmConversion.h"
+#include "core/audio/dsp/EqSpec.h"
 #include "core/audio/dsp/LoudnessGain.h"
 #include "core/audio/dsp/GainStage.h"
 #include "core/audio/automix/CrossfadeMixer.h"
@@ -138,6 +139,36 @@ private slots:
         QCOMPARE(encoded, std::numeric_limits<qint16>::max());
         QCOMPARE(decodeSample(reinterpret_cast<const char *>(&encoded),
                               QAudioFormat::Int16, 0) > 0.999f, true);
+    }
+
+    void testRust12BandEqFlatZeroSoundLossAndCrossfadeOverlap() {
+        EqualizerFilter eq;
+        std::vector<float> flatGains(kEqBands, 0.0f);
+        eq.setup(flatGains, 0.0f, 48000.0f);
+        QVERIFY(eq.isFlat());
+
+        const int frames = 1024;
+        std::vector<float> orig(frames * 2);
+        for (int i = 0; i < frames; ++i) {
+            float s = 0.95f * std::sin(2.0f * 3.14159265f * 1000.0f * i / 48000.0f);
+            orig[i * 2] = s;
+            orig[i * 2 + 1] = -s;
+        }
+        std::vector<float> processed = orig;
+        eq.process(processed.data(), frames, 2);
+        for (size_t i = 0; i < orig.size(); ++i) {
+            QVERIFY(std::abs(processed[i] - orig[i]) < 1e-6f);
+        }
+
+        // Verify Rust tail-buffer crossfade blends Track A into Track B
+        std::vector<float> trackA(512 * 2, 0.8f);
+        eq.process(trackA.data(), 512, 2);
+        dopamine_dsp_trigger_crossfade(256);
+        std::vector<float> trackB(256 * 2, 0.4f);
+        eq.process(trackB.data(), 256, 2);
+        QVERIFY( std::abs(trackB[0] - 0.8f) < 0.03f );
+        QVERIFY( std::abs(trackB[(255 * 2)] - 0.4f) < 0.03f );
+        eq.resetStates();
     }
 };
 

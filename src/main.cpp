@@ -20,6 +20,7 @@
 #include "core/credentials/FileCredentialStore.h"
 #include "core/discovery/DiscoveryService.h"
 #include "core/platform/PlatformHelper.h"
+#include "core/platform/media/PlatformMediaService.h"
 #include "features/interconnect/app/SessionPlaybackController.h"
 #include "features/interconnect/infra/SessionPlaybackApiClient.h"
 #include "features/playback/app/AudioSettingsController.h"
@@ -92,11 +93,33 @@ int main(int argc, char *argv[]) {
         for (const auto &v : eqCtrl.bandGains())
             g.push_back(static_cast<float>(v.toDouble()));
         audioBackend.setEqualizer(g, static_cast<float>(eqCtrl.preamp()));
+        audioBackend.setLimiterEnabled(eqCtrl.limiter());
+        audioBackend.setStabilizerEnabled(eqCtrl.agc());
+        audioBackend.setEffects1(
+            eqCtrl.zBassActive() ? static_cast<float>(eqCtrl.zBass() * 100.0) : 0.0f,
+            eqCtrl.zMidsActive() ? static_cast<float>(eqCtrl.zMids() * 100.0) : 0.0f,
+            eqCtrl.zTrebleActive() ? static_cast<float>(eqCtrl.zTreble() * 100.0) : 0.0f,
+            0.0f,
+            eqCtrl.compressorActive() ? static_cast<float>(eqCtrl.compressor() * 100.0) : 0.0f,
+            static_cast<float>(eqCtrl.balance()));
+        audioBackend.setEffects2(
+            eqCtrl.echoActive(), static_cast<float>(eqCtrl.echo() * 100.0),
+            eqCtrl.autoWahActive(), static_cast<float>(eqCtrl.autoWah() * 100.0),
+            eqCtrl.reverbActive(), static_cast<float>(eqCtrl.reverb() * 100.0),
+            eqCtrl.flanger());
     };
     QObject::connect(&eqCtrl,
         &Playback::App::EqualizerController::paramsChanged, syncEq);
     syncEq();
     Playback::App::AudioSettingsController audioSettings;
+    auto syncAudioSettings = [&]() {
+        audioBackend.setCrossfadeMs(
+            static_cast<int>(audioSettings.crossfadeSec() * 1000.0));
+    };
+    QObject::connect(&audioSettings,
+        &Playback::App::AudioSettingsController::settingsChanged,
+        syncAudioSettings);
+    syncAudioSettings();
     Dopamine::Core::Credentials::FileCredentialStore credentials;
     Settings::App::SettingsController settingsCtrl(&apiClient, &credentials);
     dopamine::rust::SessionBridge sessionBridge;
@@ -105,12 +128,12 @@ int main(int argc, char *argv[]) {
         &settingsCtrl, &Settings::App::SettingsController::adoptRemoteServer);
     QObject::connect(&sessionBridge,
         &dopamine::rust::SessionBridge::bearerTokenChanged,
-        &apiClient, [&apiClient](const QString &token) {
+        &apiClient, [&apiClient, &audioBackend](const QString &token) {
             apiClient.setBearerToken(token);
+            audioBackend.setBearerToken(token.toUtf8());
         });
     QString pendingUri = initialUri;
     bool qmlReady = false;
-    sessionBridge.initialize();
     Library::Infra::LibraryApiClient libApi(&apiClient);
     Library::App::LibraryController libCtrl(&libApi);
     Queue::Infra::QueueApiClient qApi(&apiClient);
@@ -121,6 +144,9 @@ int main(int argc, char *argv[]) {
         &sessionPlaybackApi, &queueCtrl);
     Playlists::Infra::PlaylistApiClient plApi(&apiClient);
     Playlists::App::PlaylistController plCtrl(&plApi);
+    QObject::connect(&audioBackend,
+        &Dopamine::Core::Audio::IAudioBackend::trackFinished,
+        &queueCtrl, &Queue::App::QueueController::next);
     QObject::connect(&sessionBridge,
         &dopamine::rust::SessionBridge::serverAdopted,
         &libCtrl, [&libCtrl](const QString &) {
@@ -131,17 +157,102 @@ int main(int argc, char *argv[]) {
         &libCtrl, [&libCtrl]() {
             libCtrl.loadTracks(1);
         });
+    QObject::connect(&settingsCtrl,
+        &Settings::App::SettingsController::rescanTriggered,
+        &libCtrl, [&libCtrl]() {
+            libCtrl.loadTracks(1);
+        });
     QObject::connect(&queueCtrl,
         &Queue::App::QueueController::playTrackRequested,
-        &playbackCtrl, [&playbackCtrl](int id, auto ti, auto ar,
-                                       auto al, auto path, int d) {
+        &playbackCtrl, [&playbackCtrl, &queueCtrl, &audioBackend,
+                        &sessionPlayback]
+        (int id, auto ti, auto ar, auto al, auto path, int d) {
+            if (sessionPlayback.isControllingAndroid()) {
+                playbackCtrl.loadLibraryTrack(id, ti, ar, al, path, d, 0);
+                sessionPlayback.sendRemoteCommandToAndroid(
+                    id, 0, true, playbackCtrl.volume());
+                return;
+            }
             playbackCtrl.playLibraryTrack(id, ti, ar, al, path, d);
+            const QString nextPath = queueCtrl.nextTrackPath();
+            audioBackend.setNext(nextPath.isEmpty() ? QUrl{} : QUrl(nextPath));
         });
     QObject::connect(&queueCtrl,
         &Queue::App::QueueController::sessionTrackRequested,
         &playbackCtrl, [&playbackCtrl](int id, auto ti, auto ar, auto al,
                                        auto path, int d, int pos) {
             playbackCtrl.loadLibraryTrack(id, ti, ar, al, path, d, pos);
+        });
+    QObject::connect(&sessionPlayback,
+        &Interconnect::App::SessionPlaybackController::takeoverDesktopRequested,
+        &playbackCtrl, &Playback::App::PlaybackController::play);
+    QObject::connect(&sessionPlayback,
+        &Interconnect::App::SessionPlaybackController::pauseLocalRequested,
+        &playbackCtrl, &Playback::App::PlaybackController::pause);
+    QObject::connect(&sessionPlayback,
+        &Interconnect::App::SessionPlaybackController::remoteProgressUpdated,
+        &playbackCtrl, [&playbackCtrl](int posSec, int volPct, bool) {
+            playbackCtrl.syncRemoteProgress(posSec, volPct);
+        });
+    QObject::connect(&sessionPlayback,
+        &Interconnect::App::SessionPlaybackController::remoteSeekCommandReceived,
+        &playbackCtrl, &Playback::App::PlaybackController::seekFromRemote);
+    QObject::connect(&sessionPlayback,
+        &Interconnect::App::SessionPlaybackController::remoteVolumeCommandReceived,
+        &playbackCtrl, &Playback::App::PlaybackController::setVolumeFromRemote);
+    int lastPublishedSec = -1;
+    auto publishLocalState = [&]() {
+        sessionPlayback.syncLocalPlayback(
+            playbackCtrl.trackId(), playbackCtrl.position(),
+            playbackCtrl.isPlaying(), playbackCtrl.volume());
+    };
+    QObject::connect(&playbackCtrl,
+        &Playback::App::PlaybackController::playStateChanged,
+        &sessionPlayback, publishLocalState);
+    QObject::connect(&playbackCtrl,
+        &Playback::App::PlaybackController::trackChanged,
+        &sessionPlayback, publishLocalState);
+    const bool isDynamicAccent = settingsCtrl.getSetting(
+        QStringLiteral("Appearance/dynamicAccent"), true).toBool();
+    colors.setDynamicAccentEnabled(isDynamicAccent);
+    QObject::connect(&playbackCtrl,
+        &Playback::App::PlaybackController::trackChanged,
+        &colors, [&playbackCtrl, &colors]() {
+            colors.updateTrackCover(playbackCtrl.trackCover(), playbackCtrl.trackId());
+        });
+    QObject::connect(&playbackCtrl,
+        &Playback::App::PlaybackController::positionChanged,
+        &sessionPlayback, [&playbackCtrl, &lastPublishedSec, publishLocalState]() {
+            if (!playbackCtrl.isPlaying()) return;
+            const int pos = playbackCtrl.position();
+            if (pos != lastPublishedSec) {
+                lastPublishedSec = pos;
+                publishLocalState();
+            }
+        });
+    QObject::connect(&playbackCtrl,
+        &Playback::App::PlaybackController::userSeeked,
+        &sessionPlayback, [&playbackCtrl, &sessionPlayback, publishLocalState]
+        (int seconds) {
+            if (sessionPlayback.isControllingAndroid()) {
+                sessionPlayback.sendRemoteCommandToAndroid(
+                    playbackCtrl.trackId(), seconds,
+                    sessionPlayback.remotePlaying(), playbackCtrl.volume());
+            } else {
+                publishLocalState();
+            }
+        });
+    QObject::connect(&playbackCtrl,
+        &Playback::App::PlaybackController::userVolumeChanged,
+        &sessionPlayback, [&playbackCtrl, &sessionPlayback, publishLocalState]
+        (int vol) {
+            if (sessionPlayback.isControllingAndroid()) {
+                sessionPlayback.sendRemoteCommandToAndroid(
+                    playbackCtrl.trackId(), playbackCtrl.position(),
+                    sessionPlayback.remotePlaying(), vol);
+            } else {
+                publishLocalState();
+            }
         });
     QObject::connect(&sessionBridge,
         &dopamine::rust::SessionBridge::serverAdopted,
@@ -156,10 +267,31 @@ int main(int argc, char *argv[]) {
             else
                 sessionPlayback.stop();
         });
-    if (sessionBridge.getIsLoggedIn()) sessionPlayback.start();
+    sessionBridge.initialize();
+    if (!config.apiUrl().isEmpty()) {
+        libCtrl.loadTracks(1);
+        sessionPlayback.start();
+    }
 
     discoveryService.startDiscovery();
+    Dopamine::Core::Platform::PlatformMediaService &platformMedia =
+        Dopamine::Core::Platform::PlatformMediaService::instance();
+    platformMedia.initialize(&playbackCtrl, &queueCtrl);
+
     QQmlApplicationEngine engine;
+    QObject::connect(&platformMedia,
+        &Dopamine::Core::Platform::PlatformMediaService::raiseRequested,
+        &engine, [&engine]() {
+            const auto objects = engine.rootObjects();
+            if (!objects.isEmpty()) {
+                if (auto *w = qobject_cast<QQuickWindow *>(objects.first())) {
+                    w->show(); w->raise(); w->requestActivate();
+                }
+            }
+        });
+    QObject::connect(&platformMedia,
+        &Dopamine::Core::Platform::PlatformMediaService::quitRequested,
+        &app, &QCoreApplication::quit);
     QObject::connect(&singleInstance,
         &Dopamine::Core::SingleInstance::messageReceived,
         &app, [&pendingUri, &qmlReady, &sessionBridge, &engine]

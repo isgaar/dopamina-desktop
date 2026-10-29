@@ -1,7 +1,8 @@
 /**
  * Location: src/features/settings/ui/panes/MusicSourceSettingsPane.qml
- * Function: Music source settings pane allowing switching between remote
- * server, local directory, and SMB storage shares with credential persistence.
+ * Function: Music source and scanner settings pane allowing switching between
+ * remote server, local directory, and SMB storage shares, along with file format
+ * filters, tag encoding, duration limits, and library re-indexing from Android.
  * All Rights Reserved isgaar
  */
 import QtQuick
@@ -32,8 +33,7 @@ SettingsPane {
             Repeater {
                 model: [
                     { t: Strings.get("settings_source_server"), m: "server" },
-                    { t: Strings.get("settings_source_local"), m: "local" },
-                    { t: Strings.get("settings_source_smb"), m: "smb" }
+                    { t: Strings.get("settings_source_local"), m: "local" }
                 ]
                 delegate: AppButton {
                     text: modelData.t
@@ -59,41 +59,6 @@ SettingsPane {
             onTextEdited: v => settingsController &&
                 (settingsController.draftLocalPath = v)
         }
-        SettingsField {
-            visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_host")
-            text: settingsController ? settingsController.draftSmbHost : ""
-            onTextEdited: v => settingsController &&
-                (settingsController.draftSmbHost = v)
-        }
-        SettingsField {
-            visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_share")
-            text: settingsController ? settingsController.draftSmbShare : ""
-            onTextEdited: v => settingsController &&
-                (settingsController.draftSmbShare = v)
-        }
-        SettingsField {
-            visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_folder")
-            text: settingsController ? settingsController.draftSmbFolder : ""
-            onTextEdited: v => settingsController &&
-                (settingsController.draftSmbFolder = v)
-        }
-        SettingsField {
-            visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_user")
-            text: settingsController ? settingsController.draftSmbUser : ""
-            onTextEdited: v => settingsController &&
-                (settingsController.draftSmbUser = v)
-        }
-        SettingsField {
-            visible: root.srcType === "smb"
-            label: Strings.get("settings_smb_password")
-            text: settingsController ? settingsController.draftSmbPassword : ""
-            onTextEdited: v => settingsController &&
-                (settingsController.draftSmbPassword = v)
-        }
 
         RowLayout {
             Layout.fillWidth: true; spacing: Theme.spaceSm
@@ -111,6 +76,111 @@ SettingsPane {
                 text: root.statusText(st)
             }
             Item { Layout.fillWidth: true }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 1
+            color: Theme.borderDark
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_scan_startup_title")
+            subtitle: Strings.get("settings_scan_startup_desc")
+            checked: settingsController ? settingsController.getSetting("Scanner/scanOnStartup", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("Scanner/scanOnStartup", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_scan_notify_title")
+            subtitle: Strings.get("settings_scan_notify_desc")
+            checked: settingsController ? settingsController.getSetting("Scanner/notifyNewTracks", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("Scanner/notifyNewTracks", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_scan_nomedia_title")
+            subtitle: Strings.get("settings_scan_nomedia_desc")
+            checked: settingsController ? settingsController.getSetting("Scanner/skipNoMedia", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("Scanner/skipNoMedia", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_scan_mp4_title")
+            subtitle: Strings.get("settings_scan_mp4_desc")
+            checked: settingsController ? settingsController.getSetting("Scanner/skipMp4", false) : false
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("Scanner/skipMp4", isChecked)
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_scan_ogg_title")
+            subtitle: Strings.get("settings_scan_ogg_desc")
+            checked: settingsController ? settingsController.getSetting("Scanner/skipOgg", false) : false
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("Scanner/skipOgg", isChecked)
+            }
+        }
+
+        SettingsSelect {
+            label: Strings.get("settings_scan_encoding_title")
+            helpText: Strings.get("settings_scan_encoding_desc")
+            options: [
+                { value: "utf8", label: "Auto (UTF-8)" },
+                { value: "latin1", label: "ISO-8859-1 (Latin-1)" }
+            ]
+            currentValue: settingsController ? settingsController.getSetting("Scanner/encoding", "utf8") : "utf8"
+            onSelected: val => {
+                if (settingsController) settingsController.setSetting("Scanner/encoding", val)
+            }
+        }
+
+        SettingsSelect {
+            label: Strings.get("settings_scan_short_title")
+            helpText: Strings.get("settings_scan_short_desc")
+            options: [
+                { value: "0", label: "Incluir todo" },
+                { value: "5", label: "< 5 s" },
+                { value: "15", label: "< 15 s" },
+                { value: "30", label: "< 30 s" }
+            ]
+            currentValue: settingsController ? String(settingsController.getSetting("Scanner/skipShortSec", "5")) : "5"
+            onSelected: val => {
+                if (settingsController) settingsController.setSetting("Scanner/skipShortSec", val)
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Theme.spaceSm
+
+            AppButton {
+                text: Strings.get("settings_scan_delete_db_title")
+                variant: "secondary"
+                onClicked: {
+                    if (settingsController) {
+                        settingsController.rescanLibrary()
+                        rescanStatusText.text = Strings.get("settings_scan_rescan_done")
+                    }
+                }
+            }
+
+            Text {
+                id: rescanStatusText
+                text: Strings.get("settings_scan_delete_db_desc")
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                color: Theme.textDim
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+            }
         }
     }
 }

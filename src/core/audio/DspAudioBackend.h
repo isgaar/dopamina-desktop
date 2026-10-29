@@ -58,6 +58,13 @@ public:
         if (m_prefetcher) m_prefetcher->setBearerToken(token);
     }
     void setEqualizer(const std::vector<float>& gains, float preampDb);
+    void setEffects1(float bass, float mids, float treble, float virtualizer,
+                     float compressor, float balance);
+    void setEffects2(bool echoOn, float echoGain, bool autowahOn,
+                     float autowahGain, bool reverbOn, float reverbGain,
+                     bool flangerOn);
+    void setLimiterEnabled(bool enabled);
+    void setStabilizerEnabled(bool enabled);
     bool isFilterFlat() const { return m_eqFilter.isFlat(); }
 
 private slots:
@@ -87,8 +94,8 @@ private:
     float m_preampDb = 0.0f;
     Dsp::CrossfadeMixer m_mixer;
     std::unique_ptr<Source::AudioDiskCache> m_cache;
-    std::unique_ptr<Source::TrackPrefetcher> m_prefetcher;
     QNetworkAccessManager *m_nam = nullptr;
+    std::unique_ptr<Source::TrackPrefetcher> m_prefetcher;
     QTimer *m_pump = nullptr;
 
     QByteArray m_pendingPcm;
@@ -102,6 +109,7 @@ private:
     bool m_isPaused = false;
     bool m_stopping = false;
     bool m_decoderFinished = false;
+    bool m_crossfadeTriggered = false;
 };
 
 } // namespace Dopamine::Core::Audio

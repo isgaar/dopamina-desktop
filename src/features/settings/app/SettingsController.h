@@ -10,6 +10,7 @@
 #include "../infra/SettingsStorage.h"
 #include <QObject>
 #include <QString>
+#include <QVariant>
 
 namespace Dopamine::Core {
 class ApiClient;
@@ -108,6 +109,10 @@ public:
     Q_INVOKABLE void testConnection();
     Q_INVOKABLE void testSourceConnection();
     Q_INVOKABLE void adoptRemoteServer(const QString &url);
+    Q_INVOKABLE QVariant getSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    Q_INVOKABLE void setSetting(const QString &key, const QVariant &value);
+    Q_INVOKABLE void clearCoversCache();
+    Q_INVOKABLE void rescanLibrary();
 
 signals:
     void draftApiUrlChanged(); void tokenChanged();
@@ -116,6 +121,8 @@ signals:
     void sidebarWidthChanged(); void sidebarCollapsedChanged();
     void dirtyChanged(); void firstRunChanged();
     void connectionStatusChanged(); void sourceStatusChanged();
+    void coverCacheCleared();
+    void rescanTriggered();
 private:
     void updateDirtyState();
 

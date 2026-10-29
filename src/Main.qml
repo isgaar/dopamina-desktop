@@ -59,7 +59,9 @@ ApplicationWindow {
         anchors.fill: parent; color: Theme.bgDarkest
         radius: isFloat ? Theme.radiusMd : 0
         border.color: isFloat ? Theme.borderDark : "transparent"
-        border.width: isFloat ? 1 : 0; layer.enabled: window.isFloat
+        border.width: isFloat ? 1 : 0
+        clip: true
+        layer.enabled: window.isFloat
         layer.effect: MultiEffect { maskEnabled: true; maskSource: cornerMask }
 
         AppTitleBar {
@@ -67,6 +69,7 @@ ApplicationWindow {
             anchors.left: parent.left; anchors.right: parent.right
             isFirstRun: window.isSetup
             onOpenSessionRequested: sessionWindow.showWindow()
+            onOpenSettingsRequested: settingsWindow.showSettings()
             onSearchEdited: text => {
                 window.activeView = "tracks"
                 if (libraryController) libraryController.search(text)

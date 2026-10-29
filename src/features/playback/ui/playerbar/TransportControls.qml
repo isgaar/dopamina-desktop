@@ -39,7 +39,8 @@ Row {
         AppIcon {
             anchors.centerIn: parent
             size: 17
-            name: playbackController.isPlaying ? "pause" : "play"
+            name: (playbackController.isPlaying ||
+                   sessionPlaybackController.remotePlaying) ? "pause" : "play"
             iconColor: Theme.bgDarkest
         }
 
@@ -48,7 +49,12 @@ Row {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: playbackController.togglePlay()
+            onClicked: {
+                if (sessionPlaybackController.isControllingAndroid)
+                    sessionPlaybackController.toggleRemotePlay();
+                else
+                    playbackController.togglePlay();
+            }
         }
     }
 

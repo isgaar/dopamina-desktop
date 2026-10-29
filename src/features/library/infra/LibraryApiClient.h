@@ -9,6 +9,7 @@
 
 #include <QObject>
 #include <QJsonArray>
+#include <QJsonObject>
 #include <functional>
 #include "core/ApiClient.h"
 
@@ -22,11 +23,17 @@ public:
 
     using CatalogCallback =
         std::function<void(bool ok, const QJsonArray &data)>;
+    using ObjectCallback =
+        std::function<void(bool ok, const QJsonObject &data)>;
+    using BytesCallback =
+        std::function<void(bool ok, const QByteArray &data)>;
 
     void fetchTracks(int page, int limit, const QString &query,
                      CatalogCallback cb);
     void fetchAlbums(int page, int limit, CatalogCallback cb);
     void fetchArtists(int page, int limit, CatalogCallback cb);
+    void fetchTrackMetadata(int trackId, ObjectCallback cb);
+    void downloadTrackStream(int trackId, BytesCallback cb);
 
 private:
     Core::ApiClient *m_client = nullptr;

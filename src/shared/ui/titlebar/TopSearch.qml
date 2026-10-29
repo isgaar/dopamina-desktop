@@ -1,7 +1,7 @@
 /**
  * Location: src/shared/ui/titlebar/TopSearch.qml
  * Function: Header-wide library search field matching the Android pill
- * silhouette, with focus accent and a localized placeholder.
+ * silhouette, with focus accent, localized placeholder, and recent searches popup.
  * All Rights Reserved isgaar
  */
 import QtQuick
@@ -16,20 +16,22 @@ Rectangle {
     height: 36
     radius: height / 2
     color: Theme.withAlpha(Theme.bgSurface, 0.55)
-    border.width: 1
-    border.color: input.activeFocus ?
-        Theme.withAlpha(Theme.primary, 0.65) : Theme.borderDark
+    border.width: (input.activeFocus || recentPopup.opened) ? 1.5 : 1
+    border.color: (input.activeFocus || recentPopup.opened) ?
+        Theme.primary : Theme.borderDark
 
     function clear() {
         input.text = ""
         root.edited("")
+        recentPopup.close()
     }
 
     AppIcon {
         id: icon
         name: "search"
         size: 17
-        iconColor: input.activeFocus ? Theme.primaryHover : Theme.textMuted
+        iconColor: (input.activeFocus || recentPopup.opened) ?
+            Theme.primary : Theme.textMuted
         anchors.left: parent.left
         anchors.leftMargin: 14
         anchors.verticalCenter: parent.verticalCenter
@@ -38,7 +40,7 @@ Rectangle {
     Text {
         z: -1
         visible: input.text.length === 0
-        text: Strings.get("search_placeholder")
+        text: Strings.get("search_placeholder") || "¿Qué quieres reproducir?"
         color: Theme.textDim
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontBase
@@ -50,7 +52,10 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: input.forceActiveFocus()
+        onClicked: {
+            input.forceActiveFocus()
+            recentPopup.openBelow(root)
+        }
     }
 
     TextInput {
@@ -66,6 +71,44 @@ Rectangle {
         selectByMouse: true
         clip: true
         onTextChanged: root.edited(text)
+        onActiveFocusChanged: {
+            if (activeFocus && !recentPopup.opened) {
+                recentPopup.openBelow(root)
+            }
+        }
+        onAccepted: {
+            if (input.text.trim().length > 0) {
+                recentPopup.addRecent({
+                    "title": input.text.trim(),
+                    "subtitle": "Búsqueda",
+                    "type": "song"
+                })
+            }
+            recentPopup.close()
+        }
         Keys.onEscapePressed: root.clear()
+    }
+
+    RecentSearchesPopup {
+        id: recentPopup
+        searchField: root
+        onTrackSelected: track => {
+            input.text = track.title || ""
+            root.edited(input.text)
+            recentPopup.addRecent(track)
+            if (typeof queueController !== "undefined" && queueController && track) {
+                queueController.playNow(track)
+            }
+        }
+        onArtistSelected: artist => {
+            input.text = artist
+            root.edited(artist)
+            recentPopup.addRecent({
+                "title": artist,
+                "subtitle": "Artista",
+                "type": "artist",
+                "artist": artist
+            })
+        }
     }
 }

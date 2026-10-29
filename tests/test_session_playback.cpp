@@ -76,10 +76,15 @@ public:
         cb(true, tracks);
     }
 
+    void publishState(const QJsonObject &payload) override {
+        publishedState = payload;
+    }
+
     QJsonObject defaultState;
     QJsonObject mobileState;
     QJsonObject defaultSaved;
     QJsonObject mobileSaved;
+    QJsonObject publishedState;
     QList<int> resolvedIds;
 };
 
@@ -175,6 +180,44 @@ private slots:
         QCOMPARE(requested.count(), 1);
         QCOMPARE(controller.remotePlaying(), false);
         QCOMPARE(controller.queueSize(), 2);
+    }
+
+    void testRealTimeRemoteControlBetweenAndroidAndDesktop() {
+        FakeSessionApi api;
+        Dopamine::Core::ApiClient client;
+        Dopamine::Features::Queue::Infra::QueueApiClient queueApi(&client);
+        QueueController queue(&queueApi);
+        SessionPlaybackController controller(&api, &queue);
+
+        controller.syncLocalPlayback(10, 15, true, 80);
+        QCOMPARE(controller.localPlaying(), true);
+        QCOMPARE(controller.activeDeviceKind(), QStringLiteral("desktop"));
+
+        QSignalSpy volSpy(&controller,
+            &SessionPlaybackController::remoteVolumeCommandReceived);
+        QSignalSpy seekSpy(&controller,
+            &SessionPlaybackController::remoteSeekCommandReceived);
+
+        QJsonObject cmd = makeState(10, {10}, 55.0, true, 500.0);
+        cmd.insert(QStringLiteral("volume"), 0.45);
+        cmd.insert(QStringLiteral("device_id"),
+                   QStringLiteral("remote_cmd_to_desktop"));
+        api.defaultState = cmd;
+        controller.refreshNow();
+
+        QCOMPARE(volSpy.count(), 1);
+        QCOMPARE(volSpy.first().at(0).toInt(), 45);
+        QCOMPARE(seekSpy.count(), 1);
+        QCOMPARE(seekSpy.first().at(0).toInt(), 55);
+        QCOMPARE(api.publishedState.value(QStringLiteral("device_id")).toString(),
+                 QStringLiteral("desktop_client"));
+
+        controller.sendRemoteCommandToAndroid(10, 72, true, 65);
+        QCOMPARE(api.publishedState.value(QStringLiteral("user_id")).toString(),
+                 QStringLiteral("mobile_client"));
+        QCOMPARE(api.publishedState.value(QStringLiteral("device_id")).toString(),
+                 QStringLiteral("remote_cmd_to_mobile"));
+        QCOMPARE(api.publishedState.value(QStringLiteral("position_sec")).toInt(), 72);
     }
 
     void testLiveServerMirrorsRemoteQueue() {

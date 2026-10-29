@@ -9,7 +9,10 @@
 #include "core/ApiClient.h"
 #include "core/credentials/MemoryCredentialStore.h"
 #include "core/service/LocalServiceManager.h"
+#include "shared/colors/ColorManager.h"
+#include <QDir>
 #include <QSettings>
+#include <QStandardPaths>
 
 namespace Dopamine::Features::Settings::App {
 
@@ -163,6 +166,32 @@ void SettingsController::setSidebarCollapsed(bool c) {
         s.setValue(QStringLiteral("Navigation/sidebarCollapsed"), c);
         emit sidebarCollapsedChanged();
     }
+}
+
+QVariant SettingsController::getSetting(const QString &key, const QVariant &defaultValue) const {
+    QSettings s(QStringLiteral("isgaar"), QStringLiteral("Dopamine"));
+    return s.value(key, defaultValue);
+}
+
+void SettingsController::setSetting(const QString &key, const QVariant &value) {
+    QSettings s(QStringLiteral("isgaar"), QStringLiteral("Dopamine"));
+    s.setValue(key, value);
+    if (key == QLatin1String("Appearance/dynamicAccent")) {
+        Dopamine::Shared::Colors::ColorManager::instance().setDynamicAccentEnabled(value.toBool());
+    }
+}
+
+void SettingsController::clearCoversCache() {
+    const QString cacheBase = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    QDir coversDir(cacheBase + QStringLiteral("/covers"));
+    if (coversDir.exists()) {
+        coversDir.removeRecursively();
+    }
+    emit coverCacheCleared();
+}
+
+void SettingsController::rescanLibrary() {
+    emit rescanTriggered();
 }
 
 } // namespace Dopamine::Features::Settings::App

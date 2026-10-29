@@ -18,7 +18,7 @@ Rectangle {
     border.color: Theme.borderDark; border.width: 1
 
     readonly property string srcType: settingsController ?
-        settingsController.draftSourceType : "smb"
+        (settingsController.draftSourceType === "smb" ? "local" : settingsController.draftSourceType) : "local"
     readonly property string status: settingsController ?
         settingsController.sourceStatus : ""
     readonly property string statusMsg: root.status === "ok" ?
@@ -47,7 +47,6 @@ Rectangle {
             spacing: Theme.spaceSm
             Repeater {
                 model: [
-                    { t: Strings.get("settings_source_smb"), m: "smb" },
                     { t: Strings.get("settings_source_folder"), m: "local" },
                     { t: Strings.get("settings_source_server"), m: "server" }
                 ]
@@ -59,10 +58,6 @@ Rectangle {
                         (settingsController.draftSourceType = modelData.m)
                 }
             }
-        }
-
-        FirstRunSmbFields {
-            visible: root.srcType === "smb"
         }
 
         SettingsField {

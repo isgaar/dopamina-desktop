@@ -30,6 +30,8 @@ public:
     virtual void fetchState(const QString &userId, StateCallback cb);
     virtual void fetchSavedSession(const QString &userId, StateCallback cb);
     virtual void resolveTracks(const QList<int> &ids, TracksCallback cb);
+    virtual void publishState(const QJsonObject &payload);
+    virtual void saveSession(const QJsonObject &payload);
 
 private:
     Core::ApiClient *m_client = nullptr;

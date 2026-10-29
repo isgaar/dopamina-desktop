@@ -31,12 +31,14 @@
     <string name="nav_section_library">TU BIBLIOTECA</string>
     <string name="nav_principal">Principal</string>
     <string name="nav_explore">Explorar</string>
-    <string name="nav_local_library">Biblioteca Local</string>
+    <string name="nav_local_library">Biblioteca</string>
     <string name="nav_new_playlist">Nueva playlist</string>
     <string name="nav_liked_title">Música que te gustó</string>
     <string name="nav_liked_subtitle">Playlist autogenerada</string>
     <string name="nav_playlists_hint">Tus listas creadas aparecerán aquí.</string>
     <string name="search_placeholder">¿Qué quieres reproducir?</string>
+    <string name="search_recent_title">Búsquedas recientes</string>
+    <string name="search_recent_clear">Borrar</string>
     <string name="nav_tracks">Pistas</string>
     <string name="nav_albums">Álbumes</string>
     <string name="nav_artists">Artistas</string>
@@ -244,7 +246,98 @@
     <string name="mix_ambiguity_later">Ahora no</string>
     <string name="mix_ambiguity_apply_album">Aplicar a todo este álbum</string>
     <string name="mix_ambiguity_preview">15 s</string>
-    <string name="session_source_mobile">Sesión móvil</string>
+    <string name="session_source_mobile">Sesión móvil (Android)</string>
     <string name="session_source_web">Sesión web</string>
+    <string name="session_source_desktop">Este equipo (Escritorio)</string>
     <string name="session_source_playing">En reproducción</string>
+    <string name="session_switch_to_desktop">Cambiar a Escritorio</string>
+    <string name="session_switch_to_android">Transferir a Android</string>
+
+    <!-- Track context menu matching Android and user mockup -->
+    <string name="ctx_play_mix">Oír mix de la canción</string>
+    <string name="ctx_go_radio">Ir a radio de la canción</string>
+    <string name="ctx_play_next">Reproducir a continuación</string>
+    <string name="ctx_add_queue">Agregar a la fila de reproducción</string>
+    <string name="ctx_add_playlist">Agregar a playlist...</string>
+    <string name="ctx_save_liked">Guardar en Tus me gusta</string>
+    <string name="ctx_remove_liked">Quitar de Tus me gusta</string>
+    <string name="ctx_go_artist">Ir al artista</string>
+    <string name="ctx_go_album">Ir al álbum</string>
+    <string name="ctx_hifi_details">Detalles técnicos y acústicos Hi-Fi</string>
+    <string name="ctx_download_audio">Descargar archivo de audio</string>
+
+    <!-- Audio Fidelity Dialog matching Android NowPlayingAudioBadge -->
+    <string name="audio_quality_title">Calidad de audio</string>
+    <string name="audio_quality_max_desc">Máxima fidelidad: Hi-Res Lossless real (24-bit / &gt;48 kHz con armónicos ultrasónicos verificados)</string>
+    <string name="audio_quality_high_desc">Alta fidelidad: Calidad CD sin pérdidas (16-bit / 44.1-48 kHz con espectro audible completo)</string>
+    <string name="audio_quality_ok_desc">Fidelidad aceptable: Audio comprimido a alta tasa de bits (~320 kbps o corte espectral superior)</string>
+    <string name="audio_quality_low_desc">Baja fidelidad: Transcodificación con corte abrupto en 16 kHz o compresión a baja tasa de bits</string>
+    <string name="dismiss">Aceptar</string>
+
+    <!-- Playlist & HUD dialogs -->
+    <string name="pl_picker_title">Agregar a playlist</string>
+    <string name="new_playlist_name_hint">Nombre de nueva playlist...</string>
+    <string name="playlists_empty_msg">No tienes playlists creadas</string>
+    <string name="hud_title">Detalles técnicos y acústicos Hi-Fi</string>
+    <string name="hud_tempo">TEMPO / CADENCIA</string>
+    <string name="hud_camelot">TONALIDAD CAMELOT</string>
+    <string name="hud_loudness">LOUDNESS INTEGRADA</string>
+    <string name="hud_sample_depth">FRECUENCIA Y BITS</string>
+    <string name="hud_container">CONTENEDOR</string>
+    <string name="hud_fidelity">PUNTUACIÓN HI-FI</string>
+    <string name="hud_storage_path">UBICACIÓN DE ALMACENAMIENTO</string>
+    <string name="hud_close">Cerrar</string>
+
+    <!-- Android Parity Settings Strings -->
+    <string name="settings_skip_silence_title">Omitir fragmentos de silencio</string>
+    <string name="settings_skip_silence_desc">Salta automáticamente partes silenciosas al inicio y final</string>
+    <string name="settings_volume_stabilizer_title">Nivelador de volumen</string>
+    <string name="settings_volume_stabilizer_desc">Normaliza pistas a -14 LUFS con limitador suave sin distorsión</string>
+    <string name="settings_visualizer_title">Visualizador de audio reactivo</string>
+    <string name="settings_visualizer_desc">Animación en tiempo real sincronizada al audio de la pista</string>
+    <string name="settings_buffer_size_desc">Memoria intermedia contra microcortes de audio</string>
+
+    <string name="settings_pause_focus_title">Pausar al perder foco</string>
+    <string name="settings_pause_focus_desc">Detiene el audio si otra aplicación reproduce sonido</string>
+    <string name="settings_headphone_unplug_title">Auriculares desconectados</string>
+    <string name="settings_headphone_unplug_desc">Pausa la reproducción al desconectar auriculares o altavoces</string>
+    <string name="settings_headphone_plug_title">Al conectar auriculares</string>
+    <string name="settings_headphone_plug_desc">Reanuda la reproducción al enchufar auriculares o altavoces</string>
+    <string name="settings_bt_connect_title">Al conectar Bluetooth</string>
+    <string name="settings_bt_connect_desc">Inicia la reproducción al vincular dispositivos Bluetooth</string>
+    <string name="settings_vol_zero_title">Volumen en cero</string>
+    <string name="settings_vol_zero_desc">Pausa automáticamente la reproducción si el volumen llega a cero</string>
+    <string name="settings_vol_keys_desc">Controlar la reproducción mediante teclas multimedia del sistema</string>
+    <string name="settings_powersaving_desc">Reduce efectos visuales y uso de CPU en segundo plano</string>
+
+    <string name="settings_carousel_title">Carrusel de carátulas en reproducción</string>
+    <string name="settings_carousel_desc">Animación fluida de carátulas adyacentes en la vista actual</string>
+    <string name="settings_cover_no_ext_title">Guardar sin extensión</string>
+    <string name="settings_cover_no_ext_desc">Oculta las carátulas descargadas de exploradores de imágenes</string>
+    <string name="settings_cover_size">Tamaño de carátula</string>
+    <string name="settings_cover_size_desc">Resolución límite en píxeles</string>
+    <string name="settings_cover_clear_title">Limpiar caché de carátulas</string>
+    <string name="settings_cover_clear_desc">Elimina imágenes de carátulas guardadas localmente</string>
+    <string name="settings_cover_clear_done">Caché de carátulas liberada con éxito</string>
+
+    <string name="settings_scan_startup_title">Escanear al iniciar</string>
+    <string name="settings_scan_startup_desc">Busca nueva música en disco automáticamente al abrir</string>
+    <string name="settings_scan_notify_title">Notificar nuevas pistas</string>
+    <string name="settings_scan_notify_desc">Aviso al encontrar canciones añadidas a la biblioteca</string>
+    <string name="settings_scan_nomedia_title">Omitir carpetas .nomedia y ocultas</string>
+    <string name="settings_scan_nomedia_desc">No explora directorios con archivos .nomedia</string>
+    <string name="settings_scan_mp4_title">Omitir archivos .mp4</string>
+    <string name="settings_scan_mp4_desc">Ignora contenedores de video o audio MP4</string>
+    <string name="settings_scan_ogg_title">Omitir archivos .ogg y .oga</string>
+    <string name="settings_scan_ogg_desc">Filtra pistas en formato Ogg Vorbis</string>
+    <string name="settings_scan_encoding_title">Codificación de etiquetas</string>
+    <string name="settings_scan_encoding_desc">Corrige caracteres especiales en tags ID3</string>
+    <string name="settings_scan_short_title">Omitir audios cortos</string>
+    <string name="settings_scan_short_desc">Excluye notas de voz y sonidos de duración menor al umbral</string>
+    <string name="settings_scan_delete_db_title">Reindexar biblioteca</string>
+    <string name="settings_scan_delete_db_desc">Reexplora y reconstruye la biblioteca desde el origen</string>
+    <string name="settings_scan_rescan_done">Reindexación iniciada</string>
+
+    <string name="settings_accent_dynamic">Color de acento dinámico</string>
+    <string name="settings_accent_dynamic_desc">Extrae la paleta armónica del álbum en reproducción</string>
 </resources>

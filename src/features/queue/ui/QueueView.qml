@@ -9,6 +9,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../shared/ui"
 import "../../../shared/ui/feedback"
+import "../../library/ui"
 
 Rectangle {
     id: root
@@ -56,10 +57,26 @@ Rectangle {
             model: root.controller ? root.controller.queueTracks : []
 
             delegate: Rectangle {
-                width: listView.width; height: 44; radius: Theme.radiusSm
+                id: queueItemRect
+                width: listView.width; height: 48; radius: Theme.radiusSm
                 color: (root.controller &&
                     index === root.controller.currentIndex) ?
-                    Theme.bgSurface : "transparent"
+                    Theme.bgSurface : (itemHover.containsMouse ? "#181822" : "transparent")
+
+                MouseArea {
+                    id: itemHover
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: mouse => {
+                        if (mouse.button === Qt.RightButton) {
+                            trackMenu.openAtItem(queueItemRect, mouse.x, mouse.y)
+                        } else if (root.controller) {
+                            root.controller.playAtIndex(index)
+                        }
+                    }
+                }
 
                 RowLayout {
                     anchors.fill: parent; anchors.margins: Theme.spaceSm
@@ -69,15 +86,34 @@ Rectangle {
                         text: (index + 1) + "."
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontSm; color: Theme.textMuted
-                        Layout.preferredWidth: 28
+                        Layout.preferredWidth: 24
+                    }
+
+                    Rectangle {
+                        Layout.preferredWidth: 32; Layout.preferredHeight: 32
+                        radius: Theme.radiusSm; color: Theme.bgCard
+                        border.color: Theme.borderDark; border.width: 1
+
+                        AppIcon {
+                            anchors.centerIn: parent
+                            name: "disc"; size: 14; iconColor: Theme.textDim
+                        }
+                        RoundedImage {
+                            anchors.fill: parent; radius: Theme.radiusSm
+                            source: modelData.coverUrl || modelData.cover || ""
+                        }
                     }
 
                     Text {
-                        text: modelData.title ||
+                        text: modelData.title || modelData.titulo ||
                             (Strings.get("tab_tracks") + " #" + modelData.id)
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontMd; color: Theme.textLight
                         Layout.fillWidth: true; elide: Text.ElideRight
+                    }
+
+                    AudioQualityBadge {
+                        track: modelData
                     }
 
                     AppIcon {
@@ -85,6 +121,12 @@ Rectangle {
                         name: "mix"; size: 16
                         iconColor: Theme.primaryHover
                     }
+                }
+
+                TrackContextMenu {
+                    id: trackMenu
+                    track: modelData
+                    isLiked: false
                 }
             }
         }

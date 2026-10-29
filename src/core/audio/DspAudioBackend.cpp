@@ -31,11 +31,26 @@ void DspAudioBackend::setVolume(int volume) {
     emit volumeChanged(m_volume);
 }
 
-void DspAudioBackend::play(const QUrl &url) { playAt(url, 0); }
+void DspAudioBackend::play(const QUrl &url) {
+    if (m_isPaused && m_currentUrl == url && m_sink) {
+        m_sink->resume();
+        m_pump->start();
+        m_isPlaying = true;
+        m_isPaused = false;
+        emit stateChanged(true);
+        return;
+    }
+    playAt(url, 0);
+}
 
 void DspAudioBackend::playAt(const QUrl &url, qint64 positionMs) {
     if (!url.isValid()) { emit errorOccurred("URL no válida."); return; }
+    const bool keepCrossfadeTail = m_crossfadeTriggered;
     stop();
+    m_crossfadeTriggered = false;
+    if (!keepCrossfadeTail) {
+        dopamine_dsp_set_crossfade_out_target(1.0f);
+    }
     m_currentUrl = url; m_framesWritten = 0;
     m_startMs = qMax<qint64>(0, positionMs);
     m_skipFrames = -1;
@@ -95,15 +110,25 @@ void DspAudioBackend::stop() {
     }
     m_isPlaying = false; m_isPaused = false; m_framesWritten = 0;
     m_startMs = 0; m_skipFrames = 0;
-    m_eqFilter.resetStates();
+    if (!m_crossfadeTriggered) {
+        m_eqFilter.resetStates();
+    }
     m_stopping = false;
     emit stateChanged(false); emit positionChanged(0);
 }
 
 void DspAudioBackend::seek(qint64 positionMs) {
+    const qint64 clampedPos = qMax<qint64>(0, positionMs);
+    if (m_currentUrl.isValid() && (m_isPlaying || m_isPaused)) {
+        const bool wasPaused = m_isPaused;
+        playAt(m_currentUrl, clampedPos);
+        if (wasPaused) pause();
+        emit positionChanged(clampedPos);
+        return;
+    }
     if (m_format.sampleRate() > 0)
-        m_framesWritten = (positionMs * m_format.sampleRate()) / 1000;
-    emit positionChanged(positionMs);
+        m_framesWritten = (clampedPos * m_format.sampleRate()) / 1000;
+    emit positionChanged(clampedPos);
 }
 void DspAudioBackend::setNext(const QUrl &url) {
     m_nextUrl = url;
@@ -114,6 +139,29 @@ void DspAudioBackend::setEqualizer(const std::vector<float>& g, float pre) {
     m_eqGains = g; m_preampDb = pre;
     float r = (float)m_format.sampleRate();
     m_eqFilter.setup(m_eqGains, m_preampDb, r > 0.0f ? r : 44100.0f);
+}
+
+void DspAudioBackend::setEffects1(float bass, float mids, float treble,
+                                  float virtualizer, float compressor,
+                                  float balance) {
+    dopamine_dsp_set_effects1(bass, mids, treble, virtualizer, compressor,
+                              balance);
+}
+
+void DspAudioBackend::setEffects2(bool echoOn, float echoGain, bool autowahOn,
+                                  float autowahGain, bool reverbOn,
+                                  float reverbGain, bool flangerOn) {
+    dopamine_dsp_set_effects2(echoOn, echoGain, autowahOn, autowahGain,
+                              reverbOn, reverbGain, flangerOn);
+}
+
+void DspAudioBackend::setLimiterEnabled(bool enabled) {
+    m_gainStage.setLimiterEnabled(enabled);
+    dopamine_dsp_set_limiter_enabled(enabled);
+}
+
+void DspAudioBackend::setStabilizerEnabled(bool enabled) {
+    dopamine_dsp_set_stabilizer_enabled(enabled);
 }
 
 void DspAudioBackend::setupSink(const QAudioFormat &format) {
@@ -174,7 +222,7 @@ void DspAudioBackend::pump() {
         if (m_decoderFinished) finishPlayback();
         return;
     }
-    for (int i = 0; i < 32 && m_decoder->bufferAvailable() &&
+    for (int i = 0; i < 32 && m_decoder && m_decoder->bufferAvailable() &&
                     m_pendingPcm.size() < maxPendingBytes(); ++i) {
         handleBufferReady();
         flushPending();
@@ -217,6 +265,16 @@ void DspAudioBackend::handleBufferReady() {
         }
     }
 
+    if (m_crossfadeMs > 0 && m_durationMs > 5000) {
+        const qint64 rem = m_durationMs - position();
+        if (rem > 0 && rem <= m_crossfadeMs) {
+            const float ratio = qBound(
+                0.35f, static_cast<float>(rem) / static_cast<float>(m_crossfadeMs),
+                1.0f);
+            dopamine_dsp_set_crossfade_out_target(ratio);
+        }
+    }
+
     float *processed = samples.data() + offset * ch;
     m_gainStage.process(processed, frames, ch);
     m_eqFilter.process(processed, frames, ch);
@@ -227,10 +285,25 @@ void DspAudioBackend::handleBufferReady() {
     }
     m_pendingPcm.append(raw);
     flushPending();
-    if (m_nextUrl.isValid() && m_durationMs > 0) {
-        qint64 rem = m_durationMs - position();
-        if (position() >= m_durationMs / 2 || rem <= 20000) {
+    if (m_durationMs > 0) {
+        const qint64 rem = m_durationMs - position();
+        if (m_nextUrl.isValid() &&
+            (position() >= m_durationMs / 2 || rem <= 20000)) {
             m_prefetcher->prefetch(m_nextUrl);
+        }
+        const qint64 triggerWin = static_cast<qint64>(qBound(350, m_crossfadeMs / 3, 1200));
+        if (m_crossfadeMs > 0 && m_durationMs > 5000 && !m_crossfadeTriggered &&
+            rem > 0 && rem <= triggerWin) {
+            m_crossfadeTriggered = true;
+            const int sr = qMax(8000, m_format.sampleRate());
+            const int fadeFrames = (m_crossfadeMs * sr) / 1000;
+            dopamine_dsp_trigger_crossfade(fadeFrames);
+            if (m_nextUrl.isValid()) {
+                QUrl next = m_nextUrl; m_nextUrl = QUrl();
+                play(next);
+            } else {
+                emit trackFinished();
+            }
         }
     }
 }
@@ -246,6 +319,11 @@ void DspAudioBackend::finishPlayback() {
     if (m_decoder && m_decoder->bufferAvailable()) return;
     if (m_sink && m_sinkIo && m_sink->state() != QAudio::IdleState) return;
     m_decoderFinished = false;
+    if (m_crossfadeMs > 0 && !m_crossfadeTriggered) {
+        const int sr = qMax(8000, m_format.sampleRate());
+        dopamine_dsp_trigger_crossfade((m_crossfadeMs * sr) / 1000);
+        m_crossfadeTriggered = true;
+    }
     if (m_nextUrl.isValid()) {
         QUrl next = m_nextUrl; m_nextUrl = QUrl();
         play(next);

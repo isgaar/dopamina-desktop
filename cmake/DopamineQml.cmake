@@ -14,6 +14,7 @@ set(DOPAMINE_QML_FILES
     src/shared/ui/titlebar/AppBrand.qml
     src/shared/ui/titlebar/WindowControls.qml
     src/shared/ui/titlebar/TopSearch.qml
+    src/shared/ui/titlebar/RecentSearchesPopup.qml
     src/shared/ui/window/RoundedWindow.qml
     src/shared/ui/window/AboutWindow.qml
     src/shared/ui/window/SettingsWindow.qml
@@ -72,6 +73,11 @@ set(DOPAMINE_QML_FILES
     src/features/library/ui/LibraryTrackDelegate.qml
     src/features/library/ui/FavoritesView.qml
     src/features/library/ui/ContentTabs.qml
+    src/features/library/ui/AudioQualityBadge.qml
+    src/features/library/ui/AudioQualityDialog.qml
+    src/features/library/ui/TrackContextMenu.qml
+    src/features/library/ui/TrackTechnicalDialog.qml
+    src/features/library/ui/AddToPlaylistDialog.qml
     src/features/queue/ui/QueueView.qml
     src/features/playlists/ui/PlaylistsView.qml
     src/features/playlists/ui/PlaylistRow.qml

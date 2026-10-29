@@ -26,22 +26,23 @@ Rectangle {
     MouseArea {
         id: resizerM; anchors.fill: parent
         hoverEnabled: true; cursorShape: Qt.SplitHCursor
-        property real startX: 0; property bool isDragging: false
+        property bool isDragging: false
 
         onPressed: mouse => {
-            startX = mouse.x; isDragging = true
+            isDragging = true
             if (root.sideNav) root.sideNav.animating = false
         }
         onPositionChanged: mouse => {
-            if (!isDragging || !root.sideNav) return
-            var rawW = root.sideNav.width + (mouse.x - startX)
-            if (rawW < 120) {
+            if (!isDragging || !root.sideNav || !root.parent) return
+            var globalX = mapToItem(root.parent, mouse.x, 0).x
+            if (globalX < 110) {
                 root.sideNav.collapsed = true
             } else {
                 var maxW = Math.min(
-                    500, Math.floor(root.maxContainerWidth * 0.45))
-                var cl = Math.max(160, Math.min(rawW, maxW))
-                root.sideNav.collapsed = false; root.sideNav.targetWidth = cl
+                    450, Math.floor(root.maxContainerWidth * 0.40))
+                var cl = Math.max(160, Math.min(Math.round(globalX), maxW))
+                root.sideNav.collapsed = false
+                root.sideNav.targetWidth = cl
                 root.sideNav.lastExpandedWidth = cl
             }
         }

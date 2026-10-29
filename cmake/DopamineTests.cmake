@@ -51,14 +51,15 @@ add_executable(test_audio_dsp tests/test_audio_dsp.cpp
     src/core/audio/dsp/GainStage.cpp
     src/core/audio/automix/CrossfadeMixer.cpp
     src/core/audio/dsp/LoudnessGain.cpp)
-target_link_libraries(test_audio_dsp PRIVATE Qt6::Core Qt6::Multimedia Qt6::Test)
+target_link_libraries(test_audio_dsp PRIVATE
+    Qt6::Core Qt6::Multimedia Qt6::Test dopamine_desktop)
 target_include_directories(test_audio_dsp PRIVATE src)
 add_test(NAME AudioDspTest COMMAND test_audio_dsp)
 
 add_executable(test_equalizer tests/test_equalizer.cpp
     src/features/playback/app/EqualizerController.cpp
     src/features/playback/domain/EqualizerState.cpp)
-target_link_libraries(test_equalizer PRIVATE Qt6::Core Qt6::Test)
+target_link_libraries(test_equalizer PRIVATE Qt6::Core Qt6::Test dopamine_desktop)
 target_include_directories(test_equalizer PRIVATE src)
 add_test(NAME EqualizerTest COMMAND test_equalizer)
 
@@ -130,3 +131,23 @@ add_executable(test_ambiguity_daemon tests/test_ambiguity_daemon.cpp
 target_link_libraries(test_ambiguity_daemon PRIVATE Qt6::Core Qt6::Test)
 target_include_directories(test_ambiguity_daemon PRIVATE src)
 add_test(NAME AmbiguityDaemonTest COMMAND test_ambiguity_daemon)
+
+if(TARGET Qt6::DBus)
+    add_executable(test_platform_media tests/test_platform_media.cpp
+        src/core/audio/IAudioBackend.h
+        src/core/platform/media/mpris/MprisPlayerService.cpp
+        src/core/platform/media/mpris/MprisPlayerAdaptor.cpp
+        src/core/platform/media/mpris/MprisRootAdaptor.cpp
+        src/core/platform/media/PlatformMediaService.cpp
+        src/features/playback/app/PlaybackController.cpp
+        src/features/playback/app/EqualizerController.cpp
+        src/features/playback/domain/EqualizerState.cpp
+        src/features/playback/domain/LrcParser.cpp
+        src/features/queue/app/QueueController.cpp
+        src/features/queue/infra/QueueApiClient.cpp
+        src/core/ApiClient.cpp src/core/ProjectConfig.cpp)
+    target_link_libraries(test_platform_media PRIVATE Qt6::Core Qt6::Test Qt6::Network Qt6::DBus)
+    target_compile_definitions(test_platform_media PRIVATE DOPAMINE_HAS_DBUS)
+    target_include_directories(test_platform_media PRIVATE src)
+    add_test(NAME PlatformMediaTest COMMAND test_platform_media)
+endif()

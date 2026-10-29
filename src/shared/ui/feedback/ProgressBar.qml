@@ -13,6 +13,7 @@ Rectangle {
     property real value: 0.0
     property bool indeterminate: false
     property color barColor: Theme.accent
+    signal moved(real newValue)
     readonly property real progress: to > from ?
         Math.max(0.0, Math.min(1.0, (value - from) / (to - from))) : 0.0
 
@@ -39,6 +40,18 @@ Rectangle {
                 duration: 1200
                 easing.type: Easing.InOutQuad
             }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        anchors.topMargin: -6
+        anchors.bottomMargin: -6
+        cursorShape: Qt.PointingHandCursor
+        onClicked: mouse => {
+            if (root.width <= 0 || root.to <= root.from) return;
+            var ratio = Math.max(0.0, Math.min(1.0, mouse.x / root.width));
+            root.moved(root.from + ratio * (root.to - root.from));
         }
     }
 }

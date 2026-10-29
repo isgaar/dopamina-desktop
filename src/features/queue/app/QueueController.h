@@ -35,16 +35,21 @@ public:
     bool isRepeat() const { return m_isRepeat; }
 
     Q_INVOKABLE void playNow(const QVariantMap &track);
+    Q_INVOKABLE void playFromLibrary(const QVariantList &tracks, int index);
+    Q_INVOKABLE void playAtIndex(int index);
     Q_INVOKABLE void playNext(const QVariantMap &track);
     Q_INVOKABLE void appendToQueue(const QVariantMap &track);
     Q_INVOKABLE void clearQueue();
     Q_INVOKABLE void next();
     Q_INVOKABLE void previous();
     Q_INVOKABLE void startMix(int seedTrackId, const QString &seedTitle);
+    Q_INVOKABLE void startMixTrack(const QVariantMap &seedTrack);
+    Q_INVOKABLE void startRadioTrack(const QVariantMap &seedTrack);
     Q_INVOKABLE void toggleShuffle();
     Q_INVOKABLE void toggleRepeat();
     Q_INVOKABLE void applySessionQueue(const QVariantList &tracks,
                                        int currentIndex, int positionSec);
+    QString nextTrackPath() const;
 
 signals:
     void queueChanged();

@@ -59,13 +59,24 @@ void PlaylistController::deletePlaylist(int id) {
     });
 }
 
+void PlaylistController::addTrackToPlaylist(int playlistId, int trackId) {
+    if (!m_api || playlistId <= 0 || trackId <= 0) return;
+    m_api->addTrackToPlaylist(playlistId, trackId, [this](bool ok) {
+        if (ok) loadPlaylists();
+    });
+}
+
 void PlaylistController::toggleLike(int trackId) {
-    if (!m_api || trackId <= 0) return;
+    if (trackId == 0) return;
     bool currentlyLiked = m_likedSet.contains(trackId);
     bool nextState = !currentlyLiked;
     if (nextState) m_likedSet.insert(trackId);
     else m_likedSet.remove(trackId);
     emit likesChanged();
+    if (!m_api || trackId <= 0 ||
+        Core::ProjectConfig::instance().sourceType() != QStringLiteral("server")) {
+        return;
+    }
     m_api->setLike(trackId, nextState,
         [this, trackId, currentlyLiked](bool ok) {
         if (!ok) {

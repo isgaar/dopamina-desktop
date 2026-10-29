@@ -31,12 +31,13 @@ ColumnLayout {
 
         ProgressBar {
             Layout.fillWidth: true
-            Layout.preferredHeight: 3
+            Layout.preferredHeight: 4
             Layout.alignment: Qt.AlignVCenter
             from: 0
             to: Math.max(1, playbackController.duration)
             value: playbackController.position
-            barColor: Theme.textLight
+            barColor: Theme.primary
+            onMoved: v => playbackController.seek(Math.round(v))
         }
 
         Text {

@@ -29,6 +29,7 @@ public:
     Q_INVOKABLE void loadPlaylists();
     Q_INVOKABLE void createPlaylist(const QString &name);
     Q_INVOKABLE void deletePlaylist(int id);
+    Q_INVOKABLE void addTrackToPlaylist(int playlistId, int trackId);
     Q_INVOKABLE void toggleLike(int trackId);
     Q_INVOKABLE bool isLiked(int trackId) const {
         return m_likedSet.contains(trackId);

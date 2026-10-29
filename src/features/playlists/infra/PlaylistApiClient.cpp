@@ -40,6 +40,22 @@ void PlaylistApiClient::deletePlaylist(int id, StatusCallback cb) {
     });
 }
 
+void PlaylistApiClient::addTrackToPlaylist(int playlistId, int trackId,
+                                           StatusCallback cb) {
+    if (!m_client || playlistId <= 0 || trackId <= 0) {
+        if (cb) cb(false);
+        return;
+    }
+    QJsonObject obj;
+    obj["track_id"] = trackId;
+    obj["cancion_id"] = trackId;
+    QByteArray body = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    QString path = QString("/api/v1/playlists/%1/tracks").arg(playlistId);
+    m_client->post(path, body, [cb](bool ok, auto) {
+        if (cb) cb(ok);
+    });
+}
+
 void PlaylistApiClient::fetchLikes(ListCallback cb) {
     if (!m_client) { if (cb) cb(false, {}); return; }
     m_client->get("/api/v1/likes", [cb](bool ok, auto data) {

@@ -19,8 +19,45 @@ void QueueController::playNow(const QVariantMap &track) {
     playCurrentTrack();
 }
 
+void QueueController::playFromLibrary(const QVariantList &tracks, int index) {
+    if (tracks.isEmpty()) return;
+    m_queue = tracks;
+    m_currentIndex = qBound(0, index, tracks.size() - 1);
+    m_isMixActive = false;
+    emit queueChanged();
+    emit indexChanged();
+    playCurrentTrack();
+}
+
+void QueueController::playAtIndex(int index) {
+    if (index < 0 || index >= m_queue.size()) return;
+    m_currentIndex = index;
+    emit indexChanged();
+    playCurrentTrack();
+}
+
+QString QueueController::nextTrackPath() const {
+    if (m_queue.isEmpty()) return QString{};
+    int nextIdx = m_currentIndex + 1;
+    if (nextIdx >= m_queue.size()) {
+        if (!m_isRepeat) return QString{};
+        nextIdx = 0;
+    }
+    const QVariantMap nextTrack = m_queue[nextIdx].toMap();
+    return nextTrack.value(QStringLiteral("path")).toString();
+}
+
 void QueueController::playNext(const QVariantMap &track) {
-    m_queue.insert(m_currentIndex + 1, track);
+    if (m_queue.isEmpty() || m_currentIndex < 0) {
+        m_queue.append(track);
+        m_currentIndex = 0;
+        emit queueChanged();
+        emit indexChanged();
+        playCurrentTrack();
+        return;
+    }
+    const int pos = qBound(0, m_currentIndex + 1, m_queue.size());
+    m_queue.insert(pos, track);
     emit queueChanged();
 }
 
@@ -97,16 +134,32 @@ void QueueController::previous() {
 }
 
 void QueueController::startMix(int seedTrackId, const QString &seedTitle) {
-    m_isMixActive = true; m_seedId = seedTrackId;
-    m_mixSeedTitle = seedTitle; emit mixChanged();
-    m_queue.clear(); m_currentIndex = 0;
     QVariantMap seedTrack;
-    seedTrack["id"] = seedTrackId;
-    seedTrack["title"] = seedTitle;
+    seedTrack[QStringLiteral("id")] = seedTrackId;
+    seedTrack[QStringLiteral("title")] = seedTitle;
+    startMixTrack(seedTrack);
+}
+
+void QueueController::startMixTrack(const QVariantMap &seedTrack) {
+    const int seedTrackId = seedTrack.value(QStringLiteral("id")).toInt();
+    QString seedTitle = seedTrack.value(QStringLiteral("title")).toString();
+    if (seedTitle.isEmpty())
+        seedTitle = seedTrack.value(QStringLiteral("titulo")).toString();
+    m_isMixActive = true;
+    m_seedId = seedTrackId;
+    m_mixSeedTitle = seedTitle;
+    emit mixChanged();
+    m_queue.clear();
+    m_currentIndex = 0;
     m_queue.append(seedTrack);
-    emit queueChanged(); emit indexChanged();
+    emit queueChanged();
+    emit indexChanged();
     playCurrentTrack();
     refillMixIfNeeded();
+}
+
+void QueueController::startRadioTrack(const QVariantMap &seedTrack) {
+    startMixTrack(seedTrack);
 }
 
 void QueueController::refillMixIfNeeded() {
@@ -130,15 +183,22 @@ void QueueController::refillMixIfNeeded() {
 void QueueController::playCurrentTrack() {
     if (m_currentIndex < 0 || m_currentIndex >= m_queue.size()) return;
     QVariantMap t = m_queue[m_currentIndex].toMap();
-    int id = t["id"].toInt();
+    int id = t.value(QStringLiteral("id")).toInt();
     if (id <= 0) return;
     m_history.append(id);
     if (m_history.size() > 50) m_history.removeFirst();
     if (m_api) m_api->recordHistory(id);
+    QString title = t.value(QStringLiteral("title")).toString();
+    if (title.isEmpty()) title = t.value(QStringLiteral("titulo")).toString();
+    QString artist = t.value(QStringLiteral("artist")).toString();
+    if (artist.isEmpty()) artist = t.value(QStringLiteral("artista")).toString();
+    int duration = t.value(QStringLiteral("duration")).toInt();
+    if (duration <= 0) duration = t.value(QStringLiteral("duracion")).toInt();
     emit playTrackRequested(
-        id, t["title"].toString(), t["artist"].toString(),
-        t["album"].toString(), t["path"].toString(),
-        t["duration"].toInt());
+        id, title, artist,
+        t.value(QStringLiteral("album")).toString(),
+        t.value(QStringLiteral("path")).toString(),
+        duration);
 }
 
 } // namespace Dopamine::Features::Queue::App

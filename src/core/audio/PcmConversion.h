@@ -40,12 +40,14 @@ inline void encodeSample(char *data, QAudioFormat::SampleFormat format,
         break;
     case QAudioFormat::Int16:
         static_cast<qint16 *>(static_cast<void *>(data))[index] =
-            static_cast<qint16>(std::lround(clamped * 32767.0f));
+            static_cast<qint16>(std::clamp(
+                std::lround(clamped * 32768.0f), -32768L, 32767L));
         break;
     case QAudioFormat::Int32:
         static_cast<qint32 *>(static_cast<void *>(data))[index] =
-            static_cast<qint32>(std::llround(
-                static_cast<double>(clamped) * 2147483647.0));
+            static_cast<qint32>(std::clamp(
+                std::llround(static_cast<double>(clamped) * 2147483648.0),
+                -2147483648LL, 2147483647LL));
         break;
     case QAudioFormat::Float:
         static_cast<float *>(static_cast<void *>(data))[index] = clamped;

@@ -38,17 +38,24 @@ Item {
             delegate: Rectangle {
                 id: pill
                 readonly property bool active:
-                    root.current === modelData.mode
+                    modelData.mode === "tracks" ?
+                    (root.current === "tracks" ||
+                     root.current === "folders" ||
+                     root.current === "principal") :
+                    (root.current === modelData.mode)
                 width: label.implicitWidth + 28
                 height: 32
                 radius: Theme.radiusFull
-                color: active ? Theme.primary :
+                color: active ?
+                    Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.16) :
                     (hover.containsMouse ? Theme.bgSurface :
                      Theme.withAlpha(Theme.bgSurface, 0.45))
                 border.width: 1
-                border.color: active ? Theme.primary :
+                border.color: active ?
+                    Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.45) :
                     Theme.withAlpha(Theme.borderDark, 0.5)
-                Behavior on color { ColorAnimation { duration: 120 } }
+                Behavior on color { ColorAnimation { duration: 160 } }
+                Behavior on border.color { ColorAnimation { duration: 160 } }
 
                 Text {
                     id: label
@@ -57,7 +64,8 @@ Item {
                     font.family: Theme.fontFamily
                     font.pixelSize: 12
                     font.bold: pill.active
-                    color: pill.active ? root.activeFg : Theme.textMuted
+                    color: pill.active ? Theme.primary : (hover.containsMouse ? "#FFFFFF" : Theme.textMuted)
+                    Behavior on color { ColorAnimation { duration: 160 } }
                 }
 
                 MouseArea {

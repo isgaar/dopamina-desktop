@@ -1,7 +1,8 @@
 /**
  * Location: src/features/settings/ui/panes/AppearanceSettingsPane.qml
- * Function: Appearance settings pane providing the interface language and
- * the five XML-backed Android theme palettes with live preview swatches.
+ * Function: Appearance settings pane providing the interface language,
+ * dynamic artwork accent color extraction, and the five XML-backed
+ * Android theme palettes with live preview swatches.
  * All Rights Reserved isgaar
  */
 import QtQuick
@@ -34,6 +35,15 @@ SettingsPane {
             onSelected: val => {
                 if (settingsController)
                     settingsController.draftLanguage = val
+            }
+        }
+
+        SettingsSwitchRow {
+            title: Strings.get("settings_accent_dynamic")
+            subtitle: Strings.get("settings_accent_dynamic_desc")
+            checked: settingsController ? settingsController.getSetting("Appearance/dynamicAccent", true) : true
+            onToggled: isChecked => {
+                if (settingsController) settingsController.setSetting("Appearance/dynamicAccent", isChecked)
             }
         }
 

@@ -6,14 +6,15 @@
  */
 import QtQuick
 import QtQuick.Window
+import "root:/src/shared"
 
 Row {
     id: root
     property var window: null
     property bool canMaximize: true
-    anchors.top: parent ? parent.top : undefined
-    anchors.bottom: parent ? parent.bottom : undefined
-    height: parent ? parent.height : 56
+    spacing: 6
+    height: 32
+
     readonly property bool isMax: window &&
         window.visibility === Window.Maximized
 
@@ -33,43 +34,45 @@ Row {
             readonly property bool isMaxBtn: modelData.id === "max"
             readonly property bool isClose: modelData.isClose === true
             readonly property bool btnEnabled: !isMaxBtn || root.canMaximize
-            width: 46; height: root.height; opacity: btnEnabled ? 1.0 : 0.35
-            topRightRadius: isClose && window && window.isFloat
-                ? Theme.radiusMd : 0
+            width: 32; height: 32; radius: 16
+            opacity: btnEnabled ? 1.0 : 0.35
             color: btnM.containsMouse && btnEnabled
                 ? (isClose ? Theme.danger : Theme.bgSurface) : "transparent"
-            Behavior on color { ColorAnimation { duration: 100 } }
+            Behavior on color { ColorAnimation { duration: 120 } }
 
             Item {
-                anchors.centerIn: parent; width: 10; height: 10
+                anchors.centerIn: parent; width: 12; height: 12
                 Rectangle {
                     visible: modelData.id === "min"; anchors.centerIn: parent
-                    width: 10; height: 1; color: Theme.textLight
+                    width: 10; height: 1.5; radius: 1; color: Theme.textLight
                 }
                 Rectangle {
-                    visible: isMaxBtn && !root.isMax; anchors.fill: parent
+                    visible: isMaxBtn && !root.isMax; anchors.centerIn: parent
+                    width: 10; height: 10; radius: 2
                     color: "transparent"; border.color: Theme.textLight
-                    border.width: 1
+                    border.width: 1.2
                 }
                 Item {
                     visible: isMaxBtn && root.isMax; anchors.fill: parent
                     Rectangle {
-                        x: 2; y: 0; width: 7; height: 1
+                        x: 3; y: 1; width: 7; height: 1.2; radius: 1
                         color: Theme.textLight
                     }
                     Rectangle {
-                        x: 8; y: 1; width: 1; height: 7
+                        x: 9; y: 2; width: 1.2; height: 7; radius: 1
                         color: Theme.textLight
                     }
                     Rectangle {
-                        x: 0; y: 2; width: 8; height: 8; color: "transparent"
-                        border.color: Theme.textLight; border.width: 1
+                        x: 1; y: 3; width: 8; height: 8; radius: 2
+                        color: "transparent"
+                        border.color: Theme.textLight; border.width: 1.2
                     }
                 }
                 Text {
                     visible: isClose; anchors.centerIn: parent
-                    text: "\u2715"; font.pixelSize: 11
+                    text: "\u2715"; font.pixelSize: 12
                     font.family: Theme.fontFamily
+                    font.bold: true
                     color: (isClose && btnM.containsMouse)
                         ? "#FFFFFF" : Theme.textLight
                 }
@@ -85,3 +88,4 @@ Row {
         }
     }
 }
+

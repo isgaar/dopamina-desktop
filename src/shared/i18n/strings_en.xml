@@ -31,12 +31,14 @@
     <string name="nav_section_library">YOUR LIBRARY</string>
     <string name="nav_principal">Home</string>
     <string name="nav_explore">Explore</string>
-    <string name="nav_local_library">Local Library</string>
+    <string name="nav_local_library">Library</string>
     <string name="nav_new_playlist">New playlist</string>
     <string name="nav_liked_title">Music you liked</string>
     <string name="nav_liked_subtitle">Auto-generated playlist</string>
     <string name="nav_playlists_hint">Your created playlists will appear here.</string>
     <string name="search_placeholder">What do you want to play?</string>
+    <string name="search_recent_title">Recent searches</string>
+    <string name="search_recent_clear">Clear</string>
     <string name="nav_tracks">Tracks</string>
     <string name="nav_albums">Albums</string>
     <string name="nav_artists">Artists</string>
@@ -244,7 +246,98 @@
     <string name="mix_ambiguity_later">Not now</string>
     <string name="mix_ambiguity_apply_album">Apply to this entire album</string>
     <string name="mix_ambiguity_preview">15 s</string>
-    <string name="session_source_mobile">Mobile session</string>
+    <string name="session_source_mobile">Mobile session (Android)</string>
     <string name="session_source_web">Web session</string>
+    <string name="session_source_desktop">This PC (Desktop)</string>
     <string name="session_source_playing">Playing</string>
+    <string name="session_switch_to_desktop">Switch to Desktop</string>
+    <string name="session_switch_to_android">Switch to Android</string>
+
+    <!-- Track context menu matching Android and user mockup -->
+    <string name="ctx_play_mix">Play track mix</string>
+    <string name="ctx_go_radio">Go to track radio</string>
+    <string name="ctx_play_next">Play next</string>
+    <string name="ctx_add_queue">Add to queue</string>
+    <string name="ctx_add_playlist">Add to playlist...</string>
+    <string name="ctx_save_liked">Save to your Likes</string>
+    <string name="ctx_remove_liked">Remove from your Likes</string>
+    <string name="ctx_go_artist">Go to artist</string>
+    <string name="ctx_go_album">Go to album</string>
+    <string name="ctx_hifi_details">Hi-Fi technical details</string>
+    <string name="ctx_download_audio">Download audio file</string>
+
+    <!-- Audio Fidelity Dialog matching Android NowPlayingAudioBadge -->
+    <string name="audio_quality_title">Audio Quality</string>
+    <string name="audio_quality_max_desc">Maximum fidelity: Genuine Hi-Res Lossless (24-bit / &gt;48 kHz with ultrasonic harmonics)</string>
+    <string name="audio_quality_high_desc">High fidelity: Lossless CD quality (16-bit / 44.1-48 kHz with full spectrum)</string>
+    <string name="audio_quality_ok_desc">Fair fidelity: High-bitrate audio (~320 kbps or upper spectral range)</string>
+    <string name="audio_quality_low_desc">Low fidelity: Transcode with steep cutoff at 16 kHz or low-bitrate compression</string>
+    <string name="dismiss">Dismiss</string>
+
+    <!-- Playlist & HUD dialogs -->
+    <string name="pl_picker_title">Add to playlist</string>
+    <string name="new_playlist_name_hint">New playlist name...</string>
+    <string name="playlists_empty_msg">No playlists created</string>
+    <string name="hud_title">Hi-Fi Technical &amp; Acoustic Details</string>
+    <string name="hud_tempo">TEMPO / CADENCE</string>
+    <string name="hud_camelot">CAMELOT KEY</string>
+    <string name="hud_loudness">INTEGRATED LOUDNESS</string>
+    <string name="hud_sample_depth">SAMPLE RATE &amp; BITS</string>
+    <string name="hud_container">CONTAINER</string>
+    <string name="hud_fidelity">HI-FI FIDELITY SCORE</string>
+    <string name="hud_storage_path">STORAGE LOCATION</string>
+    <string name="hud_close">Close</string>
+
+    <!-- Android Parity Settings Strings -->
+    <string name="settings_skip_silence_title">Skip silence</string>
+    <string name="settings_skip_silence_desc">Automatically skip silent audio fragments between or within songs</string>
+    <string name="settings_volume_stabilizer_title">Volume stabilizer</string>
+    <string name="settings_volume_stabilizer_desc">Normalize tracks to -14 LUFS with soft distortion-free limiting</string>
+    <string name="settings_visualizer_title">Reactive audio visualizer</string>
+    <string name="settings_visualizer_desc">Real-time spectrum animation synchronized to audio</string>
+    <string name="settings_buffer_size_desc">Buffer memory against audio stutter</string>
+
+    <string name="settings_pause_focus_title">Pause on focus loss</string>
+    <string name="settings_pause_focus_desc">Stops audio if another app takes focus</string>
+    <string name="settings_headphone_unplug_title">Headphones disconnected</string>
+    <string name="settings_headphone_unplug_desc">Pauses playback when headphones are removed</string>
+    <string name="settings_headphone_plug_title">On headphones connected</string>
+    <string name="settings_headphone_plug_desc">Resumes when headphones are plugged in</string>
+    <string name="settings_bt_connect_title">On Bluetooth connected</string>
+    <string name="settings_bt_connect_desc">Starts playback when wireless devices connect</string>
+    <string name="settings_vol_zero_title">Volume is 0</string>
+    <string name="settings_vol_zero_desc">Pauses when the volume reaches zero</string>
+    <string name="settings_vol_keys_desc">Control playback via media keyboard keys</string>
+    <string name="settings_powersaving_desc">Reduce visual effects and CPU usage in background</string>
+
+    <string name="settings_carousel_title">Playback Carousel Effect</string>
+    <string name="settings_carousel_desc">Fluid animation of adjacent queue covers in player view</string>
+    <string name="settings_cover_no_ext_title">Save without extension</string>
+    <string name="settings_cover_no_ext_desc">Hides downloaded covers from file managers</string>
+    <string name="settings_cover_size">Maximum cover size</string>
+    <string name="settings_cover_size_desc">Maximum resolution limit in pixels</string>
+    <string name="settings_cover_clear_title">Clear cover cache</string>
+    <string name="settings_cover_clear_desc">Purges locally stored cover artwork</string>
+    <string name="settings_cover_clear_done">Cover cache successfully cleared</string>
+
+    <string name="settings_scan_startup_title">Scan on startup</string>
+    <string name="settings_scan_startup_desc">Looks for new music when the app opens</string>
+    <string name="settings_scan_notify_title">Notify about new songs</string>
+    <string name="settings_scan_notify_desc">Alert when new tracks are added to library</string>
+    <string name="settings_scan_nomedia_title">Skip .nomedia and hidden folders</string>
+    <string name="settings_scan_nomedia_desc">Does not scan directories containing .nomedia files</string>
+    <string name="settings_scan_mp4_title">Skip .mp4 files</string>
+    <string name="settings_scan_mp4_desc">Ignores MP4 containers</string>
+    <string name="settings_scan_ogg_title">Skip .ogg and .oga files</string>
+    <string name="settings_scan_ogg_desc">Filters Ogg Vorbis format tracks</string>
+    <string name="settings_scan_encoding_title">Tag encoding</string>
+    <string name="settings_scan_encoding_desc">Fixes special characters in ID3 tags</string>
+    <string name="settings_scan_short_title">Skip short audio files</string>
+    <string name="settings_scan_short_desc">Excludes voice notes and brief sounds below threshold</string>
+    <string name="settings_scan_delete_db_title">Re-index library</string>
+    <string name="settings_scan_delete_db_desc">Re-scans and rebuilds the library from source</string>
+    <string name="settings_scan_rescan_done">Re-indexing started</string>
+
+    <string name="settings_accent_dynamic">Dynamic accent from artwork</string>
+    <string name="settings_accent_dynamic_desc">Extract harmonic palette from currently playing album</string>
 </resources>

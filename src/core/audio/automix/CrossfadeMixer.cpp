@@ -5,6 +5,7 @@
  * All Rights Reserved isgaar
  */
 #include "CrossfadeMixer.h"
+#include "../dsp/EqSpec.h"
 #include <cmath>
 #include <algorithm>
 
@@ -29,25 +30,8 @@ void CrossfadeMixer::mix(const float *outgoing,
                          float progressStart,
                          float progressEnd) {
     if (!output || frameCount <= 0 || channels <= 0) return;
-
-    for (int frame = 0; frame < frameCount; ++frame) {
-        float t = progressStart;
-        if (frameCount > 1) {
-            float frac = static_cast<float>(frame) / (frameCount - 1);
-            t = progressStart + frac * (progressEnd - progressStart);
-        }
-
-        float gOut = 1.0f;
-        float gIn = 0.0f;
-        computeGains(t, gOut, gIn);
-
-        for (int ch = 0; ch < channels; ++ch) {
-            int idx = frame * channels + ch;
-            float sOut = outgoing ? outgoing[idx] : 0.0f;
-            float sIn = incoming ? incoming[idx] : 0.0f;
-            output[idx] = sOut * gOut + sIn * gIn;
-        }
-    }
+    dopamine_dsp_mix_equal_power(outgoing, incoming, output, frameCount,
+                                 channels, progressStart, progressEnd);
 }
 
 } // namespace Dopamine::Core::Audio::Dsp

@@ -26,6 +26,8 @@ class PlaybackController : public QObject {
                NOTIFY trackChanged)
     Q_PROPERTY(QString currentTrackCover READ trackCover
                NOTIFY trackChanged)
+    Q_PROPERTY(int currentTrackId READ trackId NOTIFY trackChanged)
+    Q_PROPERTY(QString currentTrackPath READ trackPath NOTIFY trackChanged)
     Q_PROPERTY(int duration READ duration NOTIFY positionChanged)
     Q_PROPERTY(int position READ position NOTIFY positionChanged)
     Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY playStateChanged)
@@ -47,6 +49,8 @@ public:
     QString trackArtist() const { return m_track.artist; }
     QString trackAlbum() const { return m_track.album; }
     QString trackCover() const { return m_track.cover; }
+    int trackId() const { return m_track.id; }
+    QString trackPath() const { return m_currentUrl.toString(); }
     int duration() const { return m_track.duration; }
     int position() const { return m_position; }
     bool isPlaying() const;
@@ -59,22 +63,30 @@ public:
     Q_INVOKABLE void play();
     Q_INVOKABLE void pause();
     Q_INVOKABLE void stop();
+    Q_INVOKABLE void seek(int seconds);
     Q_INVOKABLE void setVolume(int vol);
+    void seekFromRemote(int seconds);
+    void setVolumeFromRemote(int vol);
+    void syncRemoteProgress(int positionSec, int volumePct);
     Q_INVOKABLE void playLibraryTrack(int id, const QString &title,
                                       const QString &artist,
                                       const QString &album,
-                                      const QString &path, int dur);
+                                      const QString &path, int dur,
+                                      const QString &coverUrl = QString{});
     Q_INVOKABLE void loadLibraryTrack(int id, const QString &title,
                                       const QString &artist,
                                       const QString &album,
                                       const QString &path, int dur,
-                                      int positionSec);
+                                      int positionSec,
+                                      const QString &coverUrl = QString{});
 
 signals:
     void trackChanged();
     void positionChanged();
     void playStateChanged();
     void volumeChanged();
+    void userSeeked(int seconds);
+    void userVolumeChanged(int vol);
     void lyricsChanged();
 
 private slots:

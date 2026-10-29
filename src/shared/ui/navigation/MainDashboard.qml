@@ -15,6 +15,7 @@ import "root:/src/features/queue/ui"
 
 Item {
     id: root
+    clip: true
     property string activeView: "tracks"
     signal openSettingsRequested()
     signal openEqualizerRequested()
@@ -23,6 +24,7 @@ Item {
 
     PlayerBar {
         id: playerBar
+        z: 10
         anchors.left: parent.left; anchors.right: parent.right
         anchors.bottom: parent.bottom
         onQueueRequested: root.activeView = "queue"
@@ -64,10 +66,11 @@ Item {
 
         Item {
             Layout.fillWidth: true; Layout.fillHeight: true
+            clip: true
 
             LibraryView {
                 id: libraryView; anchors.fill: parent
-                visible: ["tracks", "albums", "artists", "genres",
+                visible: ["tracks", "principal", "albums", "artists", "genres",
                           "folders"].indexOf(root.activeView) !== -1
                 section: root.activeView; controller: libraryController
                 queueCtrl: queueController; playbackCtrl: playbackController

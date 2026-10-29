@@ -64,4 +64,18 @@ void SessionPlaybackApiClient::resolveTracks(const QList<int> &ids,
     });
 }
 
+void SessionPlaybackApiClient::publishState(const QJsonObject &payload) {
+    if (!m_client || payload.isEmpty()) return;
+    m_client->post(QStringLiteral("/api/v1/player/playback/state"),
+                   QJsonDocument(payload).toJson(QJsonDocument::Compact),
+                   [](bool, const QByteArray &) {});
+}
+
+void SessionPlaybackApiClient::saveSession(const QJsonObject &payload) {
+    if (!m_client || payload.isEmpty()) return;
+    m_client->post(QStringLiteral("/api/v1/player/playback/session"),
+                   QJsonDocument(payload).toJson(QJsonDocument::Compact),
+                   [](bool, const QByteArray &) {});
+}
+
 } // namespace Dopamine::Features::Interconnect::Infra

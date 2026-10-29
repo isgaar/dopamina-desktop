@@ -6,11 +6,37 @@
  */
 #include "PlaybackController.h"
 #include "../../../core/audio/IAudioBackend.h"
+#include "../../../core/ProjectConfig.h"
 #include <QFile>
 #include <QFileInfo>
 #include <QSettings>
 
 namespace Dopamine::Features::Playback::App {
+
+namespace {
+QString resolveCover(int id, const QString &path, const QString &coverUrl) {
+    if (!coverUrl.isEmpty()) {
+        if (coverUrl.startsWith('/')) {
+            QString base = Dopamine::Core::ProjectConfig::instance().apiUrl();
+            while (base.endsWith('/')) base.chop(1);
+            if (!base.isEmpty()) return base + coverUrl;
+        }
+        return coverUrl;
+    }
+    if (id > 0) {
+        if (path.contains("/api/v1/")) {
+            const int idx = path.indexOf("/api/v1/");
+            return path.left(idx) + QString("/api/v1/covers/%1").arg(id);
+        }
+        QString base = Dopamine::Core::ProjectConfig::instance().apiUrl();
+        while (base.endsWith('/')) base.chop(1);
+        if (!base.isEmpty()) {
+            return base + QString("/api/v1/covers/%1").arg(id);
+        }
+    }
+    return QString{};
+}
+} // namespace
 
 PlaybackController::PlaybackController(
     Core::Audio::IAudioBackend *aud, QObject *parent)
@@ -35,6 +61,17 @@ bool PlaybackController::isPlaying() const {
 }
 
 void PlaybackController::setVolume(int vol) {
+    const int clamped = qBound(0, vol, 100);
+    if (m_volume == clamped) return;
+    m_volume = clamped;
+    if (m_audio) m_audio->setVolume(m_volume);
+    QSettings("isgaar", "Dopamine")
+        .setValue("Playback/Volume", m_volume);
+    emit volumeChanged();
+    emit userVolumeChanged(m_volume);
+}
+
+void PlaybackController::setVolumeFromRemote(int vol) {
     const int clamped = qBound(0, vol, 100);
     if (m_volume == clamped) return;
     m_volume = clamped;
@@ -69,11 +106,51 @@ void PlaybackController::stop() {
     }
 }
 
+void PlaybackController::seek(int seconds) {
+    const int clamped = qMax(0, seconds);
+    m_position = clamped;
+    m_resumeMs = static_cast<qint64>(clamped) * 1000;
+    if (m_audio) m_audio->seek(m_resumeMs);
+    emit positionChanged();
+    emit userSeeked(clamped);
+}
+
+void PlaybackController::seekFromRemote(int seconds) {
+    const int clamped = qMax(0, seconds);
+    m_position = clamped;
+    m_resumeMs = static_cast<qint64>(clamped) * 1000;
+    if (m_audio) m_audio->seek(m_resumeMs);
+    emit positionChanged();
+}
+
+void PlaybackController::syncRemoteProgress(int positionSec, int volumePct) {
+    if (isPlaying()) return;
+    const int clampedPos = qMax(0, positionSec);
+    if (m_position != clampedPos) {
+        m_position = clampedPos;
+        m_resumeMs = static_cast<qint64>(clampedPos) * 1000;
+        emit positionChanged();
+        const int idx = Domain::LrcParser::activeLineIndex(
+            m_lyrics, m_resumeMs);
+        if (idx != m_activeLyric) {
+            m_activeLyric = idx;
+            emit lyricsChanged();
+        }
+    }
+    if (volumePct >= 0 && volumePct <= 100 && m_volume != volumePct) {
+        m_volume = volumePct;
+        if (m_audio) m_audio->setVolume(m_volume);
+        emit volumeChanged();
+    }
+}
+
 void PlaybackController::playLibraryTrack(int id, const QString &title,
                                           const QString &artist,
                                           const QString &album,
-                                          const QString &path, int dur) {
-    m_track = {id, title, artist, album, QString{}, dur};
+                                          const QString &path, int dur,
+                                          const QString &coverUrl) {
+    const QString resolvedCover = resolveCover(id, path, coverUrl);
+    m_track = {id, title, artist, album, resolvedCover, dur};
     m_currentUrl.clear();
     if (!path.isEmpty()) {
         m_currentUrl = path.startsWith('/') ?
@@ -95,9 +172,11 @@ void PlaybackController::loadLibraryTrack(int id, const QString &title,
                                           const QString &artist,
                                           const QString &album,
                                           const QString &path, int dur,
-                                          int positionSec) {
+                                          int positionSec,
+                                          const QString &coverUrl) {
     if (m_audio) m_audio->stop();
-    m_track = {id, title, artist, album, QString{}, dur};
+    const QString resolvedCover = resolveCover(id, path, coverUrl);
+    m_track = {id, title, artist, album, resolvedCover, dur};
     m_currentUrl.clear();
     if (!path.isEmpty()) {
         m_currentUrl = path.startsWith('/') ?

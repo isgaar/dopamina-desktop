@@ -26,6 +26,7 @@ public:
     void fetchPlaylists(ListCallback cb);
     void createPlaylist(const QString &name, StatusCallback cb);
     void deletePlaylist(int id, StatusCallback cb);
+    void addTrackToPlaylist(int playlistId, int trackId, StatusCallback cb);
     void fetchLikes(ListCallback cb);
     void setLike(int trackId, bool liked, StatusCallback cb);
 

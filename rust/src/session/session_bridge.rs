@@ -171,9 +171,16 @@ impl qobject::SessionBridge {
                         clear_error(object.as_mut());
                     }
                     apply_status(object.as_mut(), "online");
+                    let url = object.server_url().clone();
+                    object.as_mut().server_adopted(&url);
+                    object.as_mut().login_succeeded();
                 } else if outcome.status == 401 {
                     clear_session(object.as_mut());
                     apply_status(object.as_mut(), "online");
+                    let url = object.server_url().clone();
+                    if !url.is_empty() {
+                        object.as_mut().server_adopted(&url);
+                    }
                     object
                         .as_mut()
                         .set_error_key(QString::from("session_expired"));
