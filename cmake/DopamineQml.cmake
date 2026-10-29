@@ -83,6 +83,7 @@ set(DOPAMINE_QML_FILES
     src/features/queue/ui/QueueView.qml
     src/features/playlists/ui/PlaylistsView.qml
     src/features/playlists/ui/PlaylistRow.qml
+    src/features/playback/visualizations/VisualizerEffectHost.qml
 )
 
 

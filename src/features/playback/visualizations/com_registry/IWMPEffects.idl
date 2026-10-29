@@ -1,0 +1,55 @@
+// Windows Media Player Visualization Interfaces (IWMPEffects & IWMPEffects2)
+// Extracted and Reverse-Engineered from wmp.tlb & mpvis.tlb
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+const int SA_BUFFER_SIZE = 1024;
+
+typedef struct _TimedLevel {
+    unsigned char frequency[2][SA_BUFFER_SIZE];
+    unsigned char waveform[2][SA_BUFFER_SIZE];
+    int state;
+    hyper timeStamp;
+} TimedLevel;
+
+[
+    object,
+    uuid(D5DA4A00-47F6-11D3-BB49-00A0C93CA73A),
+    dual,
+    helpstring("IWMPEffects: Standard Windows Media Player Visualization Interface"),
+    pointer_default(unique)
+]
+interface IWMPEffects : IUnknown
+{
+    HRESULT Render([in] TimedLevel *pLevels, [in] HDC hdc, [in] RECT *prc);
+    HRESULT MediaInfo([in] LONG lChannelCount, [in] LONG lSampleRate, [in] BSTR bstrTitle);
+    HRESULT GetCapabilities([out] DWORD *pdwCapabilities);
+    HRESULT DisplayPropertyPage([in] HWND hwndOwner);
+    HRESULT GetTitle([out] BSTR *pbstrTitle);
+    HRESULT GetPresetTitle([in] LONG nPreset, [out] BSTR *pbstrPresetTitle);
+    HRESULT GetPresetCount([out] LONG *pnPresetCount);
+    HRESULT SetCurrentPreset([in] LONG nPreset);
+    HRESULT GetCurrentPreset([out] LONG *pnPreset);
+};
+
+[
+    object,
+    uuid(695386EC-AA3C-4618-A5E1-DD9F8B98A7F0),
+    helpstring("IWMPEffects2: Extended Visualization Interface with Fullscreen & Window Events"),
+    pointer_default(unique)
+]
+interface IWMPEffects2 : IWMPEffects
+{
+    HRESULT SetCore([in] IUnknown *pPlayer);
+    HRESULT Create([in] HWND hwndParent);
+    HRESULT Destroy(void);
+    HRESULT NotifyNewMedia([in] IUnknown *pMedia);
+    HRESULT OnWindowMessage([in] UINT msg, [in] WPARAM WParam, [in] LPARAM LParam, [out] LRESULT *plResultParam);
+    HRESULT RenderFullScreen([in] TimedLevel *pLevels);
+};
+
+// Known Visualization CLSIDs:
+// Alchemy (mpvis.dll):               {0AA02E8D-F851-4CB0-9F64-BBA9BE7A983D}
+// Bars and Waves (wmp.dll):          {48501FF0-F6A9-11D2-9435-00A0C92A2F2D}
+// Battery / Ambience (wmp.dll):      {8D2A317B-D98B-4efa-89D6-E49F0ACF98A1}

@@ -1,0 +1,231 @@
+{
+  "description": "Complete Catalog of Windows Media Player Legacy Visualizations & Presets",
+  "collections": [
+    {
+      "id": "alchemy",
+      "name_es": "Alquimia",
+      "name_en": "Alchemy",
+      "dll": "mpvis.DLL",
+      "clsid": "{0AA02E8D-F851-4CB0-9F64-BBA9BE7A983D}",
+      "description_es": "Visualizaciones caleidoscópicas basadas en deformación de ondas de audio, estrellas y difuminado espectral.",
+      "presets": [
+        {
+          "id": 100,
+          "name": "Alquimia / Predeterminado"
+        },
+        {
+          "id": 101,
+          "name": "Desenfocar (Blur)"
+        },
+        {
+          "id": 102,
+          "name": "SwitchBlur"
+        },
+        {
+          "id": 103,
+          "name": "Desplazar (Shift)"
+        },
+        {
+          "id": 104,
+          "name": "Ciclo de procesamiento estándar"
+        },
+        {
+          "id": 105,
+          "name": "Desplazamiento lineal"
+        },
+        {
+          "id": 106,
+          "name": "Desplazar y estirar"
+        },
+        {
+          "id": 107,
+          "name": "SuperStar"
+        },
+        {
+          "id": 108,
+          "name": "WonderWave (Onda Maravilla)",
+          "active_in_screenshot": true
+        },
+        {
+          "id": 109,
+          "name": "Cambio de ámbito (Scope Shift)"
+        },
+        {
+          "id": 110,
+          "name": "Funkcional"
+        },
+        {
+          "id": 115,
+          "name": "Amplificación de bajos (Bass Boost)"
+        },
+        {
+          "id": 117,
+          "name": "Aleatorio (Random)"
+        }
+      ]
+    },
+    {
+      "id": "bars_and_waves",
+      "name_es": "Barras y ondas",
+      "name_en": "Bars and Waves",
+      "dll": "wmp.dll",
+      "clsid": "{48501FF0-F6A9-11D2-9435-00A0C92A2F2D}",
+      "description_es": "Ecualizadores de espectro clásicos, niebla marina, tormenta de fuego y osciloscopios.",
+      "presets": [
+        {
+          "id": 5501,
+          "name": "Barras (Bars)"
+        },
+        {
+          "id": 5502,
+          "name": "Bruma marina (Ocean Mist)"
+        },
+        {
+          "id": 5503,
+          "name": "Tormenta de fuego (Firestorm)"
+        },
+        {
+          "id": 5504,
+          "name": "Ámbito (Scope)"
+        }
+      ]
+    },
+    {
+      "id": "spikes",
+      "name_es": "Puntas",
+      "name_en": "Spikes",
+      "dll": "wmp.dll",
+      "description_es": "Agujas y formas orgánicas reactivas al espectro.",
+      "presets": [
+        {
+          "id": 5506,
+          "name": "Punta (Spike)"
+        },
+        {
+          "id": 5507,
+          "name": "Ameba (Amoeba)"
+        }
+      ]
+    },
+    {
+      "id": "particles",
+      "name_es": "Partículas",
+      "name_en": "Particles",
+      "dll": "wmp.dll",
+      "description_es": "Nubes de partículas y flujos rotatorios.",
+      "presets": [
+        {
+          "id": 5509,
+          "name": "Partícula (Particle)"
+        },
+        {
+          "id": 5510,
+          "name": "Partícula giratoria (Swirling Particle)"
+        }
+      ]
+    },
+    {
+      "id": "ambience",
+      "name_es": "Ambiente / Batería",
+      "name_en": "Ambience / Battery",
+      "dll": "wmp.dll",
+      "clsid": "{8D2A317B-D98B-4efa-89D6-E49F0ACF98A1}",
+      "description_es": "Ondulaciones psicodélicas, espirales, vórtices y gotas de agua reactivas.",
+      "presets": [
+        {
+          "id": 5515,
+          "name": "Aleatorio"
+        },
+        {
+          "id": 5516,
+          "name": "Remolino (Swirl)"
+        },
+        {
+          "id": 5517,
+          "name": "Velocidad (Speed)"
+        },
+        {
+          "id": 5518,
+          "name": "Anon"
+        },
+        {
+          "id": 5519,
+          "name": "Caída (Fall)"
+        },
+        {
+          "id": 5520,
+          "name": "Agua (Water)"
+        },
+        {
+          "id": 5521,
+          "name": "Burbuja (Bubble)"
+        },
+        {
+          "id": 5522,
+          "name": "Vértigo (Vertigo)"
+        },
+        {
+          "id": 5523,
+          "name": "Molino (Windmill)"
+        },
+        {
+          "id": 5524,
+          "name": "Niágara (Niagara)"
+        },
+        {
+          "id": 5525,
+          "name": "Batidora (Mixer)"
+        },
+        {
+          "id": 5526,
+          "name": "Equis (X)"
+        },
+        {
+          "id": 5527,
+          "name": "Torbellino (Whirlwind)"
+        },
+        {
+          "id": 5539,
+          "name": "Cosas (Things)"
+        }
+      ]
+    },
+    {
+      "id": "plenoptic",
+      "name_es": "Plenoptic",
+      "name_en": "Plenoptic",
+      "dll": "wmp.dll",
+      "description_es": "Anillos de humo, líneas y llamas fluidas.",
+      "presets": [
+        {
+          "id": 5532,
+          "name": "Aleatorio"
+        },
+        {
+          "id": 5533,
+          "name": "Círculos de humo (Smoke Rings)"
+        },
+        {
+          "id": 5534,
+          "name": "Líneas de humo (Smoke Lines)"
+        },
+        {
+          "id": 5535,
+          "name": "Vox"
+        },
+        {
+          "id": 5536,
+          "name": "Llama (Flame)"
+        },
+        {
+          "id": 5537,
+          "name": "Fuente (Fountain)"
+        },
+        {
+          "id": 5538,
+          "name": "Spyro"
+        }
+      ]
+    }
+  ]
+}

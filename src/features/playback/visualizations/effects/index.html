@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows Media Player Legacy — Visualizer & Player</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="../../icons/wmplayer_icon_IDR_MAINFRAME.ico">
+</head>
+<body>
+  <div class="player-container">
+    <!-- Window Title Bar -->
+    <header class="window-titlebar">
+      <div class="title-left">
+        <img src="../../icons/wmplayer_icon_IDR_MAINFRAME.ico" class="wmp-logo" alt="WMP">
+        <span>Reproductor de Windows Media (versión anterior)</span>
+      </div>
+      <div class="window-controls">
+        <button class="win-btn" title="Minimizar">&#8211;</button>
+        <button class="win-btn" title="Maximizar">&#9633;</button>
+        <button class="win-btn close" title="Cerrar">&#10005;</button>
+      </div>
+    </header>
+
+    <!-- Main Canvas Viewport -->
+    <main class="canvas-container">
+      <canvas id="visCanvas"></canvas>
+
+      <!-- Track Info Overlay (Matching User's Screenshot) -->
+      <div class="track-info-overlay">
+        <div class="track-artist" id="trackArtist">3BallMTY</div>
+        <div class="track-title" id="trackTitle">Inténtalo (Tribal Beat Demo)</div>
+      </div>
+
+      <!-- Preset Selector Overlay -->
+      <div class="preset-selector-overlay">
+        <span class="preset-label">Visualización:</span>
+        <select id="presetSelect" class="preset-select">
+          <optgroup label="Alquimia (mpvis.dll)">
+            <option value="wonderwave" selected>Alquimia: WonderWave (Captura)</option>
+            <option value="superstar">Alquimia: SuperStar</option>
+            <option value="switchblur">Alquimia: SwitchBlur</option>
+          </optgroup>
+          <optgroup label="Barras y ondas (wmp.dll)">
+            <option value="bars">Barras y ondas: Barras</option>
+            <option value="ocean_mist">Barras y ondas: Bruma marina</option>
+            <option value="firestorm">Barras y ondas: Tormenta de fuego</option>
+          </optgroup>
+          <optgroup label="Puntas y Ambiente">
+            <option value="spikes">Puntas: Spikes</option>
+            <option value="ambience_mixer">Ambiente: Batidora / Remolino</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <!-- Bottom Control Deck -->
+      <footer class="control-deck">
+        <!-- Timeline Row -->
+        <div class="timeline-row">
+          <span class="time-display" id="timeDisplay">02:34</span>
+          <div class="seek-bar-container" id="seekBar">
+            <div class="seek-bar-fill" id="seekFill"></div>
+          </div>
+        </div>
+
+        <!-- Transport Controls Row -->
+        <div class="transport-row">
+          <!-- Audio Source Selectors -->
+          <div class="source-options">
+            <button id="demoBeatBtn" class="pill-btn active" title="Reproducir ritmo de demostración sintetizado">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+              Ritmo Demo (3BallMTY)
+            </button>
+            <button id="loadFileBtn" class="pill-btn" title="Cargar archivo MP3/WAV de tu PC">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+              Cargar Música (MP3)
+            </button>
+            <input type="file" id="audioFileInput" accept="audio/*">
+          </div>
+
+          <!-- Central Transport Buttons -->
+          <div class="center-controls">
+            <!-- Shuffle -->
+            <button class="icon-btn small" title="Reproducción aleatoria">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+            </button>
+            <!-- Repeat -->
+            <button class="icon-btn small" title="Repetir">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+            </button>
+            <!-- Stop -->
+            <button id="stopBtn" class="icon-btn medium" title="Detener">
+              <rect x="7" y="7" width="10" height="10" fill="#a4c4e4" rx="1"/>
+            </button>
+            <!-- Previous -->
+            <button class="icon-btn medium" title="Anterior">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <!-- Metallic Blue Play Orb -->
+            <button id="playBtn" class="play-orb-btn" title="Reproducir / Pausar">
+              <svg id="playIcon" width="24" height="24" viewBox="0 0 24 24">
+                <polygon points="6,3 20,12 6,21" fill="#ffffff"/>
+              </svg>
+            </button>
+            <!-- Next -->
+            <button class="icon-btn medium" title="Siguiente">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+          </div>
+
+          <!-- Volume and Fullscreen -->
+          <div class="right-controls">
+            <div class="volume-container">
+              <button class="icon-btn small" title="Volumen">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+              </button>
+              <input type="range" id="volSlider" class="vol-slider" min="0" max="1" step="0.05" value="0.8">
+            </div>
+            <!-- Fullscreen (Icon matching user's screenshot at bottom right) -->
+            <button id="fullscreenBtn" class="icon-btn medium" title="Pantalla completa">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

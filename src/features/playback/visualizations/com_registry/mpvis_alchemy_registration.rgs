@@ -1,0 +1,43 @@
+HKCR
+{
+    NoRemove CLSID
+    {
+        ForceRemove {0AA02E8D-F851-4CB0-9F64-BBA9BE7A983D} = s 'AlchemyVis Class'
+        {
+            InprocServer32 = s '%MODULE%'
+            {
+                val ThreadingModel = s 'Apartment'
+            }
+            'TypeLib' = s '{C58F1580-0DF3-401C-93B1-2D9DDA61CF04}'
+            'Version' = s '1.0'
+        }
+    }
+}
+HKEY_LOCAL_MACHINE
+{
+    NoRemove SOFTWARE
+    {
+        NoRemove Microsoft
+        {
+            NoRemove MediaPlayer
+            {
+                NoRemove Objects
+                {
+                    NoRemove Effects
+                    {
+                        Delete Tolerance
+                        ForceRemove Alchemy
+                        {
+                            Properties
+                            {
+                                val classid = s '{0AA02E8D-F851-4CB0-9F64-BBA9BE7A983D}'
+                                val name = s 'res://mpvis.dll/RT_STRING/#100'
+                                val description = s 'res://mpvis.dll/RT_STRING/#100'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

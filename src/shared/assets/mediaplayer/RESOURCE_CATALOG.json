@@ -1,0 +1,1358 @@
+{
+  "extracted_at": "2026-10-25T21:53:11.302Z",
+  "source": "Windows Media Player Legacy (Windows 11/10 built-in)",
+  "extracted_using": "REA (Reverse Engineer Anything)",
+  "categories": {
+    "icons": [
+      {
+        "file": "icons/wmplayer_icon_IDR_MAINFRAME.ico",
+        "source": "wmplayer.exe",
+        "icon_group_id": "IDR_MAINFRAME",
+        "size_bytes": 92061,
+        "resolutions": "64x64 (4bpp), 48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 64x64 (8bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 64x64 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmplayer_icon_120.ico",
+        "source": "wmplayer.exe",
+        "icon_group_id": 120,
+        "size_bytes": 57584,
+        "resolutions": "16x16 (4bpp), 16x16 (8bpp), 24x24 (4bpp), 24x24 (8bpp), 32x32 (4bpp), 32x32 (8bpp), 48x48 (4bpp), 48x48 (8bpp), 16x16 (32bpp), 24x24 (32bpp), 32x32 (32bpp), 48x48 (32bpp), 256x256 (32bpp)"
+      },
+      {
+        "file": "icons/setup_wm_icon_70.ico",
+        "source": "setup_wm.exe",
+        "icon_group_id": 70,
+        "size_bytes": 92061,
+        "resolutions": "64x64 (4bpp), 48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 64x64 (8bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 64x64 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/setup_wm_icon_71.ico",
+        "source": "setup_wm.exe",
+        "icon_group_id": 71,
+        "size_bytes": 29926,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmpconfig_icon_IDR_MAINFRAME.ico",
+        "source": "wmpconfig.exe",
+        "icon_group_id": "IDR_MAINFRAME",
+        "size_bytes": 92061,
+        "resolutions": "64x64 (4bpp), 48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 64x64 (8bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 64x64 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmpshare_icon_IDR_MAINFRAME.ico",
+        "source": "wmpshare.exe",
+        "icon_group_id": "IDR_MAINFRAME",
+        "size_bytes": 92061,
+        "resolutions": "64x64 (4bpp), 48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 64x64 (8bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 64x64 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmpnssci_icon_600.ico",
+        "source": "wmpnssci.dll",
+        "icon_group_id": 600,
+        "size_bytes": 70787,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmpnssci_icon_601.ico",
+        "source": "wmpnssci.dll",
+        "icon_group_id": 601,
+        "size_bytes": 67940,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmpnssci_icon_602.ico",
+        "source": "wmpnssci.dll",
+        "icon_group_id": 602,
+        "size_bytes": 72658,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_28750.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 28750,
+        "size_bytes": 55127,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_28751.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 28751,
+        "size_bytes": 55127,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_28752.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 28752,
+        "size_bytes": 55127,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_28753.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 28753,
+        "size_bytes": 55127,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_29100.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 29100,
+        "size_bytes": 10134,
+        "resolutions": "32x32 (4bpp), 16x16 (4bpp), 32x32 (8bpp), 16x16 (8bpp), 32x32 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_29101.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 29101,
+        "size_bytes": 10134,
+        "resolutions": "32x32 (4bpp), 16x16 (4bpp), 32x32 (8bpp), 16x16 (8bpp), 32x32 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_29102.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 29102,
+        "size_bytes": 25214,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 16x16 (8bpp), 48x48 (32bpp), 32x32 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_29105.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 29105,
+        "size_bytes": 55127,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 24x24 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 24x24 (8bpp), 16x16 (8bpp), 256x256 (32bpp), 48x48 (32bpp), 32x32 (32bpp), 24x24 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_29106.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 29106,
+        "size_bytes": 25214,
+        "resolutions": "48x48 (4bpp), 32x32 (4bpp), 16x16 (4bpp), 48x48 (8bpp), 32x32 (8bpp), 16x16 (8bpp), 48x48 (32bpp), 32x32 (32bpp), 16x16 (32bpp)"
+      },
+      {
+        "file": "icons/wmp_icon_29107.ico",
+        "source": "wmp.dll",
+        "icon_group_id": 29107,
+        "size_bytes": 10134,
+        "resolutions": "32x32 (4bpp), 16x16 (4bpp), 32x32 (8bpp), 16x16 (8bpp), 32x32 (32bpp), 16x16 (32bpp)"
+      }
+    ],
+    "bitmaps": [
+      {
+        "file": "bitmaps/setup_wm_bitmap_235.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 235,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_236.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 236,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_237.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 237,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_238.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 238,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_239.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 239,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_240.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 240,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_241.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 241,
+        "size_bytes": 10190,
+        "dimensions": "266x34",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_242.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 242,
+        "size_bytes": 10190,
+        "dimensions": "266x34",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_243.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 243,
+        "size_bytes": 14270,
+        "dimensions": "385x34",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_244.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 244,
+        "size_bytes": 14270,
+        "dimensions": "385x34",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_245.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 245,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_246.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 246,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_247.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 247,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_248.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 248,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_254.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 254,
+        "size_bytes": 73952,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_255.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 255,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_258.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 258,
+        "size_bytes": 32516,
+        "dimensions": "600x54",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_259.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 259,
+        "size_bytes": 940,
+        "dimensions": "16x16",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_260.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 260,
+        "size_bytes": 832,
+        "dimensions": "16x16",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_262.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 262,
+        "size_bytes": 9352,
+        "dimensions": "266x33",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_263.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 263,
+        "size_bytes": 1376,
+        "dimensions": "22x17",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_264.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 264,
+        "size_bytes": 9328,
+        "dimensions": "266x33",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_266.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 266,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_268.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 268,
+        "size_bytes": 74876,
+        "dimensions": "600x123",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_1110.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 1110,
+        "size_bytes": 167492,
+        "dimensions": "600x279",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_1113.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 1113,
+        "size_bytes": 32516,
+        "dimensions": "600x54",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_1114.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 1114,
+        "size_bytes": 13312,
+        "dimensions": "385x33",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/setup_wm_bitmap_1115.bmp",
+        "source": "setup_wm.exe",
+        "bitmap_id": 1115,
+        "size_bytes": 13288,
+        "dimensions": "385x33",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/mpvis_bitmap_206.bmp",
+        "source": "mpvis.DLL",
+        "bitmap_id": 206,
+        "size_bytes": 1334,
+        "dimensions": "64x64",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/mpvis_bitmap_207.bmp",
+        "source": "mpvis.DLL",
+        "bitmap_id": 207,
+        "size_bytes": 1590,
+        "dimensions": "128x128",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/mpvis_bitmap_208.bmp",
+        "source": "mpvis.DLL",
+        "bitmap_id": 208,
+        "size_bytes": 2614,
+        "dimensions": "256x256",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/mpvis_bitmap_209.bmp",
+        "source": "mpvis.DLL",
+        "bitmap_id": 209,
+        "size_bytes": 5174,
+        "dimensions": "512x512",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/mpvis_bitmap_210.bmp",
+        "source": "mpvis.DLL",
+        "bitmap_id": 210,
+        "size_bytes": 13366,
+        "dimensions": "1024x1024",
+        "bpp": 8
+      },
+      {
+        "file": "bitmaps/WmpDui_bitmap_101.bmp",
+        "source": "WmpDui.dll",
+        "bitmap_id": 101,
+        "size_bytes": 502,
+        "dimensions": "48x16",
+        "bpp": 4
+      },
+      {
+        "file": "bitmaps/WmpDui_bitmap_1011.bmp",
+        "source": "WmpDui.dll",
+        "bitmap_id": 1011,
+        "size_bytes": 198,
+        "dimensions": "7x6",
+        "bpp": 24
+      }
+    ],
+    "html": [
+      {
+        "file": "html/wmploc.dll_BLANKBLACK.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "BLANKBLACK.HTM",
+        "size_bytes": 368
+      },
+      {
+        "file": "html/wmploc.dll_BLOCKED_ALBUMINFO.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "BLOCKED_ALBUMINFO.HTM",
+        "size_bytes": 984
+      },
+      {
+        "file": "html/wmploc.dll_BLOCKED_DVDDETAILS.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "BLOCKED_DVDDETAILS.HTM",
+        "size_bytes": 981
+      },
+      {
+        "file": "html/wmploc.dll_BLOCKED_DVDWIZARD.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "BLOCKED_DVDWIZARD.HTM",
+        "size_bytes": 924
+      },
+      {
+        "file": "html/wmploc.dll_BLOCKED_SUBMITINFO.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "BLOCKED_SUBMITINFO.HTM",
+        "size_bytes": 929
+      },
+      {
+        "file": "html/wmploc.dll_EMPTY.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "EMPTY.HTM",
+        "size_bytes": 337
+      },
+      {
+        "file": "html/wmploc.dll_ERROR_SERVICEINFO.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "ERROR_SERVICEINFO.HTM",
+        "size_bytes": 959
+      },
+      {
+        "file": "html/wmploc.dll_ICW_ERRORPAGE.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "ICW_ERRORPAGE.HTM",
+        "size_bytes": 1193
+      },
+      {
+        "file": "html/wmploc.dll_LICENSEPAGE.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "LICENSEPAGE.HTM",
+        "size_bytes": 1518
+      },
+      {
+        "file": "html/wmploc.dll_LYRICSPAGE.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "LYRICSPAGE.HTM",
+        "size_bytes": 317
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_ALBUMINFO.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_ALBUMINFO.HTM",
+        "size_bytes": 1155
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_DVDDETAILS.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_DVDDETAILS.HTM",
+        "size_bytes": 940
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_DVDWIZARD.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_DVDWIZARD.HTM",
+        "size_bytes": 879
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_INFOCENTER.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_INFOCENTER.HTM",
+        "size_bytes": 1548
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_MEDIAGUIDE.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_MEDIAGUIDE.HTM",
+        "size_bytes": 1595
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_MEDIAINFO_LIBRARY.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_MEDIAINFO_LIBRARY.HTM",
+        "size_bytes": 968
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_MEDIAINFO_NOWPLAYING.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_MEDIAINFO_NOWPLAYING.HTM",
+        "size_bytes": 911
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_SUBMITINFO.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_SUBMITINFO.HTM",
+        "size_bytes": 883
+      },
+      {
+        "file": "html/wmploc.dll_OFFLINE_SUBSCRIPTIONS.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "OFFLINE_SUBSCRIPTIONS.HTM",
+        "size_bytes": 1496
+      },
+      {
+        "file": "html/wmploc.dll_PHOTO.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "PHOTO.HTM",
+        "size_bytes": 1199
+      },
+      {
+        "file": "html/wmploc.dll_SAMICAPTIONING.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "SAMICAPTIONING.HTM",
+        "size_bytes": 254
+      },
+      {
+        "file": "html/wmploc.dll_SERVICE_INITIAL.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "SERVICE_INITIAL.HTM",
+        "size_bytes": 1032
+      },
+      {
+        "file": "html/wmploc.dll_SERVICE_NOFUNC.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "SERVICE_NOFUNC.HTM",
+        "size_bytes": 1015
+      },
+      {
+        "file": "html/wmploc.dll_SERVICE_NONE.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "SERVICE_NONE.HTM",
+        "size_bytes": 1000
+      },
+      {
+        "file": "html/wmploc.dll_SERVICE_NO_LOCAL.HTM.html",
+        "source": "wmploc.dll.mui",
+        "name": "SERVICE_NO_LOCAL.HTM",
+        "size_bytes": 916
+      },
+      {
+        "file": "html/wmploc.dll_SUPPORTINFO.XSL.html",
+        "source": "wmploc.dll.mui",
+        "name": "SUPPORTINFO.XSL",
+        "size_bytes": 20724
+      }
+    ],
+    "ui_directui": [
+      {
+        "file": "ui_directui/WmpDui_ui_1010.xml",
+        "source": "WmpDui.dll",
+        "name": 1010,
+        "size_bytes": 9106
+      }
+    ],
+    "manifests": [
+      {
+        "file": "manifests/wmplayer_manifest_1.manifest",
+        "source": "wmplayer.exe",
+        "id": 1,
+        "size_bytes": 1404
+      },
+      {
+        "file": "manifests/setup_wm_manifest_1.manifest",
+        "source": "setup_wm.exe",
+        "id": 1,
+        "size_bytes": 1291
+      },
+      {
+        "file": "manifests/wmlaunch_manifest_1.manifest",
+        "source": "wmlaunch.exe",
+        "id": 1,
+        "size_bytes": 690
+      },
+      {
+        "file": "manifests/wmpconfig_manifest_1.manifest",
+        "source": "wmpconfig.exe",
+        "id": 1,
+        "size_bytes": 766
+      },
+      {
+        "file": "manifests/wmpconfig_manifest_99.manifest",
+        "source": "wmpconfig.exe",
+        "id": 99,
+        "size_bytes": 720
+      },
+      {
+        "file": "manifests/wmprph_manifest_1.manifest",
+        "source": "wmprph.exe",
+        "id": 1,
+        "size_bytes": 1302
+      },
+      {
+        "file": "manifests/wmpshare_manifest_1.manifest",
+        "source": "wmpshare.exe",
+        "id": 1,
+        "size_bytes": 657
+      },
+      {
+        "file": "manifests/wmpnetwk_manifest_1.manifest",
+        "source": "wmpnetwk.exe",
+        "id": 1,
+        "size_bytes": 698
+      },
+      {
+        "file": "manifests/wmpnssci_manifest_2.manifest",
+        "source": "wmpnssci.dll",
+        "id": 2,
+        "size_bytes": 682
+      },
+      {
+        "file": "manifests/WMPNSSUI_manifest_2.manifest",
+        "source": "WMPNSSUI.dll",
+        "id": 2,
+        "size_bytes": 726
+      }
+    ],
+    "registry_scripts": [
+      {
+        "file": "registry_scripts/wmprph_registry_101.rgs",
+        "source": "wmprph.exe",
+        "id": 101,
+        "size_bytes": 380
+      },
+      {
+        "file": "registry_scripts/mpvis_registry_101.rgs",
+        "source": "mpvis.DLL",
+        "id": 101,
+        "size_bytes": 1208
+      },
+      {
+        "file": "registry_scripts/wmpnssci_registry_100.rgs",
+        "source": "wmpnssci.dll",
+        "id": 100,
+        "size_bytes": 119
+      },
+      {
+        "file": "registry_scripts/wmpnssci_registry_301.rgs",
+        "source": "wmpnssci.dll",
+        "id": 301,
+        "size_bytes": 641
+      },
+      {
+        "file": "registry_scripts/wmp_registry_223.rgs",
+        "source": "wmp.dll",
+        "id": 223,
+        "size_bytes": 5333
+      },
+      {
+        "file": "registry_scripts/wmp_registry_224.rgs",
+        "source": "wmp.dll",
+        "id": 224,
+        "size_bytes": 474
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10101.rgs",
+        "source": "wmp.dll",
+        "id": 10101,
+        "size_bytes": 931
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10103.rgs",
+        "source": "wmp.dll",
+        "id": 10103,
+        "size_bytes": 426
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10106.rgs",
+        "source": "wmp.dll",
+        "id": 10106,
+        "size_bytes": 461
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10107.rgs",
+        "source": "wmp.dll",
+        "id": 10107,
+        "size_bytes": 8544
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10108.rgs",
+        "source": "wmp.dll",
+        "id": 10108,
+        "size_bytes": 2133
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10109.rgs",
+        "source": "wmp.dll",
+        "id": 10109,
+        "size_bytes": 4374
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10110.rgs",
+        "source": "wmp.dll",
+        "id": 10110,
+        "size_bytes": 551
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10111.rgs",
+        "source": "wmp.dll",
+        "id": 10111,
+        "size_bytes": 2995
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10112.rgs",
+        "source": "wmp.dll",
+        "id": 10112,
+        "size_bytes": 422
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10113.rgs",
+        "source": "wmp.dll",
+        "id": 10113,
+        "size_bytes": 868
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10114.rgs",
+        "source": "wmp.dll",
+        "id": 10114,
+        "size_bytes": 421
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10116.rgs",
+        "source": "wmp.dll",
+        "id": 10116,
+        "size_bytes": 446
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10118.rgs",
+        "source": "wmp.dll",
+        "id": 10118,
+        "size_bytes": 604
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10119.rgs",
+        "source": "wmp.dll",
+        "id": 10119,
+        "size_bytes": 608
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10121.rgs",
+        "source": "wmp.dll",
+        "id": 10121,
+        "size_bytes": 1380
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10122.rgs",
+        "source": "wmp.dll",
+        "id": 10122,
+        "size_bytes": 1240
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10123.rgs",
+        "source": "wmp.dll",
+        "id": 10123,
+        "size_bytes": 504
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10124.rgs",
+        "source": "wmp.dll",
+        "id": 10124,
+        "size_bytes": 491
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10127.rgs",
+        "source": "wmp.dll",
+        "id": 10127,
+        "size_bytes": 224
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10132.rgs",
+        "source": "wmp.dll",
+        "id": 10132,
+        "size_bytes": 222
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10135.rgs",
+        "source": "wmp.dll",
+        "id": 10135,
+        "size_bytes": 221
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10136.rgs",
+        "source": "wmp.dll",
+        "id": 10136,
+        "size_bytes": 225
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10137.rgs",
+        "source": "wmp.dll",
+        "id": 10137,
+        "size_bytes": 226
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10138.rgs",
+        "source": "wmp.dll",
+        "id": 10138,
+        "size_bytes": 225
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10141.rgs",
+        "source": "wmp.dll",
+        "id": 10141,
+        "size_bytes": 224
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10142.rgs",
+        "source": "wmp.dll",
+        "id": 10142,
+        "size_bytes": 225
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10147.rgs",
+        "source": "wmp.dll",
+        "id": 10147,
+        "size_bytes": 794
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10149.rgs",
+        "source": "wmp.dll",
+        "id": 10149,
+        "size_bytes": 230
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10152.rgs",
+        "source": "wmp.dll",
+        "id": 10152,
+        "size_bytes": 222
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10153.rgs",
+        "source": "wmp.dll",
+        "id": 10153,
+        "size_bytes": 243
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10154.rgs",
+        "source": "wmp.dll",
+        "id": 10154,
+        "size_bytes": 255
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10159.rgs",
+        "source": "wmp.dll",
+        "id": 10159,
+        "size_bytes": 785
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10160.rgs",
+        "source": "wmp.dll",
+        "id": 10160,
+        "size_bytes": 66694
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10163.rgs",
+        "source": "wmp.dll",
+        "id": 10163,
+        "size_bytes": 239
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10164.rgs",
+        "source": "wmp.dll",
+        "id": 10164,
+        "size_bytes": 240
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10165.rgs",
+        "source": "wmp.dll",
+        "id": 10165,
+        "size_bytes": 383
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10166.rgs",
+        "source": "wmp.dll",
+        "id": 10166,
+        "size_bytes": 383
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10167.rgs",
+        "source": "wmp.dll",
+        "id": 10167,
+        "size_bytes": 383
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10168.rgs",
+        "source": "wmp.dll",
+        "id": 10168,
+        "size_bytes": 383
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10169.rgs",
+        "source": "wmp.dll",
+        "id": 10169,
+        "size_bytes": 382
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10170.rgs",
+        "source": "wmp.dll",
+        "id": 10170,
+        "size_bytes": 365
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10171.rgs",
+        "source": "wmp.dll",
+        "id": 10171,
+        "size_bytes": 364
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10172.rgs",
+        "source": "wmp.dll",
+        "id": 10172,
+        "size_bytes": 362
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10173.rgs",
+        "source": "wmp.dll",
+        "id": 10173,
+        "size_bytes": 383
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10175.rgs",
+        "source": "wmp.dll",
+        "id": 10175,
+        "size_bytes": 426
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10176.rgs",
+        "source": "wmp.dll",
+        "id": 10176,
+        "size_bytes": 430
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10177.rgs",
+        "source": "wmp.dll",
+        "id": 10177,
+        "size_bytes": 383
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10178.rgs",
+        "source": "wmp.dll",
+        "id": 10178,
+        "size_bytes": 442
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10179.rgs",
+        "source": "wmp.dll",
+        "id": 10179,
+        "size_bytes": 224
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10182.rgs",
+        "source": "wmp.dll",
+        "id": 10182,
+        "size_bytes": 224
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10183.rgs",
+        "source": "wmp.dll",
+        "id": 10183,
+        "size_bytes": 225
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10184.rgs",
+        "source": "wmp.dll",
+        "id": 10184,
+        "size_bytes": 217
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10185.rgs",
+        "source": "wmp.dll",
+        "id": 10185,
+        "size_bytes": 223
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10186.rgs",
+        "source": "wmp.dll",
+        "id": 10186,
+        "size_bytes": 451
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10187.rgs",
+        "source": "wmp.dll",
+        "id": 10187,
+        "size_bytes": 369
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10500.rgs",
+        "source": "wmp.dll",
+        "id": 10500,
+        "size_bytes": 220
+      },
+      {
+        "file": "registry_scripts/wmp_registry_10503.rgs",
+        "source": "wmp.dll",
+        "id": 10503,
+        "size_bytes": 286
+      },
+      {
+        "file": "registry_scripts/wmp_registry_15103.rgs",
+        "source": "wmp.dll",
+        "id": 15103,
+        "size_bytes": 425
+      },
+      {
+        "file": "registry_scripts/wmp_registry_15104.rgs",
+        "source": "wmp.dll",
+        "id": 15104,
+        "size_bytes": 619
+      },
+      {
+        "file": "registry_scripts/wmp_registry_15105.rgs",
+        "source": "wmp.dll",
+        "id": 15105,
+        "size_bytes": 602
+      },
+      {
+        "file": "registry_scripts/wmp_registry_20100.rgs",
+        "source": "wmp.dll",
+        "id": 20100,
+        "size_bytes": 869
+      },
+      {
+        "file": "registry_scripts/wmp_registry_20101.rgs",
+        "source": "wmp.dll",
+        "id": 20101,
+        "size_bytes": 7125
+      },
+      {
+        "file": "registry_scripts/wmp_registry_20200.rgs",
+        "source": "wmp.dll",
+        "id": 20200,
+        "size_bytes": 898
+      },
+      {
+        "file": "registry_scripts/wmp_registry_30000.rgs",
+        "source": "wmp.dll",
+        "id": 30000,
+        "size_bytes": 232
+      },
+      {
+        "file": "registry_scripts/wmpdxm_registry_25000.rgs",
+        "source": "wmpdxm.dll",
+        "id": 25000,
+        "size_bytes": 4736
+      },
+      {
+        "file": "registry_scripts/wmpeffects_registry_100.rgs",
+        "source": "wmpeffects.dll",
+        "id": 100,
+        "size_bytes": 228
+      },
+      {
+        "file": "registry_scripts/wmpshell_registry_200.rgs",
+        "source": "wmpshell.dll",
+        "id": 200,
+        "size_bytes": 668
+      },
+      {
+        "file": "registry_scripts/wmpshell_registry_201.rgs",
+        "source": "wmpshell.dll",
+        "id": 201,
+        "size_bytes": 290
+      },
+      {
+        "file": "registry_scripts/wmpshell_registry_202.rgs",
+        "source": "wmpshell.dll",
+        "id": 202,
+        "size_bytes": 288
+      },
+      {
+        "file": "registry_scripts/wmpshell_registry_204.rgs",
+        "source": "wmpshell.dll",
+        "id": 204,
+        "size_bytes": 566
+      }
+    ],
+    "encoding_profiles": [
+      {
+        "file": "encoding_profiles/wmp_profile_30102.prx",
+        "source": "wmp.dll",
+        "id": 30102,
+        "size_bytes": 2354
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30103.prx",
+        "source": "wmp.dll",
+        "id": 30103,
+        "size_bytes": 2356
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30104.prx",
+        "source": "wmp.dll",
+        "id": 30104,
+        "size_bytes": 2356
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30105.prx",
+        "source": "wmp.dll",
+        "id": 30105,
+        "size_bytes": 2358
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30106.prx",
+        "source": "wmp.dll",
+        "id": 30106,
+        "size_bytes": 2358
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30107.prx",
+        "source": "wmp.dll",
+        "id": 30107,
+        "size_bytes": 2358
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30108.prx",
+        "source": "wmp.dll",
+        "id": 30108,
+        "size_bytes": 2630
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30109.prx",
+        "source": "wmp.dll",
+        "id": 30109,
+        "size_bytes": 2630
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30110.prx",
+        "source": "wmp.dll",
+        "id": 30110,
+        "size_bytes": 2628
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30111.prx",
+        "source": "wmp.dll",
+        "id": 30111,
+        "size_bytes": 2628
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30112.prx",
+        "source": "wmp.dll",
+        "id": 30112,
+        "size_bytes": 2632
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30113.prx",
+        "source": "wmp.dll",
+        "id": 30113,
+        "size_bytes": 2668
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30114.prx",
+        "source": "wmp.dll",
+        "id": 30114,
+        "size_bytes": 2444
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30115.prx",
+        "source": "wmp.dll",
+        "id": 30115,
+        "size_bytes": 2428
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30116.prx",
+        "source": "wmp.dll",
+        "id": 30116,
+        "size_bytes": 2444
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30117.prx",
+        "source": "wmp.dll",
+        "id": 30117,
+        "size_bytes": 2446
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30118.prx",
+        "source": "wmp.dll",
+        "id": 30118,
+        "size_bytes": 2454
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30119.prx",
+        "source": "wmp.dll",
+        "id": 30119,
+        "size_bytes": 2454
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_30120.prx",
+        "source": "wmp.dll",
+        "id": 30120,
+        "size_bytes": 2452
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_31100.prx",
+        "source": "wmp.dll",
+        "id": 31100,
+        "size_bytes": 5630
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_31101.prx",
+        "source": "wmp.dll",
+        "id": 31101,
+        "size_bytes": 5642
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_31102.prx",
+        "source": "wmp.dll",
+        "id": 31102,
+        "size_bytes": 5634
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_31103.prx",
+        "source": "wmp.dll",
+        "id": 31103,
+        "size_bytes": 5634
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_31104.prx",
+        "source": "wmp.dll",
+        "id": 31104,
+        "size_bytes": 6596
+      },
+      {
+        "file": "encoding_profiles/wmp_profile_31105.prx",
+        "source": "wmp.dll",
+        "id": 31105,
+        "size_bytes": 6586
+      }
+    ],
+    "string_tables": [
+      {
+        "file": "string_tables/wmp_strings.json",
+        "source": "wmp.dll",
+        "total_strings": 54,
+        "size_bytes": 2203
+      },
+      {
+        "file": "string_tables/wmploc.dll_strings.json",
+        "source": "wmploc.dll.mui",
+        "total_strings": 2821,
+        "size_bytes": 134973
+      },
+      {
+        "file": "string_tables/setup_wm.exe_strings.json",
+        "source": "setup_wm.exe.mui",
+        "total_strings": 305,
+        "size_bytes": 29098
+      }
+    ],
+    "media_renderer_assets": [
+      {
+        "file": "media_renderer_assets/avtransport.xml",
+        "size_bytes": 20699
+      },
+      {
+        "file": "media_renderer_assets/connectionmanager_dmr.xml",
+        "size_bytes": 5428
+      },
+      {
+        "file": "media_renderer_assets/DMR_120.jpg",
+        "size_bytes": 2979
+      },
+      {
+        "file": "media_renderer_assets/DMR_120.png",
+        "size_bytes": 11382
+      },
+      {
+        "file": "media_renderer_assets/DMR_48.jpg",
+        "size_bytes": 1220
+      },
+      {
+        "file": "media_renderer_assets/DMR_48.png",
+        "size_bytes": 3453
+      },
+      {
+        "file": "media_renderer_assets/RenderingControl.xml",
+        "size_bytes": 6363
+      },
+      {
+        "file": "media_renderer_assets/RenderingControl_DMP.xml",
+        "size_bytes": 2355
+      }
+    ],
+    "network_sharing_assets": [
+      {
+        "file": "network_sharing_assets/ConnectionManager.xml",
+        "size_bytes": 5422
+      },
+      {
+        "file": "network_sharing_assets/ContentDirectory.xml",
+        "size_bytes": 7515
+      },
+      {
+        "file": "network_sharing_assets/MediaReceiverRegistrar.xml",
+        "size_bytes": 2574
+      },
+      {
+        "file": "network_sharing_assets/wmpnss_color120.jpg",
+        "size_bytes": 4743
+      },
+      {
+        "file": "network_sharing_assets/wmpnss_color120.png",
+        "size_bytes": 16037
+      },
+      {
+        "file": "network_sharing_assets/wmpnss_color32.bmp",
+        "size_bytes": 4152
+      },
+      {
+        "file": "network_sharing_assets/wmpnss_color32.jpg",
+        "size_bytes": 1859
+      },
+      {
+        "file": "network_sharing_assets/wmpnss_color48.bmp",
+        "size_bytes": 9272
+      },
+      {
+        "file": "network_sharing_assets/wmpnss_color48.jpg",
+        "size_bytes": 2320
+      },
+      {
+        "file": "network_sharing_assets/wmpnss_color48.png",
+        "size_bytes": 5022
+      }
+    ]
+  }
+}
