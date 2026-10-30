@@ -15,7 +15,7 @@
 
 namespace {
 
-constexpr int kPollMs = 1200;
+constexpr int kPollMs = 800;
 
 QString sourceKindFor(const QString &userId) {
     return userId == QLatin1String("mobile_client")
@@ -90,12 +90,13 @@ void SessionPlaybackController::refreshNow() {
 
 void SessionPlaybackController::syncLocalPlayback(int trackId, int positionSec,
                                                   bool playing, int volume) {
+    const bool wasPlaying = m_localPlaying;
     const bool changed = (m_localPlaying != playing || m_localTrackId != trackId);
     m_localTrackId = trackId;
     m_localPositionSec = qMax(0, positionSec);
     m_localPlaying = playing;
     m_localVolume = qBound(0, volume, 100);
-    if (playing) {
+    if (!wasPlaying && playing) {
         m_sourceKind = QStringLiteral("desktop");
         m_remotePlaying = false;
         m_remoteControlMobile = false;
@@ -330,11 +331,15 @@ void SessionPlaybackController::handleStates(quint64 generation) {
             mobileState.value(QStringLiteral("device_id")).toString();
         const double mobileAt =
             mobileState.value(QStringLiteral("updated_at")).toDouble();
-        if (mobilePlaying && mobileDev == QLatin1String("mobile_client") &&
-            mobileAt > m_lastLocalPlayAt + 1.5) {
+        if (mobilePlaying && (mobileDev == QLatin1String("mobile_client") ||
+                              mobileDev == QLatin1String("transfer_to_mobile")) &&
+            mobileAt > m_lastLocalPlayAt + 1.2) {
             emit pauseLocalRequested();
             m_localPlaying = false;
             m_remoteControlMobile = true;
+            m_sourceKind = QStringLiteral("mobile");
+            m_remotePlaying = true;
+            emit sessionChanged();
         } else {
             return;
         }
@@ -442,12 +447,16 @@ void SessionPlaybackController::applyState(const QString &userId,
 
     m_localTrackId = trackId > 0 ? trackId : m_localTrackId;
     m_localPositionSec = qMax(0, posSec);
+    const bool volChanged = (volPct >= 0 && volPct != m_localVolume);
     if (volPct >= 0) m_localVolume = volPct;
-    if (sourceKindFor(userId) == QLatin1String("mobile") && playing) {
+    if (sourceKindFor(userId) == QLatin1String("mobile")) {
         m_remoteControlMobile = true;
+        m_sourceKind = QStringLiteral("mobile");
+        m_remotePlaying = playing;
     }
 
     emit remoteProgressUpdated(m_localPositionSec, volPct, playing);
+    if (volChanged) emit sessionChanged();
     applyQueue(userId, queue, trackId, m_localPositionSec, playing, generation);
 }
 
@@ -565,6 +574,7 @@ void SessionPlaybackController::remoteSetVolume(int volumePct) {
     sendRemoteCommandToAndroid(m_localTrackId, m_localPositionSec,
                                m_remotePlaying, m_localVolume);
     emit remoteProgressUpdated(m_localPositionSec, m_localVolume, m_remotePlaying);
+    emit sessionChanged();
 }
 
 } // namespace Dopamine::Features::Interconnect::App

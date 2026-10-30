@@ -87,8 +87,17 @@ Text {
         case "settings": return "\ue158";
         case "users": return "\ue1a4";
         case "tag": return "\ue183";
+        case "smartphone":
+        case "mobile":
+        case "phone": return "\ue167";
+        case "monitor":
+        case "desktop": return "\ue121";
+        case "speaker": return "\ue16a";
         case "volume": return "\ue1a9";
+        case "volume-1": return "\ue1aa";
         case "volume-2": return "\ue1ab";
+        case "volume-x":
+        case "volume-mute": return "\ue1ac";
         case "contrast": return "\ue0a1";
         case "plug": return "\ue383";
         case "eye": return "\ue0be";

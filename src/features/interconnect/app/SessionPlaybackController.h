@@ -35,6 +35,8 @@ class SessionPlaybackController : public QObject {
     Q_PROPERTY(bool canSwitchToAndroid READ canSwitchToAndroid
                NOTIFY sessionChanged)
     Q_PROPERTY(int queueSize READ queueSize NOTIFY sessionChanged)
+    Q_PROPERTY(double remoteVolume READ remoteVolume NOTIFY sessionChanged)
+    Q_PROPERTY(int remoteVolumePct READ remoteVolumePct NOTIFY sessionChanged)
 
 public:
     explicit SessionPlaybackController(
@@ -47,8 +49,7 @@ public:
     bool remotePlaying() const { return m_remotePlaying; }
     bool localPlaying() const { return m_localPlaying; }
     bool isControllingAndroid() const {
-        return !m_localPlaying && m_sourceKind == QLatin1String("mobile") &&
-               (m_remotePlaying || m_remoteControlMobile);
+        return !m_localPlaying && m_sourceKind == QLatin1String("mobile");
     }
     QString activeDeviceKind() const {
         if (m_localPlaying) return QStringLiteral("desktop");
@@ -63,6 +64,8 @@ public:
         return m_localPlaying || m_localTrackId > 0 || m_queueSize > 0;
     }
     int queueSize() const { return m_queueSize; }
+    double remoteVolume() const { return m_localVolume / 100.0; }
+    int remoteVolumePct() const { return m_localVolume; }
 
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();

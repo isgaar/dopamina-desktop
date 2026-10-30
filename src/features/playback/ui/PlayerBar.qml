@@ -46,7 +46,7 @@ Rectangle {
             Layout.maximumWidth: 240
             Layout.fillWidth: false
             volume: sessionPlaybackController.isControllingAndroid ?
-                Math.round(sessionPlaybackController.remoteVolume * 100) :
+                sessionPlaybackController.remoteVolumePct :
                 playbackController.volume
             onMoved: value => {
                 if (sessionPlaybackController.isControllingAndroid)
