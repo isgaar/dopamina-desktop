@@ -212,8 +212,9 @@ pub fn render_title_bar(
             })
             .response
             .interact(Sense::click());
+        let pill_hovered = pill_resp.hovered();
         ui.ctx()
-            .data_mut(|d| d.insert_temp(pill_id.with("hov"), pill_resp.hovered()));
+            .data_mut(|d| d.insert_temp(pill_id.with("hov"), pill_hovered));
         if pill_resp.clicked() {
             action = TitleBarAction::OpenSession;
         }
@@ -495,8 +496,9 @@ pub fn render_title_bar(
                                 .frame(false)
                                 .desired_width((search_w - 72.0).max(40.0)),
                         );
+                        let edit_focused = edit.has_focus();
                         ui.ctx().data_mut(|d| {
-                            d.insert_temp(search_id.with("foc"), edit.has_focus());
+                            d.insert_temp(search_id.with("foc"), edit_focused);
                         });
                         if edit.gained_focus() && !recent_searches.is_empty() {
                             *show_recent_popup = true;
@@ -517,8 +519,9 @@ pub fn render_title_bar(
                         }
                     });
                 });
+            let search_hovered = frame_resp.response.hovered();
             ui.ctx()
-                .data_mut(|d| d.insert_temp(search_id.with("hov"), frame_resp.response.hovered()));
+                .data_mut(|d| d.insert_temp(search_id.with("hov"), search_hovered));
 
             let recent_t = ctx.animate_bool_with_time(
                 ui.id().with("recent_popup_anim"),

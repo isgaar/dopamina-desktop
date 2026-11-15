@@ -934,8 +934,9 @@ fn render_group_browser(
                             })
                             .response
                             .interact(Sense::click());
+                        let card_hovered = resp.hovered();
                         ui.ctx()
-                            .data_mut(|d| d.insert_temp(card_id.with("hov"), resp.hovered()));
+                            .data_mut(|d| d.insert_temp(card_id.with("hov"), card_hovered));
                         if resp.clicked() {
                             action = ContentAction::SelectGroup(Some(group.name.clone()));
                         }
@@ -1187,8 +1188,9 @@ fn render_playlists_view(
                             })
                             .response
                             .interact(Sense::click());
+                        let card_hovered = resp.hovered();
                         ui.ctx()
-                            .data_mut(|d| d.insert_temp(card_id.with("hov"), resp.hovered()));
+                            .data_mut(|d| d.insert_temp(card_id.with("hov"), card_hovered));
                         if resp.clicked() {
                             action = ContentAction::SelectPlaylist(Some(pl));
                         }
@@ -1564,8 +1566,9 @@ fn render_track_row(
             ui.painter()
                 .rect_filled(bar, CornerRadius::same(2), palette.primary);
         }
+        let row_hovered = frame_resp.hovered();
         ui.ctx()
-            .data_mut(|d| d.insert_temp(row_id.with("hov"), frame_resp.hovered()));
+            .data_mut(|d| d.insert_temp(row_id.with("hov"), row_hovered));
         frame_resp.context_menu(|ui| {
             render_track_context_menu(ui, track, is_liked, strings, palette, action);
         });
@@ -1718,8 +1721,9 @@ fn pill_button(
         })
         .response
         .interact(Sense::click());
+    let btn_hovered = resp.hovered();
     ui.ctx()
-        .data_mut(|d| d.insert_temp(btn_id.with("hov"), resp.hovered()));
+        .data_mut(|d| d.insert_temp(btn_id.with("hov"), btn_hovered));
     resp.clicked()
 }
 

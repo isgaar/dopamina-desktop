@@ -245,8 +245,9 @@ pub fn render_sidebar(
         })
         .response
         .interact(Sense::click());
+    let fav_hovered = fav_resp.hovered();
     ui.ctx()
-        .data_mut(|d| d.insert_temp(fav_id.with("hov"), fav_resp.hovered()));
+        .data_mut(|d| d.insert_temp(fav_id.with("hov"), fav_hovered));
     if fav_resp.clicked() {
         action = SidebarAction::SelectView(String::from("favorites"));
     }
@@ -330,8 +331,9 @@ pub fn render_sidebar(
                             })
                             .response
                             .interact(Sense::click());
+                        let pl_hovered = resp.hovered();
                         ui.ctx()
-                            .data_mut(|d| d.insert_temp(pl_id.with("hov"), resp.hovered()));
+                            .data_mut(|d| d.insert_temp(pl_id.with("hov"), pl_hovered));
                         if resp.clicked() {
                             action = SidebarAction::OpenPlaylist(pl.clone());
                         }

@@ -267,6 +267,8 @@ impl DopamineApp {
         if let Some(ref guard) = self.single_instance {
             for msg in guard.poll_messages() {
                 if msg == "RAISE" {
+                    ctx.send_viewport_cmd(ViewportCommand::Visible(true));
+                    ctx.send_viewport_cmd(ViewportCommand::Minimized(false));
                     ctx.send_viewport_cmd(ViewportCommand::Focus);
                 } else {
                     let _ = self.session.handle_uri(&msg);
