@@ -1,35 +1,52 @@
 # dopamina-desktop
 
-Native Dopamine desktop client aligned with the Android app. The presentation
-layer is Qt 6/QML; the core is being migrated to Rust with
-[cxx-qt](https://kdab.github.io/cxx-qt/).
+Native Dopamine desktop client implemented 100% in pure Rust (`eframe`/`egui`
+for frameless presentation, `symphonia` for Hi-Fi decoding, native Rust DSP,
+runtime `libpulse-simple` audio output, and `zbus` + Wayland protocols for
+desktop integration). Zero Qt, QML, C++, or CMake dependencies.
 
 ## Features
 
-- Local library playback with Hi-Fi DSP, crossfade, equalizer, and `.lrc`
-  synchronized lyrics. FM stations and the legacy playback sync API are gone.
-- Queue with song mix ("Oír mix"), playlists, folders, albums, artists, and
-  genres.
-- Dynamic resizable sidebar with drag-to-resize splitter, snap collapse
-  under 120px, double-click collapse toggle, and width persistence.
-- Full capsule navigation pills (`Theme.radiusFull`) with contrast-aware
-  adaptive text colors for extracted album accents, and floating `ContentTabs`.
-- Native window caption controls docked flush to the real corner with hover
-  fill and window-radius matching.
-- Five themes ported from Android: Rose Glow (default), ExoBlur, TheGrand,
-  Redline, and Flat. The interface is dark by default.
-- Seamless handoff from web console with automatic listener session and token
-  adoption, instant catalog population, and single-instance IPC window focus.
-- Theme and language persist in `appearance.xml`; remaining preferences stay in
-  the native INI settings.
-- Lumpy Sans is the only interface typeface. Main and secondary windows use
-  four-corner rounded chrome.
+- **Hi-Fi Audio & Pure-Rust DSP**: Playback for `FLAC`, `ALAC`, `WAV`, `MP3`,
+  `AAC`, and `OGG` decoded via `symphonia` and processed through a 32-bit float
+  chain (`12-band EQ`, `limiter`, `AGC`, `Z-Bass/Mids/Treble`, `compressor`,
+  `echo`, `reverb`, `autowah`, `flanger`, equal-power `crossfade`, real-time FFT
+  visualizer, and `.lrc` synchronized lyrics).
+- **Catalog & Library Organization**: Local folder, mounted SMB share, or
+  Dopamine Core server catalog with acoustic deduplication, A-Z jump rail,
+  search with persistent recents, and offline track caching.
+- **Navigation, Views & Queue**: *Listen* home dashboard, *Library* (`Tracks`,
+  `Albums`, `Artists`, `Genres`, `Folders`), *Favorites*, *Playlists*, *Queue*
+  with mix triangulation, bidirectional desktop/mobile handoff
+  (`SessionPlaybackController`), and `dopamine://` single-instance IPC
+  (`SingleInstanceGuard`).
+- **Deterministic Frameless Layout & Smooth Animations**:
+  - Pixel-accurate `Rect` workspace partitioning (`56px` custom TitleBar,
+    collapsible resizable SideNav `72..500px`, main content area, optional
+    `.lrc` drawer, and `74px` PlayerBar).
+  - Shared `egui` animation helpers (`src/ui/theme.rs`): sliding active
+    capsules in SideNav and `ContentTabs`, keyed view/sub-tab slide + fade
+    transitions (`begin_keyed_transition`), smooth open/close transitions for the
+    sidebar, visualizer, and `.lrc` drawer, hover/active color interpolation,
+    animated 3-bar playing EQ indicator, pulsing play glow, and modal backdrop
+    scrim.
+- **KDE Plasma Global Menu (`GlobalMenuService`)**:
+  - Exposes `com.canonical.dbusmenu` at `/MenuBar` over Session D-Bus (`zbus`)
+    with localized *Archivo/File*, *Reproducción/Playback*, *Ver/View*,
+    *Audio*, and *Ayuda/Help* menus synchronized with live playback state.
+  - Binds KWin Wayland `org_kde_kwin_appmenu_manager` (`wayland-client` +
+    `wayland-protocols-plasma`) on Plasma Wayland, falls back to
+    `com.canonical.AppMenu.Registrar.RegisterWindow` on X11, and shares the
+    same `MenuEntry` tree with an elevated in-app menu popup.
+- **Themes & Localization**: Five XML themes (`roseglow`, `exoblur`,
+  `thegrand`, `redline`, `flat`) plus cover-derived dynamic accents, Lumpy Sans
+  + Lucide fonts, and complete bilingual Spanish/English catalogs (413 keys in
+  `src/shared/i18n/strings_*.xml`).
 
-## Appearance
+## Appearance & Storage
 
-`SettingsStorage` writes `appearance.xml` with `QXmlStreamWriter` under
-`QStandardPaths::GenericConfigLocation/<org>/Dopamine/`. Qt 6 does not provide
-`QSettings::XmlFormat`, so the file mirrors Android's XML resource model:
+Theme and language persist under `~/.config/isgaar/Dopamine/` in
+`appearance.xml` alongside full application settings in `settings.json`:
 
 ```xml
 <appearance>
@@ -38,64 +55,41 @@ layer is Qt 6/QML; the core is being migrated to Rust with
 </appearance>
 ```
 
-Theme colors live only in `src/shared/colors/theme_*.xml`:
-`roseglow`, `exoblur`, `thegrand`, `redline`, and `flat`. `ColorManager` loads
-them at runtime and `Theme` exposes the active palette and language tokens.
+Theme tokens live in `src/shared/colors/theme_*.xml` and translations live in
+`src/shared/i18n/strings_*.xml`.
 
-## Layout
+## Project Layout
 
-- `src/`: C++/QML application shell and feature controllers.
-- `rust/`: Rust core built in parallel, mirroring the Android layers.
-- `cmake/`: source, QML, test, and Rust manifests.
+- `src/main.rs` & `src/app.rs`: `eframe`/`egui` bootstrap, deterministic layout
+  slicing, animated drawer orchestration, and `GlobalMenuService` sync.
+- `src/audio/`: Symphonia decoder, crossfade/transition planner,
+  `libpulse-simple` sink, and playback worker.
+- `src/dsp/`: 32-bit float equalizer, dynamics, multi-FX, and ADPCM DSP chain.
+- `src/core/`: URL/source config, XML+JSON settings, LRC parser, Unix IPC guard,
+  and native KDE `GlobalMenuService` (`global_menu.rs`).
+- `src/data/`: Track/Playback/Playlist models and `reqwest` API client.
+- `src/features/`: Library, Queue/Mix, Playlists, and Interconnect controllers.
+- `src/session/`: `dopamine://` URI handoff, XML/token storage, and auth API.
+- `src/shared/`: XML themes (`colors/`) and ES/EN catalogs (`i18n/`).
+- `src/ui/`: Custom frameless chrome, popup menus, sidebar, content views,
+  visualizer, player bar, modals, and shared animation primitives (`theme.rs`).
 
-## Sessions
+## Build and Test
 
-Desktop sessions are owned by Rust under `rust/src/session/`. The
-`SessionBridge` QObject, exposed to QML as `sessionController`, validates the
-cached token, drives login and logout, and handles `dopamine://connect`
-handoffs from the web console.
-
-- Profile: `~/.config/isgaar/Dopamine/session.xml`
-- Token: `~/.config/isgaar/Dopamine/credentials/session.token`, mode `0600`
-- Handoff: `/auth/qr/sessions` for real accounts, otherwise the server URL
-  deep link
-
-`install.sh` registers `x-scheme-handler/dopamine`, so browsers open the
-running desktop instance instead of starting a duplicate process.
-
-## Rust core
-
-- `rust/src/data/model/track.rs`: track model with the Android catalog contract
-  and Spanish/English server payload aliases.
-- `rust/src/data/model/playback.rs`: synchronized playback snapshot.
-- `rust/src/data/remote/dopamine_api_client.rs`: asynchronous `reqwest` client
-  for the FastAPI backend.
-- `rust/src/bridge.rs`: `CoreBridge` QObject exposed to QML as `rustBridge`.
-
-`CoreBridge` exposes `endpoint`, `status`, `last`, `count`, `busy`, `connected`,
-plus `setBaseUrl()`, `checkConnection()` and `loadTracks()`. The C++ bootstrap
-keeps `endpoint` synchronized with `ProjectConfig::apiUrl()`.
-
-## Build and test
-
-Prerequisites: Rust stable, CMake 3.24+, a C++17 compiler and Qt 6.
+Prerequisites: Rust stable (`cargo`) and PulseAudio client libraries (`libpulse`
+loaded dynamically at runtime).
 
 ```sh
-cmake --preset linux-debug
-cmake --build --preset linux-debug
-ctest --test-dir build/linux-debug --output-on-failure
-./build/linux-debug/dopamine
+cargo test
+cargo build --release
+./target/release/dopamine
 ```
 
-The first configure downloads `cxx-qt-cmake` 0.10.0 with `FetchContent`.
-Run the Rust tests independently:
-
-```sh
-cargo test --manifest-path rust/Cargo.toml
-```
+Or run `./install.sh` to compile in Release mode, register the desktop entry
+and `x-scheme-handler/dopamine`, and launch the app.
 
 Relevant environment variables:
 
 - `DOPAMINE_API_URL`: backend URL read by `ProjectConfig`.
-- `DOPAMINE_SERVER_URL`: fallback used by the Rust bridge when it is created
-  directly, without the C++ configuration.
+- `DOPAMINE_SERVER_URL`: fallback server URL used by session and settings
+  defaults.

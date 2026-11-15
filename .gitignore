@@ -1,7 +1,6 @@
-build/
-cmake-build-*/
+target/
+**/*.rs.bk
 .cache/
-rust/target/
 *.o
 *.a
 *.so
